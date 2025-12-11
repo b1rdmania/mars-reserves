@@ -32,7 +32,7 @@ export const ActionPanel: React.FC<Props> = ({ state, onSelect, disabled }) => {
         const list = byCategory[cat];
         if (!list.length) return null;
         return (
-          <div key={cat}>
+          <div key={cat} className="min-w-0">
             <div className="text-[11px] uppercase tracking-wide text-slate-400 mb-1 font-mono">{cat}</div>
             <div className="space-y-1.5">
               {list.map((a) => (

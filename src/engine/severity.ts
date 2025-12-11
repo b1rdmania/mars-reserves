@@ -11,3 +11,4 @@ export function rollSeverity(rng: () => number): SeverityResult {
   return { roll, label: "Glancing", multiplier: 0.7 };
 }
 
+
