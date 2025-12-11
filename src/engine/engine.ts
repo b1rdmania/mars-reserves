@@ -136,7 +136,7 @@ export function step(state: GameState, actionId: ActionId, rng: RNG): GameState 
       techHype: applyScale(next.techHype, before.techHype),
       officialTreasury: applyScale(next.officialTreasury, before.officialTreasury),
       siphoned: applyScale(next.siphoned, before.siphoned),
-      log: [`${severity.label} degen roll ${severity.roll}/6 → ${action.name}`, ...next.log],
+      log: [`${severity.label} → ${action.name}`, ...next.log],
     };
   }
 

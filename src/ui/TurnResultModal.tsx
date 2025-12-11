@@ -1,4 +1,5 @@
 import React from "react";
+import { formatMoney, formatTokenPrice } from "./format";
 import type { SeverityResult } from "../engine/severity";
 
 interface DeltaEntry {
@@ -26,8 +27,10 @@ function formatDelta(delta: number, unit?: string, label?: string) {
   const sign = delta >= 0 ? "+" : "";
   if (moneyLike) {
     const abs = Math.abs(delta);
-    const formatted = abs >= 1 ? `$${abs.toFixed(abs >= 10 ? 0 : 2)}` : `$${abs.toFixed(4)}`;
-    return `${sign}${formatted}`;
+    if (label?.toLowerCase().includes("price")) {
+      return `${sign}${formatTokenPrice(abs)}`;
+    }
+    return `${sign}${formatMoney(abs)}`;
   }
   const val = Number.isInteger(delta) ? delta : delta.toFixed(1);
   return `${sign}${val}${unit ?? ""}`;
