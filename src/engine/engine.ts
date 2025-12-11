@@ -23,13 +23,20 @@ function applyMarketDrift(state: GameState, rng: RNG): GameState {
   let tokenPrice = Math.max(0.05, state.tokenPrice * (1 + priceDelta));
   if (tokenPrice > state.tokenPrice * 1.25) tokenPrice = state.tokenPrice * 1.25;
   if (tokenPrice < state.tokenPrice * 0.75) tokenPrice = state.tokenPrice * 0.75;
+  const realizedDelta = (tokenPrice - state.tokenPrice) / state.tokenPrice;
 
   const tvlSentiment = (100 - state.rage + state.cred) / 200;
   const tvlNoise = (rng() - 0.5) * 0.1;
-  let tvl = state.tvl * (1 + priceDelta * 0.5 + tvlNoise * tvlSentiment);
+  let tvl = state.tvl * (1 + realizedDelta * 0.5 + tvlNoise * tvlSentiment);
   tvl = Math.max(0, tvl);
 
-  return { ...state, tokenPrice, tvl };
+  // 50% of treasury is native token; adjust that portion by price movement
+  const nativePortion = state.officialTreasury * 0.5;
+  const stablePortion = state.officialTreasury - nativePortion;
+  const adjustedNative = nativePortion * (1 + realizedDelta);
+  const officialTreasury = Math.max(0, stablePortion + adjustedNative);
+
+  return { ...state, tokenPrice, tvl, officialTreasury };
 }
 
 function applyDrift(state: GameState, rng: RNG): GameState {

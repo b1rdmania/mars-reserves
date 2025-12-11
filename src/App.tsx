@@ -193,13 +193,8 @@ const App: React.FC = () => {
       <div className="max-w-4xl w-full p-3 sm:p-5 relative bg-[#0d0f14] pb-8 space-y-3">
         <TopPanel state={state} maxTurns={state.maxTurns} showDescription={false} />
 
-        <div className="flex items-center justify-between text-[11px] font-mono text-slate-400">
-          <span>Press ~ to toggle debug panel</span>
-          <button
-            className="underline"
-            onClick={() => setMuted(true)}
-            title="Mute SFX"
-          >
+        <div className="flex items-center justify-end text-[11px] font-mono text-slate-400">
+          <button className="underline" onClick={() => setMuted(true)} title="Mute SFX">
             Mute
           </button>
         </div>

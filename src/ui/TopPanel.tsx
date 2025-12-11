@@ -47,14 +47,14 @@ export const TopPanel: React.FC<Props> = ({ state, maxTurns, showDescription = t
             TVL <span className="font-semibold">{formatMoney(tvl)}</span>
           </span>
           <span className="flex items-center gap-1">
-            Rage
+            Community Rage
             <span className="h-1.5 w-10 bg-slate-700 rounded overflow-hidden">
               <span className="block h-1.5 bg-red-500" style={{ width: `${Math.min(100, rage)}%` }} />
             </span>
             {rage}
           </span>
           <span className="flex items-center gap-1">
-            Heat
+            Regulatory Heat
             <span className="h-1.5 w-10 bg-slate-700 rounded overflow-hidden">
               <span className="block h-1.5 bg-orange-400" style={{ width: `${Math.min(100, heat)}%` }} />
             </span>
