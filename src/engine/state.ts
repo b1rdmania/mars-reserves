@@ -14,6 +14,7 @@ export interface GameState {
   chainName: string;
   founderName: string;
   ticker: string;
+  availableActions: string[];
   tokenPrice: number; // e.g. 1.0
   tvl: number; // total value locked (USD)
   officialTreasury: number; // protocol treasury (USD)

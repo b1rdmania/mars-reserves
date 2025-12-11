@@ -1,6 +1,6 @@
 import React from "react";
 import type { GameState } from "../engine/state";
-import { getVisibleActions } from "../engine/actions";
+import { ACTIONS, getVisibleActions } from "../engine/actions";
 import type { ActionCategory, ActionId } from "../engine/actions";
 
 interface Props {
@@ -12,7 +12,11 @@ interface Props {
 const CATEGORY_ORDER: ActionCategory[] = ["Siphon", "Governance", "Narrative", "Damage Control", "Social"];
 
 export const ActionPanel: React.FC<Props> = ({ state, onSelect, disabled }) => {
-  const actions = getVisibleActions(state);
+  const actions = state.availableActions.length
+    ? ACTIONS.filter((a) => state.availableActions.includes(a.id)).filter(
+        (a) => !a.visibleIf || a.visibleIf(state),
+      )
+    : getVisibleActions(state);
   const byCategory: Record<ActionCategory, typeof actions> = {
     Siphon: [],
     Governance: [],

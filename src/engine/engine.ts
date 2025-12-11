@@ -96,6 +96,7 @@ export function initialState(params?: {
     cred: 60,
     techHype: 40,
     seasonId,
+    availableActions: [],
     hidden: {
       auditRisk: 0,
       founderStability: 1,
@@ -114,8 +115,11 @@ export function step(state: GameState, actionId: ActionId, rng: RNG): GameState 
   let next = { ...state, turn: state.turn + 1 };
   const season = getSeason(state.seasonId);
 
-  const available = sampleActionsForTurn(state, rng);
-  const action = available.find((a) => a.id === actionId) ?? ACTIONS.find((a) => a.id === actionId);
+  const availableIds = state.availableActions.length
+    ? state.availableActions
+    : sampleActionsForTurn(state, rng).map((a) => a.id);
+  const availableDefs = ACTIONS.filter((a) => availableIds.includes(a.id));
+  const action = availableDefs.find((a) => a.id === actionId) ?? ACTIONS.find((a) => a.id === actionId);
   if (action) {
     const severity = rollSeverity(rng);
     const before = { ...next };
@@ -153,6 +157,10 @@ export function step(state: GameState, actionId: ActionId, rng: RNG): GameState 
   if (ev) {
     next = ev.apply(next);
   }
+
+  // sample next turn's actions
+  const nextActions = sampleActionsForTurn(next, rng).map((a) => a.id);
+  next = { ...next, availableActions: nextActions };
 
   next = checkGameOver(next);
   return next;

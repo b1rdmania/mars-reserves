@@ -14,6 +14,7 @@ import { TopPanel } from "./ui/TopPanel";
 import { TurnResultModal } from "./ui/TurnResultModal";
 import type { SeverityResult } from "./engine/severity";
 import { playSound, setMuted } from "./engine/audio";
+import { sampleActionsForTurn } from "./engine/actions";
 
 const App: React.FC = () => {
   const [seed, setSeed] = useState(() => Math.floor(Math.random() * 1e9));
@@ -89,27 +90,27 @@ const App: React.FC = () => {
   };
 
   const handleStart = () => {
-    setState(
-      initialState({
-        chainName: chainName || "ZooChain",
-        founderName: founderName || "You",
-        ticker: ticker || "ZOO",
-        seasonId,
-      }),
-    );
+    const base = initialState({
+      chainName: chainName || "ZooChain",
+      founderName: founderName || "You",
+      ticker: ticker || "ZOO",
+      seasonId,
+    });
+    const sampled = sampleActionsForTurn(base, rng).map((a) => a.id);
+    setState({ ...base, availableActions: sampled });
   };
 
   const handleRestart = () => {
     const newSeed = Math.floor(Math.random() * 1e9);
     setSeed(newSeed);
-    setState(
-      initialState({
-        chainName: chainName || "ZooChain",
-        founderName: founderName || "You",
-        ticker: ticker || "ZOO",
-        seasonId,
-      }),
-    );
+    const base = initialState({
+      chainName: chainName || "ZooChain",
+      founderName: founderName || "You",
+      ticker: ticker || "ZOO",
+      seasonId,
+    });
+    const sampled = sampleActionsForTurn(base, rng).map((a) => a.id);
+    setState({ ...base, availableActions: sampled });
   };
 
   const handleResolveCrisis = (optionId: string) => {
@@ -183,7 +184,7 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen bg-[#0d0f14] text-slate-100 flex items-center justify-center">
       <div className="max-w-3xl w-full p-4 sm:p-5 relative bg-[#0d0f14]">
-        <TopPanel state={state} maxTurns={50} />
+        <TopPanel state={state} maxTurns={state.maxTurns} />
 
         <div className="bg-[#12151c] border border-[#1c1f27] rounded-[8px] p-4">
           <div className="flex items-center justify-between mb-3">
