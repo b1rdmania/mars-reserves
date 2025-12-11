@@ -26,10 +26,7 @@ function formatDelta(delta: number, unit?: string, label?: string) {
   const sign = delta >= 0 ? "+" : "";
   if (moneyLike) {
     const abs = Math.abs(delta);
-    const formatted =
-      abs >= 1
-        ? `$${abs.toFixed(abs >= 10 ? 0 : 2)}`
-        : `$${abs.toFixed(4)}`;
+    const formatted = abs >= 1 ? `$${abs.toFixed(abs >= 10 ? 0 : 2)}` : `$${abs.toFixed(4)}`;
     return `${sign}${formatted}`;
   }
   const val = Number.isInteger(delta) ? delta : delta.toFixed(1);

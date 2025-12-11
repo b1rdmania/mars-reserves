@@ -14,7 +14,7 @@ import { TopPanel } from "./ui/TopPanel";
 import { TurnResultModal } from "./ui/TurnResultModal";
 import type { SeverityResult } from "./engine/severity";
 import { playSound, setMuted } from "./engine/audio";
-import { sampleActionsForTurn } from "./engine/actions";
+import { ACTIONS, sampleActionsForTurn } from "./engine/actions";
 
 const App: React.FC = () => {
   const [seed, setSeed] = useState(() => Math.floor(Math.random() * 1e9));
@@ -77,8 +77,13 @@ const App: React.FC = () => {
         }
       }
 
+      const actionName =
+        severityLine?.split("→ ")[1]?.trim() ??
+        ACTIONS.find((a) => a.id === id)?.name ??
+        id.replace(/_/g, " ");
+
       setTurnModalData({
-        actionName: severityLine ? severityLine.split("→ ")[1] ?? id : id,
+        actionName,
         severity,
         deltas,
         logLine: after.log[1],
