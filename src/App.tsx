@@ -182,11 +182,13 @@ const App: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#0d0f14] text-slate-100 flex items-center justify-center">
-      <div className="max-w-3xl w-full p-4 sm:p-5 relative bg-[#0d0f14]">
-        <TopPanel state={state} maxTurns={state.maxTurns} />
+    <div className="min-h-screen bg-[#0d0f14] text-slate-100 flex items-start justify-center">
+      <div className="max-w-4xl w-full p-3 sm:p-5 relative bg-[#0d0f14] pb-16">
+        <div className="sticky top-0 z-30">
+          <TopPanel state={state} maxTurns={state.maxTurns} />
+        </div>
 
-        <div className="bg-[#12151c] border border-[#1c1f27] rounded-[8px] p-4">
+        <div className="bg-[#12151c] border border-[#1c1f27] rounded-[8px] p-4 mt-2">
           <div className="flex items-center justify-between mb-3">
             <p className="text-[10px] text-slate-500 font-mono">Press ~ to toggle debug panel</p>
             <button
@@ -203,7 +205,7 @@ const App: React.FC = () => {
               <h2 className="text-sm font-semibold mb-1 font-mono">Actions</h2>
               {state && <ActionPanel state={state} onSelect={handleAction} disabled={!!state.pendingCrisis} />}
             </div>
-            <div>
+      <div>
               <h2 className="text-sm font-semibold mb-1 font-mono">Log</h2>
               {state && <EventLog log={state.log} />}
             </div>
@@ -245,7 +247,7 @@ const App: React.FC = () => {
           </div>
         )}
       </div>
-    </div>
+      </div>
   );
 };
 

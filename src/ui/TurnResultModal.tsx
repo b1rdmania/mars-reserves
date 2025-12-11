@@ -16,8 +16,22 @@ interface Props {
   logLine?: string;
 }
 
-function formatDelta(delta: number, unit?: string) {
+function formatDelta(delta: number, unit?: string, label?: string) {
+  const moneyLike =
+    label &&
+    (label.toLowerCase().includes("treasury") ||
+      label.toLowerCase().includes("siphoned") ||
+      label.toLowerCase().includes("tvl") ||
+      label.toLowerCase().includes("price"));
   const sign = delta >= 0 ? "+" : "";
+  if (moneyLike) {
+    const abs = Math.abs(delta);
+    const formatted =
+      abs >= 1
+        ? `$${abs.toFixed(abs >= 10 ? 0 : 2)}`
+        : `$${abs.toFixed(4)}`;
+    return `${sign}${formatted}`;
+  }
   const val = Number.isInteger(delta) ? delta : delta.toFixed(1);
   return `${sign}${val}${unit ?? ""}`;
 }
@@ -49,7 +63,7 @@ export const TurnResultModal: React.FC<Props> = ({ open, onClose, actionName, se
             <div key={d.label} className="flex justify-between">
               <span className="text-slate-300">{d.label}</span>
               <span className={d.delta >= 0 ? "text-emerald-300" : "text-rose-300"}>
-                {formatDelta(d.delta, d.unit)}
+                {formatDelta(d.delta, d.unit, d.label)}
               </span>
             </div>
           ))}

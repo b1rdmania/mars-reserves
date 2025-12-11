@@ -40,7 +40,7 @@ export const ActionPanel: React.FC<Props> = ({ state, onSelect, disabled }) => {
                   key={a.id}
                   onClick={() => onSelect(a.id)}
                   disabled={disabled}
-                  className={`w-full text-left rounded-[6px] px-3 py-2 text-[13px] font-mono ${
+                  className={`w-full text-left rounded-[6px] px-3 py-3 text-[13px] font-mono ${
                     disabled
                       ? "bg-slate-800/60 text-slate-500 cursor-not-allowed border border-slate-800"
                       : "bg-[#12151c] hover:bg-[#171b24] border border-[#1c1f27]"
