@@ -22,28 +22,38 @@ function formatDelta(delta: number, unit?: string, label?: string) {
     label &&
     (label.toLowerCase().includes("treasury") ||
       label.toLowerCase().includes("siphoned") ||
-      label.toLowerCase().includes("tvl") ||
-      label.toLowerCase().includes("price"));
+      label.toLowerCase().includes("tvl"));
+  const isPrice = label?.toLowerCase().includes("price");
   const sign = delta >= 0 ? "+" : "";
   if (moneyLike) {
-    const abs = Math.abs(delta);
-    if (label?.toLowerCase().includes("price")) {
-      return `${sign}${formatTokenPrice(abs)}`;
-    }
-    return `${sign}${formatMoney(abs)}`;
+    return `${sign}${formatMoney(Math.abs(delta))}`;
+  }
+  if (isPrice) {
+    return `${sign}${formatTokenPrice(Math.abs(delta))}`;
   }
   const val = Number.isInteger(delta) ? delta : delta.toFixed(1);
   return `${sign}${val}${unit ?? ""}`;
 }
 
+function getSeverityEmoji(label: string): string {
+  switch (label) {
+    case "Critical":
+      return "💀";
+    case "Glancing":
+      return "😌";
+    default:
+      return "⚡";
+  }
+}
+
 function getSeverityColor(label: string): string {
   switch (label) {
     case "Critical":
-      return "text-red-400 bg-red-500/20";
+      return "text-red-400 bg-red-500/20 border-red-500/30";
     case "Glancing":
-      return "text-slate-400 bg-slate-500/20";
+      return "text-slate-400 bg-slate-500/20 border-slate-500/30";
     default:
-      return "text-amber-400 bg-amber-500/20";
+      return "text-amber-400 bg-amber-500/20 border-amber-500/30";
   }
 }
 
@@ -53,42 +63,85 @@ function isNegativeDelta(label: string, delta: number): boolean {
   return delta < 0;
 }
 
+function getStatEmoji(label: string): string {
+  const l = label.toLowerCase();
+  if (l.includes("treasury")) return "🏦";
+  if (l.includes("siphoned")) return "💰";
+  if (l.includes("rage")) return "😤";
+  if (l.includes("heat")) return "🔥";
+  if (l.includes("cred")) return "⭐";
+  if (l.includes("tech")) return "🚀";
+  if (l.includes("price")) return "📈";
+  if (l.includes("tvl")) return "💧";
+  return "•";
+}
+
 export const TurnResultModal: React.FC<Props> = ({ open, onClose, actionName, severity, deltas, logLine }) => {
   if (!open) return null;
 
+  // Determine overall vibe for the card
+  const hasNegative = deltas.some((d) => isNegativeDelta(d.label, d.delta));
+  const hasSiphoned = deltas.some((d) => d.label.toLowerCase().includes("siphoned") && d.delta > 0);
+
   return (
     <div className="modal-backdrop" onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        {/* Header */}
-        <div className="flex justify-between items-start gap-4 mb-4">
-          <div>
-            <div className="text-[10px] uppercase tracking-wide text-slate-500 mb-1">Turn Result</div>
-            <div className="text-xl font-bold">{actionName}</div>
-          </div>
-          {severity && (
-            <div className={`px-3 py-1.5 rounded-full text-xs font-semibold ${getSeverityColor(severity.label)}`}>
-              {severity.label} ({severity.roll}/6)
-            </div>
-          )}
-        </div>
+      <div className="modal-content max-w-md" onClick={(e) => e.stopPropagation()}>
 
-        {/* Narrative */}
-        {logLine && (
-          <div className="text-sm text-slate-300 bg-slate-800/50 rounded-lg p-3 mb-4 leading-relaxed">
-            {logLine}
+        {/* Severity Banner */}
+        {severity && (
+          <div className={`flex items-center justify-center gap-2 py-2 px-4 rounded-lg mb-4 border ${getSeverityColor(severity.label)}`}>
+            <span className="text-xl">{getSeverityEmoji(severity.label)}</span>
+            <span className="font-semibold uppercase tracking-wide text-sm">
+              {severity.label} Hit
+            </span>
           </div>
         )}
 
-        {/* Stat Changes */}
+        {/* Action Name - Big & Bold */}
+        <h2 className="text-2xl font-bold text-center mb-4 leading-tight">
+          {actionName}
+        </h2>
+
+        {/* Narrative Box - THE STAR OF THE SHOW */}
+        {logLine && (
+          <div className="bg-gradient-to-br from-slate-800/80 to-slate-900/80 rounded-xl p-4 mb-5 border border-slate-700/50">
+            <p className="text-base text-slate-200 leading-relaxed italic">
+              "{logLine}"
+            </p>
+          </div>
+        )}
+
+        {/* Siphoned Callout - If you got the bag */}
+        {hasSiphoned && (
+          <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-lg p-3 mb-4 flex items-center gap-3">
+            <span className="text-2xl">💰</span>
+            <div>
+              <div className="text-emerald-400 font-semibold text-sm uppercase tracking-wide">Bag Secured</div>
+              <div className="text-emerald-300 text-lg font-bold">
+                {formatDelta(deltas.find(d => d.label.toLowerCase().includes("siphoned"))?.delta ?? 0, undefined, "siphoned")}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Stat Changes Grid */}
         {deltas.length > 0 && (
-          <div className="space-y-2 mb-6">
-            <div className="text-[10px] uppercase tracking-wide text-slate-500 mb-2">Changes</div>
+          <div className="grid grid-cols-2 gap-2 mb-5">
             {deltas.map((d) => {
               const isNeg = isNegativeDelta(d.label, d.delta);
+              const isSiphoned = d.label.toLowerCase().includes("siphoned");
+              if (isSiphoned) return null; // Already shown above
               return (
-                <div key={d.label} className="flex justify-between items-center py-1">
-                  <span className="text-sm text-slate-400">{d.label}</span>
-                  <span className={`text-base font-bold tabular-nums ${isNeg ? "text-red-400" : "text-emerald-400"}`}>
+                <div
+                  key={d.label}
+                  className={`flex items-center justify-between p-2 rounded-lg ${isNeg ? "bg-red-500/10" : "bg-slate-800/50"
+                    }`}
+                >
+                  <span className="flex items-center gap-1.5 text-xs text-slate-400">
+                    <span>{getStatEmoji(d.label)}</span>
+                    <span>{d.label}</span>
+                  </span>
+                  <span className={`text-sm font-bold tabular-nums ${isNeg ? "text-red-400" : "text-emerald-400"}`}>
                     {formatDelta(d.delta, d.unit, d.label)}
                   </span>
                 </div>
@@ -100,9 +153,12 @@ export const TurnResultModal: React.FC<Props> = ({ open, onClose, actionName, se
         {/* Action Button */}
         <button
           onClick={onClose}
-          className="w-full py-3 px-4 bg-sky-500 hover:bg-sky-400 text-white font-semibold rounded-xl transition-colors text-sm"
+          className={`w-full py-3.5 px-4 font-semibold rounded-xl transition-all text-base ${hasNegative
+              ? "bg-slate-700 hover:bg-slate-600 text-slate-200"
+              : "bg-sky-500 hover:bg-sky-400 text-white"
+            }`}
         >
-          Next Turn →
+          {hasNegative ? "Survive Another Turn →" : "Next Turn →"}
         </button>
       </div>
     </div>

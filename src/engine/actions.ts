@@ -3,6 +3,7 @@ import type { GameState } from "./state";
 export type ActionCategory = "Siphon" | "Governance" | "Narrative" | "Damage Control" | "Social";
 
 export type ActionId =
+  // Existing Siphon
   | "siphon_advisory"
   | "strategic_consultants"
   | "founder_wage_increase"
@@ -11,28 +12,57 @@ export type ActionId =
   | "real_estate_hq"
   | "token_buyback"
   | "foundation_grant"
+  // New Siphon
+  | "siphon_insurance_fund"
+  | "shadow_otc_deal"
+  | "emergency_token_unlock"
+  | "mev_sandwich_fund"
+  // Existing Governance
   | "emergency_emissions_vote"
   | "lp_incentives_adjust"
   | "treasury_diversification"
   | "delegate_program"
   | "freeze_governance"
+  // New Governance
+  | "community_roundtable"
+  | "snapshot_3am"
+  | "zombie_proposal"
+  // Existing Narrative
   | "announce_partnership"
   | "ship_upgrade"
   | "ai_pivot"
   | "publish_thought_paper"
   | "meme_mascot_campaign"
   | "conference_2049"
+  // New Narrative
+  | "zk_something"
+  | "depin_tweet"
+  | "rwa_tokenization"
+  | "institutions_soon"
+  // Existing Damage Control
   | "lawyer_up"
   | "clarification_post"
   | "launch_audit"
   | "fud_counter_thread"
   | "fire_scapegoat"
+  // New Damage Control
+  | "blame_bounty_hunter"
+  | "feature_not_bug"
+  | "ct_lobbyist"
+  | "screenshot_shame"
+  // Existing Social
   | "shitpost_x"
   | "join_influencer_space"
   | "dm_whale"
   | "dubai_nightclub"
   | "reply_vitalik"
-  | "meme_coin_launch";
+  | "meme_coin_launch"
+  // New Social
+  | "qt_ratio_war"
+  | "were_early_chart"
+  | "grifter_spaces"
+  | "bankless_interview"
+  | "uponly_pod";
 
 export interface ActionDef {
   id: ActionId;
@@ -634,6 +664,399 @@ export const ACTIONS: ActionDef[] = [
         heat: clamp(s.heat + 10),
         cred: clamp(s.cred - 5),
         techHype: clamp(s.techHype + 15),
+        log: [log, ...s.log],
+      };
+    },
+  },
+
+  // ═══════════════════════════════════════════════════════════
+  // NEW DEGEN WEB3-AUTHENTIC ACTIONS
+  // ═══════════════════════════════════════════════════════════
+
+  // === NEW SIPHON ACTIONS ===
+  {
+    id: "siphon_insurance_fund",
+    category: "Siphon",
+    name: "Siphon Protocol Insurance Fund",
+    description: "Route 'insurance' reserves to opaque multisigs. FTX vibes.",
+    tags: ["+Siphon", "+Rage", "+Heat", "-Treasury"],
+    apply: (s) => {
+      const amount = Math.floor(s.officialTreasury * 0.15);
+      const log = `You siphoned the insurance fund. "It's for user protection."`;
+      return {
+        ...s,
+        officialTreasury: Math.max(0, s.officialTreasury - amount),
+        siphoned: s.siphoned + amount,
+        rage: clamp(s.rage + 12),
+        heat: clamp(s.heat + 10),
+        hidden: { ...s.hidden, auditRisk: s.hidden.auditRisk + 0.2 },
+        log: [log, ...s.log],
+      };
+    },
+  },
+  {
+    id: "shadow_otc_deal",
+    category: "Siphon",
+    name: "Shadow OTC Deal",
+    description: "Privately sell tokens OTC at a discount to 'friendly' buyers.",
+    tags: ["+Siphon", "+Heat", "-Price"],
+    apply: (s) => {
+      const amount = Math.floor(s.officialTreasury * 0.08);
+      const log = `Shadow OTC complete. Price slipping as tokens hit market.`;
+      return {
+        ...s,
+        siphoned: s.siphoned + amount,
+        tokenPrice: s.tokenPrice * 0.9,
+        heat: clamp(s.heat + 15),
+        hidden: { ...s.hidden, auditRisk: s.hidden.auditRisk + 0.1 },
+        log: [log, ...s.log],
+      };
+    },
+  },
+  {
+    id: "emergency_token_unlock",
+    category: "Siphon",
+    name: "Emergency Team Token Unlock",
+    description: "Accelerate vesting 'for operational needs.' Classic.",
+    tags: ["+Siphon", "+++Rage", "+Heat"],
+    apply: (s) => {
+      const amount = Math.floor(s.officialTreasury * 0.2);
+      const log = `Emergency unlock executed. CT notices immediately.`;
+      return {
+        ...s,
+        siphoned: s.siphoned + amount,
+        rage: clamp(s.rage + 25),
+        heat: clamp(s.heat + 8),
+        cred: clamp(s.cred - 15),
+        tokenPrice: s.tokenPrice * 0.85,
+        log: [log, ...s.log],
+      };
+    },
+  },
+  {
+    id: "mev_sandwich_fund",
+    category: "Siphon",
+    name: "MEV Sandwich Fund",
+    description: "Create a MEV bot that subtly drains users. Plausible deniability.",
+    tags: ["+Siphon gradual", "+Heat if discovered"],
+    apply: (s) => {
+      const amount = 30 + Math.floor(Math.random() * 40);
+      const discovered = Math.random() < 0.3;
+      const log = discovered
+        ? `Your MEV bot got exposed. Anon sleuth is threading.`
+        : `MEV sandwich fund operational. Passive extraction engaged.`;
+      return {
+        ...s,
+        siphoned: s.siphoned + amount,
+        rage: clamp(s.rage + (discovered ? 20 : 0)),
+        heat: clamp(s.heat + (discovered ? 15 : 3)),
+        hidden: { ...s.hidden, auditRisk: s.hidden.auditRisk + (discovered ? 0.25 : 0.05) },
+        log: [log, ...s.log],
+      };
+    },
+  },
+
+  // === NEW GOVERNANCE ACTIONS ===
+  {
+    id: "community_roundtable",
+    category: "Governance",
+    name: "Community Roundtable (Pre-Selected)",
+    description: "Pretend to be neutral. Actually puppeteered with friendly influencers.",
+    tags: ["+Cred", "-Rage", "+Heat"],
+    apply: (s) => {
+      const log = `Roundtable went smoothly. Nobody suspects it was scripted.`;
+      return {
+        ...s,
+        cred: clamp(s.cred + 8),
+        rage: clamp(s.rage - 10),
+        heat: clamp(s.heat + 5),
+        log: [log, ...s.log],
+      };
+    },
+  },
+  {
+    id: "snapshot_3am",
+    category: "Governance",
+    name: "Rushed Snapshot Vote at 3AM",
+    description: "Classic governance manipulation. EU is sleeping.",
+    tags: ["+Treasury", "++Rage next morning", "-Cred"],
+    apply: (s) => {
+      const amount = 150;
+      const log = `3AM snapshot passed. Community waking up furious.`;
+      return {
+        ...s,
+        officialTreasury: s.officialTreasury + amount,
+        rage: clamp(s.rage + 18),
+        cred: clamp(s.cred - 10),
+        hidden: { ...s.hidden, communityMemory: s.hidden.communityMemory + 0.15 },
+        log: [log, ...s.log],
+      };
+    },
+  },
+  {
+    id: "zombie_proposal",
+    category: "Governance",
+    name: "Zombie AI Governance Proposal",
+    description: "Submit a proposal written by ChatGPT at 2am. Hope nobody reads it.",
+    tags: ["±Cred", "±Tech", "-Rage minor"],
+    apply: (s) => {
+      const quality = Math.random();
+      const log = quality > 0.5
+        ? `AI proposal is coherent. Some are impressed.`
+        : `AI proposal is gibberish. Screenshots everywhere.`;
+      return {
+        ...s,
+        cred: clamp(s.cred + (quality > 0.5 ? 5 : -12)),
+        techHype: clamp(s.techHype + (quality > 0.5 ? 8 : -5)),
+        rage: clamp(s.rage + (quality > 0.5 ? -3 : 8)),
+        log: [log, ...s.log],
+      };
+    },
+  },
+
+  // === NEW NARRATIVE ACTIONS ===
+  {
+    id: "zk_something",
+    category: "Narrative",
+    name: "Launch zk-Something (Nobody Understands)",
+    description: "Degen hype magnet. Zero knowledge, maximum buzzwords.",
+    tags: ["+++Tech", "+Cred", "+Heat"],
+    apply: (s) => {
+      const log = `You announced zkVM integration. VCs are salivating.`;
+      return {
+        ...s,
+        techHype: clamp(s.techHype + 25),
+        cred: clamp(s.cred + 10),
+        heat: clamp(s.heat + 5),
+        tokenPrice: s.tokenPrice * 1.08,
+        log: [log, ...s.log],
+      };
+    },
+  },
+  {
+    id: "depin_tweet",
+    category: "Narrative",
+    name: "DePIN Tweet Thread",
+    description: "Decentralised Physical Infrastructure. Buzzword stack & vibes.",
+    tags: ["+Tech", "±Cred", "-Rage"],
+    apply: (s) => {
+      const log = `Your DePIN thread went semi-viral. Hardware degens are interested.`;
+      return {
+        ...s,
+        techHype: clamp(s.techHype + 12),
+        cred: clamp(s.cred + 3),
+        rage: clamp(s.rage - 5),
+        log: [log, ...s.log],
+      };
+    },
+  },
+  {
+    id: "rwa_tokenization",
+    category: "Narrative",
+    name: "Tokenize Real-World Assets (No Plan)",
+    description: "RWA meta play. Announce first, figure out legality later.",
+    tags: ["+Tech", "+++Heat", "Treasury stable"],
+    apply: (s) => {
+      const log = `RWA announcement. Lawyers are sweating. VCs are DMing.`;
+      return {
+        ...s,
+        techHype: clamp(s.techHype + 15),
+        heat: clamp(s.heat + 20),
+        cred: clamp(s.cred + 5),
+        tokenPrice: s.tokenPrice * 1.05,
+        hidden: { ...s.hidden, auditRisk: s.hidden.auditRisk + 0.1 },
+        log: [log, ...s.log],
+      };
+    },
+  },
+  {
+    id: "institutions_soon",
+    category: "Narrative",
+    name: "'Onboarding Institutions Soon™'",
+    description: "Bullshit narrative that boosts price short term. CT will meme you.",
+    tags: ["+Price", "-Rage", "follow-up CT memes"],
+    apply: (s) => {
+      const log = `"Institutions are coming." Price pumps. CT screenshots this for later.`;
+      return {
+        ...s,
+        tokenPrice: s.tokenPrice * 1.06,
+        rage: clamp(s.rage - 5),
+        cred: clamp(s.cred - 3),
+        hidden: { ...s.hidden, communityMemory: s.hidden.communityMemory + 0.1 },
+        log: [log, ...s.log],
+      };
+    },
+  },
+
+  // === NEW DAMAGE CONTROL ACTIONS ===
+  {
+    id: "blame_bounty_hunter",
+    category: "Damage Control",
+    name: "Blame the Bug Bounty Hunter",
+    description: "Claim exploit was responsibly disclosed. Technically true-ish.",
+    tags: ["-Heat", "-Cred", "+Rage"],
+    apply: (s) => {
+      const log = `You blamed the whitehat. Security community is furious.`;
+      return {
+        ...s,
+        heat: clamp(s.heat - 12),
+        cred: clamp(s.cred - 8),
+        rage: clamp(s.rage + 10),
+        log: [log, ...s.log],
+      };
+    },
+  },
+  {
+    id: "feature_not_bug",
+    category: "Damage Control",
+    name: "Spin Exploit as 'Not an Exploit'",
+    description: "The 'that's actually a feature' play. Bridge math vibes.",
+    tags: ["-Cred", "+Rage", "-Tech"],
+    apply: (s) => {
+      const believed = Math.random() < 0.3;
+      const log = believed
+        ? `Against all odds, people bought it. "Unexpected withdrawal feature."`
+        : `Nobody buys it. The memes write themselves.`;
+      return {
+        ...s,
+        cred: clamp(s.cred + (believed ? 2 : -15)),
+        rage: clamp(s.rage + (believed ? -5 : 15)),
+        techHype: clamp(s.techHype - 10),
+        log: [log, ...s.log],
+      };
+    },
+  },
+  {
+    id: "ct_lobbyist",
+    category: "Damage Control",
+    name: "Hire a CT Lobbyist",
+    description: "Yes, this is a real thing people do.",
+    tags: ["-Rage", "-Heat", "-Treasury"],
+    apply: (s) => {
+      const cost = 80;
+      const log = `CT lobbyist deployed. Narrative starting to shift.`;
+      return {
+        ...s,
+        officialTreasury: Math.max(0, s.officialTreasury - cost),
+        rage: clamp(s.rage - 12),
+        heat: clamp(s.heat - 8),
+        cred: clamp(s.cred + 5),
+        log: [log, ...s.log],
+      };
+    },
+  },
+  {
+    id: "screenshot_shame",
+    category: "Damage Control",
+    name: "Screenshot Shame an Influencer",
+    description: "Publicly leak influencer DMs. Nuclear option.",
+    tags: ["-Rage", "-Cred", "+Heat", "social meltdown"],
+    apply: (s) => {
+      const backfires = Math.random() < 0.4;
+      const log = backfires
+        ? `The influencer had receipts too. Mutual destruction.`
+        : `Influencer exposed. They're deleting tweets.`;
+      return {
+        ...s,
+        rage: clamp(s.rage + (backfires ? 15 : -15)),
+        cred: clamp(s.cred - 10),
+        heat: clamp(s.heat + 12),
+        hidden: { ...s.hidden, founderStability: s.hidden.founderStability - 0.15 },
+        log: [log, ...s.log],
+      };
+    },
+  },
+
+  // === NEW SOCIAL ACTIONS ===
+  {
+    id: "qt_ratio_war",
+    category: "Social",
+    name: "Quote-Tweet Ratio War",
+    description: "Start a war with another project founder. CT loves drama.",
+    tags: ["±Cred big swing", "++Rage", "+Tech"],
+    apply: (s) => {
+      const won = Math.random() < 0.5;
+      const log = won
+        ? `You won the ratio war. Enemy founder is coping.`
+        : `You got ratioed into oblivion. Screenshots for days.`;
+      return {
+        ...s,
+        cred: clamp(s.cred + (won ? 15 : -20)),
+        rage: clamp(s.rage + 12),
+        techHype: clamp(s.techHype + 8),
+        log: [log, ...s.log],
+      };
+    },
+  },
+  {
+    id: "were_early_chart",
+    category: "Social",
+    name: "Post 'We're Early' Copium Chart",
+    description: "The classic adoption curve copium. Works every time.",
+    tags: ["+Tech", "-Cred", "-Rage"],
+    apply: (s) => {
+      const log = `You posted the adoption curve. Degens RT'd it unironically.`;
+      return {
+        ...s,
+        techHype: clamp(s.techHype + 10),
+        cred: clamp(s.cred - 5),
+        rage: clamp(s.rage - 8),
+        log: [log, ...s.log],
+      };
+    },
+  },
+  {
+    id: "grifter_spaces",
+    category: "Social",
+    name: "Host Spaces with a Known Grifter",
+    description: "You know exactly who. Their audience becomes yours.",
+    tags: ["-Cred", "+Tech", "+Rage"],
+    apply: (s) => {
+      const log = `You hosted the grifter. New followers, old bagholders furious.`;
+      return {
+        ...s,
+        cred: clamp(s.cred - 12),
+        techHype: clamp(s.techHype + 15),
+        rage: clamp(s.rage + 8),
+        log: [log, ...s.log],
+      };
+    },
+  },
+  {
+    id: "bankless_interview",
+    category: "Social",
+    name: "Go Bankless Interview",
+    description: "The establishment route. Credibility pump incoming.",
+    tags: ["++Cred", "+Heat", "-Rage"],
+    apply: (s) => {
+      const log = `Bankless interview aired. You sounded almost legitimate.`;
+      return {
+        ...s,
+        cred: clamp(s.cred + 18),
+        heat: clamp(s.heat + 8),
+        rage: clamp(s.rage - 10),
+        tokenPrice: s.tokenPrice * 1.03,
+        log: [log, ...s.log],
+      };
+    },
+  },
+  {
+    id: "uponly_pod",
+    category: "Social",
+    name: "Pod With UpOnly",
+    description: "The degen credibility arc. Cobie might mock you.",
+    tags: ["+Tech", "-Rage", "+Price spike"],
+    apply: (s) => {
+      const mocked = Math.random() < 0.3;
+      const log = mocked
+        ? `Cobie roasted you live. Clips going viral.`
+        : `UpOnly went well. Degen cred established.`;
+      return {
+        ...s,
+        techHype: clamp(s.techHype + (mocked ? -5 : 12)),
+        rage: clamp(s.rage + (mocked ? 10 : -8)),
+        cred: clamp(s.cred + (mocked ? -10 : 8)),
+        tokenPrice: s.tokenPrice * (mocked ? 0.97 : 1.05),
         log: [log, ...s.log],
       };
     },
