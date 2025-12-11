@@ -3,7 +3,6 @@ import { initialState, step } from "./engine/engine";
 import { mulberry32 } from "./engine/rng";
 import type { ActionId } from "./engine/actions";
 import { ActionPanel } from "./ui/ActionPanel";
-import { EventLog } from "./ui/EventLog";
 import { EndOfRunCard } from "./ui/EndOfRunCard";
 import { CrisisModal } from "./ui/CrisisModal";
 import { resolveCrisisOption } from "./engine/crises";
@@ -15,6 +14,7 @@ import { TurnResultModal } from "./ui/TurnResultModal";
 import type { SeverityResult } from "./engine/severity";
 import { playSound, setMuted } from "./engine/audio";
 import { ACTIONS, sampleActionsForTurn } from "./engine/actions";
+import { LogSection } from "./ui/LogSection";
 
 const App: React.FC = () => {
   const [seed, setSeed] = useState(() => Math.floor(Math.random() * 1e9));
@@ -190,34 +190,26 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#0d0f14] text-slate-100 flex items-start justify-center">
-      <div className="max-w-4xl w-full p-3 sm:p-5 relative bg-[#0d0f14] pb-16">
-        <div className="sticky top-0 z-30">
-          <TopPanel state={state} maxTurns={state.maxTurns} showDescription={false} />
+      <div className="max-w-4xl w-full p-3 sm:p-5 relative bg-[#0d0f14] pb-8 space-y-3">
+        <TopPanel state={state} maxTurns={state.maxTurns} showDescription={false} />
+
+        <div className="flex items-center justify-between text-[11px] font-mono text-slate-400">
+          <span>Press ~ to toggle debug panel</span>
+          <button
+            className="underline"
+            onClick={() => setMuted(true)}
+            title="Mute SFX"
+          >
+            Mute
+          </button>
         </div>
 
-        <div className="bg-[#12151c] border border-[#1c1f27] rounded-[8px] p-4 mt-2">
-          <div className="flex items-center justify-between mb-3">
-            <p className="text-[10px] text-slate-500 font-mono">Press ~ to toggle debug panel</p>
-            <button
-              className="text-[11px] font-mono text-slate-300 underline"
-              onClick={() => setMuted(true)}
-              title="Mute SFX"
-            >
-              Mute
-            </button>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-[2fr,1.5fr] gap-3">
-            <div className={`${state?.pendingCrisis ? "opacity-50 pointer-events-none" : ""}`}>
-              <h2 className="text-sm font-semibold mb-1 font-mono">Actions</h2>
-              {state && <ActionPanel state={state} onSelect={handleAction} disabled={!!state.pendingCrisis} />}
-            </div>
-      <div>
-              <h2 className="text-sm font-semibold mb-1 font-mono">Log</h2>
-              {state && <EventLog log={state.log} />}
-            </div>
-          </div>
+        <div className={`${state?.pendingCrisis ? "opacity-50 pointer-events-none" : ""}`}>
+          <h2 className="text-sm font-semibold mb-1 font-mono">Actions</h2>
+          {state && <ActionPanel state={state} onSelect={handleAction} disabled={!!state.pendingCrisis} />}
         </div>
+
+        <LogSection log={state?.log ?? []} />
 
         {state && <CrisisModal crisis={state.pendingCrisis ?? null} onResolve={handleResolveCrisis} />}
 
@@ -254,7 +246,7 @@ const App: React.FC = () => {
           </div>
         )}
       </div>
-      </div>
+    </div>
   );
 };
 
