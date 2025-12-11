@@ -15,6 +15,7 @@ import type { SeverityResult } from "./engine/severity";
 import { playSound, setMuted, initAudio } from "./engine/audio";
 import { ACTIONS, sampleActionsForTurn } from "./engine/actions";
 import { LogSection } from "./ui/LogSection";
+import { HowToPlayModal } from "./ui/HowToPlayModal";
 
 const App: React.FC = () => {
   const [seed, setSeed] = useState(() => Math.floor(Math.random() * 1e9));
@@ -28,6 +29,7 @@ const App: React.FC = () => {
   const [showDebug, setShowDebug] = useState(false);
   const [turnModalOpen, setTurnModalOpen] = useState(false);
   const [muted, setMutedState] = useState(false);
+  const [showHowToPlay, setShowHowToPlay] = useState(false);
   const [turnModalData, setTurnModalData] = useState<{
     actionName: string;
     severity: SeverityResult | null;
@@ -251,12 +253,22 @@ const App: React.FC = () => {
             </label>
           </div>
 
-          <button
-            onClick={handleStart}
-            className="w-full py-4 px-4 bg-sky-500 hover:bg-sky-400 text-white font-semibold rounded-xl transition-colors text-base"
-          >
-            Start Run →
-          </button>
+          <div className="flex gap-3">
+            <button
+              onClick={() => setShowHowToPlay(true)}
+              className="flex-1 py-4 px-4 bg-slate-700 hover:bg-slate-600 text-white font-semibold rounded-xl transition-colors text-base"
+            >
+              ❓ wtf
+            </button>
+            <button
+              onClick={handleStart}
+              className="flex-[2] py-4 px-4 bg-sky-500 hover:bg-sky-400 text-white font-semibold rounded-xl transition-colors text-base"
+            >
+              Start Run →
+            </button>
+          </div>
+
+          <HowToPlayModal open={showHowToPlay} onClose={() => setShowHowToPlay(false)} />
         </div>
       </div>
     );
