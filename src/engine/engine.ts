@@ -10,10 +10,16 @@ import { rollSeverity } from "./severity";
 import { sampleActionsForTurn } from "./actions";
 
 function applyMarketDrift(state: GameState, rng: RNG): GameState {
-  const noise = (rng() - 0.5) * 0.08; // -4%..+4%
-  const hypePush = (state.techHype - 50) / 200; // approx -0.25..+0.25
-  const fearDrag = (state.rage + state.heat - 100) / 300; // drag when combined >100
-  const priceDelta = noise + hypePush - fearDrag;
+  const sentiment = (state.cred - state.rage + state.techHype) / 300; // -1..1 ish
+  const baseDrift = sentiment * 0.05;
+  const vol =
+    state.seasonId === "meme_summer"
+      ? 0.12
+      : state.seasonId === "regulator_season"
+      ? 0.04
+      : 0.08;
+  const noise = (rng() - 0.5) * vol;
+  const priceDelta = baseDrift + noise;
   let tokenPrice = Math.max(0.05, state.tokenPrice * (1 + priceDelta));
   if (tokenPrice > state.tokenPrice * 1.25) tokenPrice = state.tokenPrice * 1.25;
   if (tokenPrice < state.tokenPrice * 0.75) tokenPrice = state.tokenPrice * 0.75;
@@ -58,11 +64,11 @@ function checkGameOver(state: GameState): GameState {
   if (state.officialTreasury <= 0) {
     return { ...state, gameOver: true, gameOverReason: "Official treasury empty: no more games to play." };
   }
-  if (state.turn >= 50) {
+  if (state.turn >= state.maxTurns) {
     return {
       ...state,
       gameOver: true,
-      gameOverReason: "Regime change: your era is over after 50 governance cycles.",
+      gameOverReason: `Regime change: your era is over after ${state.maxTurns} governance cycles.`,
     };
   }
   return state;
@@ -77,6 +83,7 @@ export function initialState(params?: {
   const { chainName = "ZooChain", founderName = "You", ticker = "ZOO", seasonId = "meme_summer" } = params ?? {};
   return {
     turn: 0,
+    maxTurns: 20,
     chainName,
     founderName,
     ticker: ticker.toUpperCase().slice(0, 4),

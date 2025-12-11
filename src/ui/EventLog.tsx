@@ -14,6 +14,8 @@ const iconForLine = (line: string) => {
     line.toLowerCase().includes("hype")
   )
     return "★";
+  if (line.startsWith("Critical")) return "✖";
+  if (line.startsWith("Glancing") || line.startsWith("Normal")) return "►";
   return "►";
 };
 

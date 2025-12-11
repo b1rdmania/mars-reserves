@@ -10,6 +10,7 @@ export interface HiddenState {
 
 export interface GameState {
   turn: number;
+  maxTurns: number;
   chainName: string;
   founderName: string;
   ticker: string;
