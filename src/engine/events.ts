@@ -1,5 +1,6 @@
 import type { GameState } from "./state";
 import type { SeasonDef } from "./seasons";
+import { SCANDAL_FRAGMENTS } from "../content/events.web3";
 
 export type EventId =
   | "founder_meltdown"
@@ -10,7 +11,8 @@ export type EventId =
   | "conference_backroom_rumour"
   | "cofounder_ragequit"
   | "vc_tweetstorm"
-  | "solana_outage";
+  | "solana_outage"
+  | "scandal_fragment";
 
 export interface EventDef {
   id: EventId;
@@ -19,7 +21,7 @@ export interface EventDef {
   apply: (s: GameState) => GameState;
 }
 
-export const EVENTS: EventDef[] = [
+const BASE_EVENTS: EventDef[] = [
   {
     id: "founder_meltdown",
     name: "Founder Meltdown in Discord",
@@ -198,6 +200,51 @@ export const EVENTS: EventDef[] = [
     },
   },
 ];
+
+function severityToWeight(severity?: string): number {
+  switch (severity) {
+    case "low":
+      return 0.4;
+    case "medium":
+      return 0.7;
+    case "high":
+      return 1.0;
+    case "very high":
+      return 1.2;
+    case "extreme":
+      return 1.5;
+    default:
+      return 0.6;
+  }
+}
+
+const SCANDAL_EVENTS: EventDef[] = SCANDAL_FRAGMENTS.map((frag) => ({
+  id: "scandal_fragment",
+  name: frag.key,
+  weight: () => severityToWeight(frag.severity),
+  apply: (s) => {
+    const sev = frag.severity ?? "medium";
+    const rageBump = sev === "extreme" ? 30 : sev === "very high" ? 22 : sev === "high" ? 16 : sev === "medium" ? 12 : 8;
+    const heatBump = sev === "extreme" ? 25 : sev === "very high" ? 18 : sev === "high" ? 14 : sev === "medium" ? 10 : 6;
+    const credDrop = sev === "extreme" ? 18 : sev === "very high" ? 14 : sev === "high" ? 10 : sev === "medium" ? 8 : 5;
+    const log = frag.narrative;
+    return {
+      ...s,
+      rage: Math.min(100, s.rage + rageBump),
+      heat: Math.min(100, s.heat + heatBump),
+      cred: Math.max(0, s.cred - credDrop),
+      hidden: {
+        ...s.hidden,
+        communityMemory: s.hidden.communityMemory + 0.1,
+        auditRisk: s.hidden.auditRisk + 0.05,
+      },
+      recentEvents: [frag.key, ...s.recentEvents].slice(0, 5),
+      log: [log, ...s.log],
+    };
+  },
+}));
+
+export const EVENTS: EventDef[] = [...BASE_EVENTS, ...SCANDAL_EVENTS];
 
 export function pickRandomEvent(state: GameState, rng: () => number, season: SeasonDef): EventDef | null {
   const candidates = EVENTS.filter((e) => e.weight(state, season) > 0);
