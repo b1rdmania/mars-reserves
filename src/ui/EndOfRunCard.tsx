@@ -1,5 +1,6 @@
 import React from "react";
 import type { GameState } from "../engine/state";
+import { ShareCard } from "./ShareCard";
 
 interface Props {
   state: GameState;
@@ -45,6 +46,8 @@ export const EndOfRunCard: React.FC<Props> = ({ state, onRestart, onChangeNames 
             </button>
           )}
         </div>
+
+        <ShareCard state={state} />
       </div>
     </div>
   );
