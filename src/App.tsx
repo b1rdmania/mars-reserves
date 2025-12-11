@@ -103,16 +103,23 @@ const App: React.FC = () => {
         }
       }
 
-      const actionName =
-        severityLine?.split("→ ")[1]?.trim() ??
-        ACTIONS.find((a) => a.id === id)?.name ??
-        id.replace(/_/g, " ");
+      const actionDef = ACTIONS.find((a) => a.id === id);
+      const actionName = actionDef?.name ?? id.replace(/_/g, " ");
+
+      // Find the actual narrative log (not the severity line)
+      // The narrative should be the log entry added by the action's apply function
+      let narrativeLog = severityLine ? after.log[1] : after.log[0];
+
+      // If we still got a severity-style line or nothing, use action description
+      if (!narrativeLog || narrativeLog.startsWith("Glancing") || narrativeLog.startsWith("Normal") || narrativeLog.startsWith("Critical")) {
+        narrativeLog = actionDef?.description ?? "";
+      }
 
       setTurnModalData({
         actionName,
         severity,
         deltas,
-        logLine: after.log[1],
+        logLine: narrativeLog,
       });
       setTurnModalOpen(true);
 
