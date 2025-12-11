@@ -6,6 +6,8 @@ import { maybePickCrisis } from "./crises";
 import type { RNG } from "./rng";
 import { getSeason } from "./seasons";
 import type { SeasonId } from "./seasons";
+import { rollSeverity } from "./severity";
+import { sampleActionsForTurn } from "./actions";
 
 function applyMarketDrift(state: GameState, rng: RNG): GameState {
   const noise = (rng() - 0.5) * 0.08; // -4%..+4%
@@ -105,9 +107,29 @@ export function step(state: GameState, actionId: ActionId, rng: RNG): GameState 
   let next = { ...state, turn: state.turn + 1 };
   const season = getSeason(state.seasonId);
 
-  const action = ACTIONS.find((a) => a.id === actionId);
+  const available = sampleActionsForTurn(state, rng);
+  const action = available.find((a) => a.id === actionId) ?? ACTIONS.find((a) => a.id === actionId);
   if (action) {
+    const severity = rollSeverity(rng);
+    const before = { ...next };
     next = action.apply(next);
+
+    // apply severity scaling to key meters
+    const scale = severity.multiplier;
+    const applyScale = (val: number, base: number) => base + (val - base) * scale;
+    next = {
+      ...next,
+      rage: applyScale(next.rage, before.rage),
+      heat: applyScale(next.heat, before.heat),
+      cred: applyScale(next.cred, before.cred),
+      techHype: applyScale(next.techHype, before.techHype),
+      officialTreasury: applyScale(next.officialTreasury, before.officialTreasury),
+      siphoned: applyScale(next.siphoned, before.siphoned),
+      log: [
+        `${severity.label} (${severity.roll}/6) → ${action.name}`,
+        ...next.log,
+      ],
+    };
   }
 
   next = applyDrift(next, rng);

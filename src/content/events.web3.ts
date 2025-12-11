@@ -4,3 +4,4 @@ import type { EventDef } from "../engine/events";
 // Extend this list to add new events without touching engine code.
 export const WEB3_EVENTS: EventDef[] = [];
 
+

@@ -613,3 +613,35 @@ export function getVisibleActions(state: GameState): ActionDef[] {
   return ACTIONS.filter((a) => !a.visibleIf || a.visibleIf(state));
 }
 
+// Sample a limited set per category to reduce menu fatigue
+export function sampleActionsForTurn(state: GameState, rng: () => number): ActionDef[] {
+  const actions = getVisibleActions(state);
+  const byCategory: Record<ActionCategory, ActionDef[]> = {
+    Siphon: [],
+    Governance: [],
+    Narrative: [],
+    "Damage Control": [],
+    Social: [],
+  };
+  actions.forEach((a) => byCategory[a.category].push(a));
+
+  const pick = (arr: ActionDef[], count: number) => {
+    const copy = [...arr];
+    const res: ActionDef[] = [];
+    for (let i = 0; i < count && copy.length; i++) {
+      const idx = Math.floor(rng() * copy.length);
+      res.push(copy[idx]);
+      copy.splice(idx, 1);
+    }
+    return res;
+  };
+
+  return [
+    ...pick(byCategory.Siphon, 2),
+    ...pick(byCategory.Governance, 1),
+    ...pick(byCategory.Narrative, 1),
+    ...pick(byCategory["Damage Control"], 1),
+    ...pick(byCategory.Social, 1),
+  ].filter(Boolean);
+}
+
