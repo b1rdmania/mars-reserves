@@ -10,51 +10,57 @@ import { rollSeverity } from "./severity";
 import { sampleActionsForTurn } from "./actions";
 
 function applyMarketDrift(state: GameState, rng: RNG): GameState {
-  // VOLATILE PRICE MODEL
-  // Rage and low cred/tech cause MASSIVE dips
-  // High tech and cred can boost price
+  // BALANCED PRICE MODEL v2
+  // More symmetric pressure: good play can pump, bad play dumps
+  // Price has momentum to reduce wild swings
 
-  // Sentiment factors (each contributes to price pressure)
-  const ragePressure = state.rage > 70 ? -0.15 : state.rage > 50 ? -0.08 : state.rage > 30 ? -0.03 : 0;
-  const credPressure = state.cred < 30 ? -0.12 : state.cred < 50 ? -0.05 : state.cred > 70 ? 0.05 : 0;
-  const techPressure = state.techHype < 20 ? -0.08 : state.techHype > 60 ? 0.08 : state.techHype > 40 ? 0.03 : 0;
+  // Sentiment factors - REBALANCED for fairness (-28% to +21%)
+  // Low rage now gives POSITIVE pressure (reward for keeping community happy)
+  const ragePressure = state.rage > 80 ? -0.12 : state.rage > 60 ? -0.06 : state.rage > 40 ? -0.02 : state.rage < 20 ? 0.03 : 0;
+  const credPressure = state.cred < 20 ? -0.10 : state.cred < 40 ? -0.04 : state.cred > 80 ? 0.08 : state.cred > 60 ? 0.04 : 0;
+  const techPressure = state.techHype < 20 ? -0.06 : state.techHype > 70 ? 0.10 : state.techHype > 50 ? 0.05 : 0;
 
-  // Combined sentiment (-0.35 to +0.16 range)
+  // Combined sentiment (-28% to +21% range - more balanced!)
   const sentiment = ragePressure + credPressure + techPressure;
 
-  // Base volatility by season
-  const baseVol = state.seasonId === "meme_summer" ? 0.25
-    : state.seasonId === "regulator_season" ? 0.12
-      : state.seasonId === "builder_winter" ? 0.15
-        : 0.20;
+  // Base volatility by season (slightly reduced)
+  const baseVol = state.seasonId === "meme_summer" ? 0.20
+    : state.seasonId === "regulator_season" ? 0.10
+      : state.seasonId === "builder_winter" ? 0.12
+        : 0.15;
 
-  // Extra volatility when things are bad
-  const panicVol = state.rage > 70 || state.cred < 30 ? 0.15 : 0;
+  // Extra volatility when things are bad (reduced from 0.15)
+  const panicVol = state.rage > 80 || state.cred < 20 ? 0.10 : 0;
   const vol = baseVol + panicVol;
 
   // Random noise
   const noise = (rng() - 0.5) * vol;
 
-  // Total price change (can be extreme: -50% to +25% in bad conditions)
+  // Calculate target price
   const priceDelta = sentiment + noise;
+  const targetPrice = state.tokenPrice * (1 + priceDelta);
 
-  // Apply price change - NO CAPS for extreme moves
-  let tokenPrice = Math.max(0.001, state.tokenPrice * (1 + priceDelta));
+  // PRICE MOMENTUM: Smooth towards target (50% move per turn)
+  // This prevents wild whiplash from single turns
+  let tokenPrice = state.tokenPrice + (targetPrice - state.tokenPrice) * 0.5;
+  tokenPrice = Math.max(0.001, tokenPrice);
 
   // Realized delta for treasury calc
   const realizedDelta = (tokenPrice - state.tokenPrice) / state.tokenPrice;
 
   // TVL affected by price and sentiment
   const tvlSentiment = (100 - state.rage + state.cred + state.techHype) / 300;
-  const tvlNoise = (rng() - 0.5) * 0.15;
+  const tvlNoise = (rng() - 0.5) * 0.12;
   // TVL moves with price but also has its own momentum
-  let tvl = state.tvl * (1 + realizedDelta * 0.7 + tvlNoise * tvlSentiment);
+  let tvl = state.tvl * (1 + realizedDelta * 0.6 + tvlNoise * tvlSentiment);
   tvl = Math.max(10_000_000, tvl); // Floor at 10M
 
-  // 70% of treasury is native token - heavily affected by price
-  const nativeRatio = 0.7;
+  // Treasury exposure to native token - uses stablecoinRatio from hidden state
+  // Diversification actions can improve this ratio over time
+  const stableRatio = state.hidden.stablecoinRatio ?? 0.3;
+  const nativeRatio = 1 - stableRatio;
   const nativePortion = state.officialTreasury * nativeRatio;
-  const stablePortion = state.officialTreasury * (1 - nativeRatio);
+  const stablePortion = state.officialTreasury * stableRatio;
   const adjustedNative = nativePortion * (1 + realizedDelta);
   const officialTreasury = Math.max(0, stablePortion + adjustedNative);
 
@@ -63,17 +69,33 @@ function applyMarketDrift(state: GameState, rng: RNG): GameState {
 
 function applyDrift(state: GameState, rng: RNG): GameState {
   const season = getSeason(state.seasonId);
-  // baseline drift; season deltas tweak these
-  const rage = state.rage - 2 + (season.rageDecayDelta ?? 0);
-  const heat = state.heat - 1 + (season.heatDriftDelta ?? 0);
-  const techHype = state.techHype - 3 + (season.techHypeDecayDelta ?? 0);
-  const cred = state.cred - 1 - (season.credDecayDelta ?? 0);
+
+  // PERCENTAGE-BASED DRIFT: Gentler at low values, stronger at high values
+  // This prevents meters from collapsing too fast when already low
+  // Season deltas are converted to percentage modifiers
+
+  // Rage: 5% decay base, seasons can modify
+  const rageDecayRate = 0.05 - (season.rageDecayDelta ?? 0) * 0.01; // +1 delta = 4% decay
+  const rage = state.rage * (1 - rageDecayRate);
+
+  // Heat: 5% decay base
+  const heatDecayRate = 0.05 - (season.heatDriftDelta ?? 0) * 0.015; // regulator season: +3 delta = 0.5% decay (almost stable)
+  const heat = state.heat * (1 - heatDecayRate);
+
+  // Tech: 4% decay base (tech is sticky - people remember your tech)
+  const techDecayRate = 0.04 - (season.techHypeDecayDelta ?? 0) * 0.01;
+  const techHype = state.techHype * (1 - techDecayRate);
+
+  // Cred: 2% decay base (credibility is the most sticky - hard to lose, hard to gain)
+  const credDecayRate = 0.02 + (season.credDecayDelta ?? 0) * 0.01;
+  const cred = state.cred * (1 - credDecayRate);
+
   let next: GameState = {
     ...state,
-    rage: Math.max(0, rage),
-    heat: Math.max(0, heat),
-    techHype: Math.max(0, techHype),
-    cred: Math.max(0, cred),
+    rage: Math.max(0, Math.round(rage * 10) / 10), // Round to 1 decimal
+    heat: Math.max(0, Math.round(heat * 10) / 10),
+    techHype: Math.max(0, Math.round(techHype * 10) / 10),
+    cred: Math.max(0, Math.round(cred * 10) / 10),
   };
   next = applyMarketDrift(next, rng);
   return next;
@@ -130,6 +152,7 @@ export function initialState(params?: {
       auditRisk: 0,
       founderStability: 1,
       communityMemory: 0,
+      stablecoinRatio: 0.3, // 30% in stables, 70% in native token
     },
     log: ["Welcome to The Treasury Game."],
     recentEvents: [],
@@ -182,9 +205,16 @@ export function step(state: GameState, actionId: ActionId, rng: RNG): GameState 
     }
   }
 
-  const ev = pickRandomEvent(next, rng, season);
-  if (ev) {
-    next = ev.apply(next);
+  // DEFENSIVE ACTION IMMUNITY: Defensive actions reduce random event chance
+  const isDefensive = action?.defensive ?? false;
+  const eventRoll = rng();
+  const eventThreshold = isDefensive ? 0.3 : 1.0; // 70% reduction for defensive plays
+
+  if (eventRoll < eventThreshold) {
+    const ev = pickRandomEvent(next, rng, season);
+    if (ev) {
+      next = ev.apply(next);
+    }
   }
 
   // sample next turn's actions

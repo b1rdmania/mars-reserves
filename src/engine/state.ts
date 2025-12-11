@@ -6,6 +6,7 @@ export interface HiddenState {
   auditRisk: number;
   founderStability: number;
   communityMemory: number;
+  stablecoinRatio: number; // 0-1: portion of treasury in stablecoins (default 0.3)
 }
 
 export interface GameState {

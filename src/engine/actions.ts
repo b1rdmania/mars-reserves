@@ -73,6 +73,7 @@ export interface ActionDef {
   visibleIf?: (state: GameState) => boolean;
   order?: number;
   tags?: string[];
+  defensive?: boolean; // If true, reduces random event chance this turn
 }
 
 const clamp = (n: number, min = 0, max = 100) => Math.min(max, Math.max(min, n));
@@ -466,6 +467,7 @@ export const ACTIONS: ActionDef[] = [
     name: "Lawyer Up",
     description: "Hire top lawyers to buffer incoming heat.",
     tags: ["-Treasury", "-Heat", "+Rage", "+Cred"],
+    defensive: true, // Reduces random event chance
     apply: (s) => {
       const cost = 120;
       const log = `You lawyerd up. The bill is... inspiring.`;
@@ -485,6 +487,7 @@ export const ACTIONS: ActionDef[] = [
     name: "Issue Clarification Post",
     description: "Medium article that solves nothing.",
     tags: ["-Rage", "+Cred", "+Heat"],
+    defensive: true, // Reduces random event chance
     apply: (s) => {
       const log = `You posted a clarification. Some calm, some mock.`;
       return {
@@ -502,6 +505,7 @@ export const ACTIONS: ActionDef[] = [
     name: "Launch Audit Initiative",
     description: "Pay auditors to give you a clean bill of health.",
     tags: ["-Treasury", "-Heat", "+Cred", "-Rage"],
+    defensive: true, // Reduces random event chance
     apply: (s) => {
       const cost = 90;
       const log = `You launched an audit initiative.`;
@@ -511,7 +515,12 @@ export const ACTIONS: ActionDef[] = [
         heat: clamp(s.heat - 12),
         cred: clamp(s.cred + 6),
         rage: clamp(s.rage - 8),
-        hidden: { ...s.hidden, auditRisk: s.hidden.auditRisk + 0.1 },
+        // Also improves stablecoin ratio (better treasury management)
+        hidden: {
+          ...s.hidden,
+          auditRisk: s.hidden.auditRisk + 0.1,
+          stablecoinRatio: Math.min(0.6, s.hidden.stablecoinRatio + 0.05),
+        },
         log: [log, ...s.log],
       };
     },
