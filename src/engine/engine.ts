@@ -14,15 +14,15 @@ function applyMarketDrift(state: GameState, rng: RNG): GameState {
   const baseDrift = sentiment * 0.05;
   const vol =
     state.seasonId === "meme_summer"
-      ? 0.12
+      ? 0.2
       : state.seasonId === "regulator_season"
-      ? 0.04
-      : 0.08;
+      ? 0.08
+      : 0.15;
   const noise = (rng() - 0.5) * vol;
   const priceDelta = baseDrift + noise;
-  let tokenPrice = Math.max(0.05, state.tokenPrice * (1 + priceDelta));
-  if (tokenPrice > state.tokenPrice * 1.25) tokenPrice = state.tokenPrice * 1.25;
-  if (tokenPrice < state.tokenPrice * 0.75) tokenPrice = state.tokenPrice * 0.75;
+  let tokenPrice = Math.max(0.01, state.tokenPrice * (1 + priceDelta));
+  if (tokenPrice > state.tokenPrice * 1.10) tokenPrice = state.tokenPrice * 1.10;
+  if (tokenPrice < state.tokenPrice * 0.90) tokenPrice = state.tokenPrice * 0.90;
   const realizedDelta = (tokenPrice - state.tokenPrice) / state.tokenPrice;
 
   const tvlSentiment = (100 - state.rage + state.cred) / 200;
