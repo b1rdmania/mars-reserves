@@ -48,7 +48,7 @@ export const TurnResultModal: React.FC<Props> = ({ open, onClose, actionName, se
           {deltas.map((d) => (
             <div key={d.label} className="flex justify-between">
               <span className="text-slate-300">{d.label}</span>
-              <span className={d.delta >= 0 ? "text-sky-300" : "text-rose-300"}>
+              <span className={d.delta >= 0 ? "text-emerald-300" : "text-rose-300"}>
                 {formatDelta(d.delta, d.unit)}
               </span>
             </div>

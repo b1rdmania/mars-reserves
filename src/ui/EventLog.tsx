@@ -19,13 +19,23 @@ const iconForLine = (line: string) => {
   return "►";
 };
 
+const classForLine = (line: string) => {
+  const lower = line.toLowerCase();
+  if (lower.includes("siphon") || lower.includes("cred") || lower.includes("hype") || lower.includes("price"))
+    return "text-emerald-300";
+  if (lower.includes("meltdown") || lower.includes("heat") || lower.includes("rage") || lower.includes("exploit"))
+    return "text-rose-300";
+  if (line.startsWith("[CRISIS]")) return "text-amber-200";
+  return "text-slate-200";
+};
+
 export const EventLog: React.FC<Props> = ({ log }) => {
   return (
     <div className="mt-3 bg-[#12151c] border border-[#1c1f27] rounded-[6px] p-3 h-44 overflow-y-auto text-[11px] font-mono leading-tight">
       {log.map((line, idx) => (
         <div key={idx} className="mb-1 flex gap-2 items-start">
           <span className="text-slate-500">{iconForLine(line)}</span>
-          <span>{line}</span>
+          <span className={classForLine(line)}>{line}</span>
         </div>
       ))}
     </div>
