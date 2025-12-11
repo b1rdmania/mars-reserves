@@ -129,9 +129,9 @@ const App: React.FC = () => {
         <div className="max-w-md w-full p-6 space-y-4 bg-[#12151c] rounded-[10px] border border-[#1c1f27]">
           <h1 className="text-2xl font-bold font-mono">Treasury Wars v1.0</h1>
           <p className="text-sm text-slate-300 font-mono">
-            Objective: Over {maxTurnsDisplay.toString()} governance cycles, convert as much of the chain&apos;s official
-            treasury into off-chain founder funds as possible — without triggering a DAO coup, regulatory enforcement,
-            jail time, or a founder assassination arc.
+            Objective: Over {maxTurnsDisplay.toString()} turns, convert as much of the chain&apos;s official treasury
+            into off-chain founder funds as possible — without triggering a DAO coup, regulatory enforcement, jail time,
+            or a founder assassination arc.
           </p>
           <div className="space-y-3">
             <label className="text-sm space-y-1 block">
