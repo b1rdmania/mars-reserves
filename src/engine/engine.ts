@@ -10,29 +10,51 @@ import { rollSeverity } from "./severity";
 import { sampleActionsForTurn } from "./actions";
 
 function applyMarketDrift(state: GameState, rng: RNG): GameState {
-  const sentiment = (state.cred - state.rage + state.techHype) / 300; // -1..1 ish
-  const baseDrift = sentiment * 0.05;
-  const vol =
-    state.seasonId === "meme_summer"
-      ? 0.2
-      : state.seasonId === "regulator_season"
-      ? 0.08
-      : 0.15;
+  // VOLATILE PRICE MODEL
+  // Rage and low cred/tech cause MASSIVE dips
+  // High tech and cred can boost price
+
+  // Sentiment factors (each contributes to price pressure)
+  const ragePressure = state.rage > 70 ? -0.15 : state.rage > 50 ? -0.08 : state.rage > 30 ? -0.03 : 0;
+  const credPressure = state.cred < 30 ? -0.12 : state.cred < 50 ? -0.05 : state.cred > 70 ? 0.05 : 0;
+  const techPressure = state.techHype < 20 ? -0.08 : state.techHype > 60 ? 0.08 : state.techHype > 40 ? 0.03 : 0;
+
+  // Combined sentiment (-0.35 to +0.16 range)
+  const sentiment = ragePressure + credPressure + techPressure;
+
+  // Base volatility by season
+  const baseVol = state.seasonId === "meme_summer" ? 0.25
+    : state.seasonId === "regulator_season" ? 0.12
+      : state.seasonId === "builder_winter" ? 0.15
+        : 0.20;
+
+  // Extra volatility when things are bad
+  const panicVol = state.rage > 70 || state.cred < 30 ? 0.15 : 0;
+  const vol = baseVol + panicVol;
+
+  // Random noise
   const noise = (rng() - 0.5) * vol;
-  const priceDelta = baseDrift + noise;
-  let tokenPrice = Math.max(0.01, state.tokenPrice * (1 + priceDelta));
-  if (tokenPrice > state.tokenPrice * 1.10) tokenPrice = state.tokenPrice * 1.10;
-  if (tokenPrice < state.tokenPrice * 0.90) tokenPrice = state.tokenPrice * 0.90;
+
+  // Total price change (can be extreme: -50% to +25% in bad conditions)
+  const priceDelta = sentiment + noise;
+
+  // Apply price change - NO CAPS for extreme moves
+  let tokenPrice = Math.max(0.001, state.tokenPrice * (1 + priceDelta));
+
+  // Realized delta for treasury calc
   const realizedDelta = (tokenPrice - state.tokenPrice) / state.tokenPrice;
 
-  const tvlSentiment = (100 - state.rage + state.cred) / 200;
-  const tvlNoise = (rng() - 0.5) * 0.1;
-  let tvl = state.tvl * (1 + realizedDelta * 0.5 + tvlNoise * tvlSentiment);
-  tvl = Math.max(0, tvl);
+  // TVL affected by price and sentiment
+  const tvlSentiment = (100 - state.rage + state.cred + state.techHype) / 300;
+  const tvlNoise = (rng() - 0.5) * 0.15;
+  // TVL moves with price but also has its own momentum
+  let tvl = state.tvl * (1 + realizedDelta * 0.7 + tvlNoise * tvlSentiment);
+  tvl = Math.max(10_000_000, tvl); // Floor at 10M
 
-  // 50% of treasury is native token; adjust that portion by price movement
-  const nativePortion = state.officialTreasury * 0.5;
-  const stablePortion = state.officialTreasury - nativePortion;
+  // 70% of treasury is native token - heavily affected by price
+  const nativeRatio = 0.7;
+  const nativePortion = state.officialTreasury * nativeRatio;
+  const stablePortion = state.officialTreasury * (1 - nativeRatio);
   const adjustedNative = nativePortion * (1 + realizedDelta);
   const officialTreasury = Math.max(0, stablePortion + adjustedNative);
 
@@ -95,7 +117,7 @@ export function initialState(params?: {
     founderName,
     ticker: ticker.toUpperCase().slice(0, 4),
     tokenPrice: 1,
-    tvl: 5_000_000_000,
+    tvl: 500_000_000,
     officialTreasury: 1_000_000_000,
     siphoned: 0,
     rage: 20,

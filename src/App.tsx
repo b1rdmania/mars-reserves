@@ -12,7 +12,7 @@ import type { SeasonId } from "./engine/seasons";
 import { TopPanel } from "./ui/TopPanel";
 import { TurnResultModal } from "./ui/TurnResultModal";
 import type { SeverityResult } from "./engine/severity";
-import { playSound, setMuted } from "./engine/audio";
+import { playSound, setMuted, initAudio } from "./engine/audio";
 import { ACTIONS, sampleActionsForTurn } from "./engine/actions";
 import { LogSection } from "./ui/LogSection";
 
@@ -27,6 +27,7 @@ const App: React.FC = () => {
   const [state, setState] = useState<GameState | null>(null);
   const [showDebug, setShowDebug] = useState(false);
   const [turnModalOpen, setTurnModalOpen] = useState(false);
+  const [muted, setMutedState] = useState(false);
   const [turnModalData, setTurnModalData] = useState<{
     actionName: string;
     severity: SeverityResult | null;
@@ -37,6 +38,7 @@ const App: React.FC = () => {
   const started = !!state;
   const maxTurnsDisplay = state?.maxTurns ?? 20;
 
+  // Debug toggle
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === "~") setShowDebug((v) => !v);
@@ -44,6 +46,27 @@ const App: React.FC = () => {
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
   }, []);
+
+  // Initialize audio on first interaction
+  useEffect(() => {
+    const handleInteraction = () => {
+      initAudio();
+      document.removeEventListener("click", handleInteraction);
+      document.removeEventListener("touchstart", handleInteraction);
+    };
+    document.addEventListener("click", handleInteraction);
+    document.addEventListener("touchstart", handleInteraction);
+    return () => {
+      document.removeEventListener("click", handleInteraction);
+      document.removeEventListener("touchstart", handleInteraction);
+    };
+  }, []);
+
+  const toggleMute = () => {
+    const newMuted = !muted;
+    setMutedState(newMuted);
+    setMuted(newMuted);
+  };
 
   const handleAction = (id: ActionId) => {
     playSound("click");
@@ -68,11 +91,11 @@ const App: React.FC = () => {
         : null;
       let severity: SeverityResult | null = null;
       if (severityLine) {
-        const match = severityLine.match(/(Glancing|Normal|Critical) \((\d)\/6\) → (.+)/);
+        const match = severityLine.match(/(Glancing|Normal|Critical) → (.+)/);
         if (match) {
           severity = {
             label: match[1] as SeverityResult["label"],
-            roll: Number(match[2]),
+            roll: match[1] === "Critical" ? 6 : match[1] === "Glancing" ? 1 : 3,
             multiplier: 1,
           };
         }
@@ -90,12 +113,30 @@ const App: React.FC = () => {
         logLine: after.log[1],
       });
       setTurnModalOpen(true);
-      playSound(deltas.some((d) => d.delta < 0) ? "negative" : "positive");
+
+      // Play sound based on outcome
+      const hasNegative = deltas.some((d) => {
+        const badWhenUp = d.label.toLowerCase().includes("rage") || d.label.toLowerCase().includes("heat");
+        return badWhenUp ? d.delta > 0 : d.delta < 0;
+      });
+      playSound(hasNegative ? "negative" : "positive");
+
+      // Check for crisis
+      if (after.pendingCrisis && !before.pendingCrisis) {
+        playSound("crisis");
+      }
+
+      // Check for game over
+      if (after.gameOver && !before.gameOver) {
+        setTimeout(() => playSound("gameover"), 100);
+      }
+
       return after;
     });
   };
 
   const handleStart = () => {
+    playSound("click");
     const base = initialState({
       chainName: chainName || "ZooChain",
       founderName: founderName || "You",
@@ -107,19 +148,22 @@ const App: React.FC = () => {
   };
 
   const handleRestart = () => {
+    playSound("click");
     const newSeed = Math.floor(Math.random() * 1e9);
     setSeed(newSeed);
+    const newRng = mulberry32(newSeed);
     const base = initialState({
       chainName: chainName || "ZooChain",
       founderName: founderName || "You",
       ticker: ticker || "ZOO",
       seasonId,
     });
-    const sampled = sampleActionsForTurn(base, rng).map((a) => a.id);
+    const sampled = sampleActionsForTurn(base, newRng).map((a) => a.id);
     setState({ ...base, availableActions: sampled });
   };
 
   const handleResolveCrisis = (optionId: string) => {
+    playSound("click");
     setState((s) => {
       if (!s) return s;
       const before = { ...s };
@@ -146,49 +190,55 @@ const App: React.FC = () => {
     });
   };
 
+  // Start screen
   if (!started) {
     return (
-      <div className="min-h-screen bg-[#0d0f14] text-slate-100 flex items-center justify-center">
-        <div className="max-w-md w-full p-6 space-y-4 bg-[#12151c] rounded-[10px] border border-[#1c1f27]">
-          <h1 className="text-2xl font-bold font-mono">Treasury Wars v1.0</h1>
-          <p className="text-sm text-slate-300 font-mono">
-            Objective: Over {maxTurnsDisplay.toString()} turns, convert as much of the chain&apos;s official treasury
-            into off-chain founder funds as possible — without triggering a DAO coup, regulatory enforcement, jail time,
-            or a founder assassination arc.
-          </p>
+      <div className="min-h-screen min-h-[100dvh] flex items-center justify-center p-4">
+        <div className="max-w-md w-full game-card-elevated space-y-5 animate-scaleIn">
+          <div>
+            <div className="flex items-center gap-2 mb-2">
+              <h1 className="text-2xl font-bold">Treasury Wars</h1>
+              <span className="text-[10px] uppercase tracking-wide bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded-full">V1 Beta</span>
+            </div>
+            <p className="text-sm text-slate-400 leading-relaxed">
+              Over {maxTurnsDisplay} turns, drain as much of the chain&apos;s official treasury
+              into your off-chain founder funds as possible — without triggering a DAO coup, regulatory enforcement, or worse.
+            </p>
+          </div>
+
           <div className="space-y-3">
-            <label className="text-sm space-y-1 block">
-              <span className="text-slate-300 font-mono">Chain name</span>
+            <label className="block">
+              <span className="text-xs uppercase tracking-wide text-slate-500">Chain Name</span>
               <input
-                className="w-full rounded-[8px] bg-[#171b24] border border-[#1c1f27] px-3 py-2 text-sm font-mono"
+                className="w-full mt-1 rounded-lg bg-slate-800 border border-slate-700 px-4 py-3 text-sm focus:outline-none focus:border-sky-500 transition-colors"
                 value={chainName}
                 onChange={(e) => setChainName(e.target.value)}
                 placeholder="FrogFi"
               />
             </label>
-            <label className="text-sm space-y-1 block">
-              <span className="text-slate-300 font-mono">Token ticker</span>
+            <label className="block">
+              <span className="text-xs uppercase tracking-wide text-slate-500">Token Ticker</span>
               <input
-                className="w-full rounded-[8px] bg-[#171b24] border border-[#1c1f27] px-3 py-2 text-sm font-mono uppercase"
+                className="w-full mt-1 rounded-lg bg-slate-800 border border-slate-700 px-4 py-3 text-sm uppercase focus:outline-none focus:border-sky-500 transition-colors"
                 value={ticker}
                 onChange={(e) => setTicker(e.target.value.toUpperCase())}
                 placeholder="ZOO"
                 maxLength={4}
               />
             </label>
-            <label className="text-sm space-y-1 block">
-              <span className="text-slate-300 font-mono">Founder name</span>
+            <label className="block">
+              <span className="text-xs uppercase tracking-wide text-slate-500">Founder Name</span>
               <input
-                className="w-full rounded-[8px] bg-[#171b24] border border-[#1c1f27] px-3 py-2 text-sm font-mono"
+                className="w-full mt-1 rounded-lg bg-slate-800 border border-slate-700 px-4 py-3 text-sm focus:outline-none focus:border-sky-500 transition-colors"
                 value={founderName}
                 onChange={(e) => setFounderName(e.target.value)}
                 placeholder="0xAndy"
               />
             </label>
-            <label className="text-sm space-y-1 block">
-              <span className="text-slate-300 font-mono">Season</span>
+            <label className="block">
+              <span className="text-xs uppercase tracking-wide text-slate-500">Season</span>
               <select
-                className="w-full rounded-[8px] bg-[#171b24] border border-[#1c1f27] px-3 py-2 text-sm font-mono"
+                className="w-full mt-1 rounded-lg bg-slate-800 border border-slate-700 px-4 py-3 text-sm focus:outline-none focus:border-sky-500 transition-colors"
                 value={seasonId}
                 onChange={(e) => setSeasonId(e.target.value as SeasonId)}
               >
@@ -200,35 +250,45 @@ const App: React.FC = () => {
               </select>
             </label>
           </div>
+
           <button
             onClick={handleStart}
-            className="w-full rounded-xl bg-sky-500 hover:bg-sky-400 text-sm font-semibold py-2"
+            className="w-full py-4 px-4 bg-sky-500 hover:bg-sky-400 text-white font-semibold rounded-xl transition-colors text-base"
           >
-            Start run
+            Start Run →
           </button>
         </div>
       </div>
     );
   }
 
+  // Main game
   return (
-    <div className="min-h-screen bg-[#0d0f14] text-slate-100 flex items-start justify-center">
-      <div className="max-w-4xl w-full p-3 sm:p-5 relative bg-[#0d0f14] pb-8 space-y-3">
+    <div className="min-h-screen min-h-[100dvh] flex flex-col">
+      <div className="flex-1 max-w-2xl w-full mx-auto p-4 pb-8">
         <TopPanel state={state} maxTurns={state.maxTurns} showDescription={false} />
 
-        <div className="flex items-center justify-end text-[11px] font-mono text-slate-400">
-          <button className="underline" onClick={() => setMuted(true)} title="Mute SFX">
-            Mute
+        {/* Mute button */}
+        <div className="flex items-center justify-end mb-3">
+          <button
+            className="text-xs text-slate-500 hover:text-slate-400 transition-colors flex items-center gap-1"
+            onClick={toggleMute}
+          >
+            {muted ? "🔇 Unmute" : "🔊 Mute"}
           </button>
         </div>
 
+        {/* Actions */}
         <div className={`${state?.pendingCrisis ? "opacity-50 pointer-events-none" : ""}`}>
-          <h2 className="text-sm font-semibold mb-1 font-mono">Actions</h2>
+          <div className="flex items-center gap-2 mb-3">
+            <span className="text-xs uppercase tracking-wide text-slate-500 font-semibold">Actions</span>
+          </div>
           {state && <ActionPanel state={state} onSelect={handleAction} disabled={!!state.pendingCrisis} />}
         </div>
 
         <LogSection log={state?.log ?? []} />
 
+        {/* Modals */}
         {state && <CrisisModal crisis={state.pendingCrisis ?? null} onResolve={handleResolveCrisis} />}
 
         <TurnResultModal
@@ -248,9 +308,10 @@ const App: React.FC = () => {
           />
         )}
 
+        {/* Debug Panel */}
         {showDebug && state && (
-          <div className="fixed bottom-4 left-4 bg-[#12151c]/95 border border-[#1c1f27] rounded-[8px] p-3 text-[11px] space-y-1 z-10 font-mono">
-            <div className="font-semibold text-slate-200">Debug</div>
+          <div className="fixed bottom-4 left-4 game-card text-[11px] space-y-1 z-10 max-w-xs">
+            <div className="font-semibold text-slate-200">Debug (~)</div>
             <div>Seed: {seed}</div>
             <div>Ticker: {state.ticker}</div>
             <div>Price: ${state.tokenPrice.toFixed(2)}</div>

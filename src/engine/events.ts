@@ -12,6 +12,9 @@ export type EventId =
   | "cofounder_ragequit"
   | "vc_tweetstorm"
   | "solana_outage"
+  | "bridge_hack"
+  | "smart_contract_bug"
+  | "whale_dump"
   | "scandal_fragment";
 
 export interface EventDef {
@@ -196,6 +199,91 @@ const BASE_EVENTS: EventDef[] = [
         techHype: Math.min(100, s.techHype + 5),
         log: [log, ...s.log],
         recentEvents: ["solana_outage", ...s.recentEvents].slice(0, 5),
+      };
+    },
+  },
+  {
+    id: "bridge_hack",
+    name: "Bridge Exploit",
+    weight: (s, season) => {
+      void season;
+      // More likely if audit risk is high
+      return s.hidden.auditRisk > 0.3 ? 0.8 : 0.15;
+    },
+    apply: (s) => {
+      const hackAmount = Math.floor(s.tvl * (0.1 + Math.random() * 0.2)); // 10-30% of TVL
+      const log = `🚨 BRIDGE EXPLOIT: Hackers drained $${(hackAmount / 1_000_000).toFixed(1)}M from the bridge. TVL nuked.`;
+      return {
+        ...s,
+        tvl: Math.max(10_000_000, s.tvl - hackAmount),
+        tokenPrice: s.tokenPrice * 0.6, // 40% crash
+        officialTreasury: s.officialTreasury * 0.85, // Treasury takes a hit too
+        rage: Math.min(100, s.rage + 35),
+        heat: Math.min(100, s.heat + 25),
+        cred: Math.max(0, s.cred - 30),
+        hidden: {
+          ...s.hidden,
+          auditRisk: Math.min(1, s.hidden.auditRisk + 0.3),
+          communityMemory: s.hidden.communityMemory + 0.3,
+        },
+        log: [log, ...s.log],
+        recentEvents: ["bridge_hack", ...s.recentEvents].slice(0, 5),
+      };
+    },
+  },
+  {
+    id: "smart_contract_bug",
+    name: "Smart Contract Bug Found",
+    weight: (s, season) => {
+      void season;
+      return s.techHype > 50 ? 0.4 : 0.2; // Ironic: more hype = more scrutiny
+    },
+    apply: (s) => {
+      const severity = Math.random();
+      if (severity > 0.7) {
+        // Critical bug - funds at risk
+        const lostFunds = Math.floor(s.tvl * 0.08);
+        const log = `🐛 CRITICAL BUG: Whitehat discloses infinite mint bug. Some funds drained before patch.`;
+        return {
+          ...s,
+          tvl: s.tvl - lostFunds,
+          tokenPrice: s.tokenPrice * 0.75,
+          rage: Math.min(100, s.rage + 25),
+          techHype: Math.max(0, s.techHype - 25),
+          cred: Math.max(0, s.cred - 20),
+          log: [log, ...s.log],
+          recentEvents: ["smart_contract_bug", ...s.recentEvents].slice(0, 5),
+        };
+      }
+      // Minor bug - just embarrassing
+      const log = `🐛 Bug bounty payout: researcher found an edge case. Fixed before exploit.`;
+      return {
+        ...s,
+        officialTreasury: s.officialTreasury - 50_000, // Bounty payment
+        techHype: Math.max(0, s.techHype - 10),
+        cred: Math.max(0, s.cred - 5),
+        log: [log, ...s.log],
+        recentEvents: ["smart_contract_bug", ...s.recentEvents].slice(0, 5),
+      };
+    },
+  },
+  {
+    id: "whale_dump",
+    name: "Whale Dumps Tokens",
+    weight: (s, season) => {
+      void season;
+      return s.rage > 40 ? 0.6 : 0.2;
+    },
+    apply: (s) => {
+      const dumpSize = 5 + Math.floor(Math.random() * 10); // 5-15% of supply
+      const log = `🐋 WHALE DUMP: Early investor just market sold ${dumpSize}% of circulating supply. Price in freefall.`;
+      return {
+        ...s,
+        tokenPrice: s.tokenPrice * (0.65 + Math.random() * 0.15), // 20-35% crash
+        rage: Math.min(100, s.rage + 20),
+        cred: Math.max(0, s.cred - 10),
+        log: [log, ...s.log],
+        recentEvents: ["whale_dump", ...s.recentEvents].slice(0, 5),
       };
     },
   },

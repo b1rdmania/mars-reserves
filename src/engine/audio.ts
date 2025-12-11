@@ -1,47 +1,165 @@
 export type SoundId = "click" | "positive" | "negative" | "crisis" | "gameover";
 
-// Each sound has a preferred .m4a source for iOS, plus mp3 fallback.
-// Swap these URLs to your own CDN for reliable playback.
-const SOUND_SOURCES: Record<SoundId, { src: string; type: string }[]> = {
-  click: [
-    { src: "https://cdn.pixabay.com/download/audio/2022/03/15/audio_f2f17077c1.m4a?filename=click-124467.mp3", type: "audio/mp4" },
-    { src: "https://assets.mixkit.co/sfx/preview/mixkit-select-click-1109.mp3", type: "audio/mpeg" },
-  ],
-  positive: [
-    { src: "https://cdn.pixabay.com/download/audio/2022/03/15/audio_b398177ab9.m4a?filename=notification-124465.mp3", type: "audio/mp4" },
-    { src: "https://assets.mixkit.co/sfx/preview/mixkit-retro-game-notification-212.mp3", type: "audio/mpeg" },
-  ],
-  negative: [
-    { src: "https://cdn.pixabay.com/download/audio/2022/03/15/audio_7a2b7b4484.m4a?filename=fail-144084.mp3", type: "audio/mp4" },
-    { src: "https://assets.mixkit.co/sfx/preview/mixkit-losing-bleeps-2026.mp3", type: "audio/mpeg" },
-  ],
-  crisis: [
-    { src: "https://cdn.pixabay.com/download/audio/2022/03/15/audio_49d487d92c.m4a?filename=alarm-124467.mp3", type: "audio/mp4" },
-    { src: "https://assets.mixkit.co/sfx/preview/mixkit-retro-emergency-alarm-1000.mp3", type: "audio/mpeg" },
-  ],
-  gameover: [
-    { src: "https://cdn.pixabay.com/download/audio/2022/03/15/audio_49d487d92c.m4a?filename=alarm-124467.mp3", type: "audio/mp4" },
-    { src: "https://assets.mixkit.co/sfx/preview/mixkit-video-game-retro-click-237.wav", type: "audio/wav" },
-  ],
-};
+let audioContext: AudioContext | null = null;
+let muted = false;
 
-let mute = false;
+function getAudioContext(): AudioContext | null {
+  if (!audioContext) {
+    try {
+      audioContext = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
+    } catch {
+      console.warn("Web Audio API not supported");
+      return null;
+    }
+  }
+  // Resume if suspended (iOS requirement)
+  if (audioContext.state === "suspended") {
+    void audioContext.resume();
+  }
+  return audioContext;
+}
 
 export function setMuted(v: boolean) {
-  mute = v;
+  muted = v;
+}
+
+export function isMuted(): boolean {
+  return muted;
+}
+
+// Simple oscillator beep
+function beep(
+  ctx: AudioContext,
+  frequency: number,
+  duration: number,
+  type: OscillatorType = "square",
+  volume = 0.15
+) {
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  
+  osc.type = type;
+  osc.frequency.setValueAtTime(frequency, ctx.currentTime);
+  
+  gain.gain.setValueAtTime(volume, ctx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+  
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  
+  osc.start(ctx.currentTime);
+  osc.stop(ctx.currentTime + duration);
+}
+
+// Two-tone beep (rising or falling)
+function twoTone(
+  ctx: AudioContext,
+  freq1: number,
+  freq2: number,
+  duration: number,
+  type: OscillatorType = "square",
+  volume = 0.12
+) {
+  const half = duration / 2;
+  
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  
+  osc.type = type;
+  osc.frequency.setValueAtTime(freq1, ctx.currentTime);
+  osc.frequency.setValueAtTime(freq2, ctx.currentTime + half);
+  
+  gain.gain.setValueAtTime(volume, ctx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+  
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  
+  osc.start(ctx.currentTime);
+  osc.stop(ctx.currentTime + duration);
+}
+
+// Warble alarm effect
+function warble(ctx: AudioContext, baseFreq: number, duration: number, volume = 0.1) {
+  const osc = ctx.createOscillator();
+  const lfo = ctx.createOscillator();
+  const lfoGain = ctx.createGain();
+  const masterGain = ctx.createGain();
+  
+  osc.type = "sawtooth";
+  osc.frequency.setValueAtTime(baseFreq, ctx.currentTime);
+  
+  lfo.type = "sine";
+  lfo.frequency.setValueAtTime(8, ctx.currentTime);
+  lfoGain.gain.setValueAtTime(50, ctx.currentTime);
+  
+  lfo.connect(lfoGain);
+  lfoGain.connect(osc.frequency);
+  
+  masterGain.gain.setValueAtTime(volume, ctx.currentTime);
+  masterGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+  
+  osc.connect(masterGain);
+  masterGain.connect(ctx.destination);
+  
+  lfo.start(ctx.currentTime);
+  osc.start(ctx.currentTime);
+  lfo.stop(ctx.currentTime + duration);
+  osc.stop(ctx.currentTime + duration);
+}
+
+// Descending sad effect
+function sadTrombone(ctx: AudioContext, volume = 0.1) {
+  const notes = [392, 370, 349, 330]; // G4 → E4 descending
+  const noteDuration = 0.15;
+  
+  notes.forEach((freq, i) => {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    
+    osc.type = "sawtooth";
+    osc.frequency.setValueAtTime(freq, ctx.currentTime + i * noteDuration);
+    
+    gain.gain.setValueAtTime(volume, ctx.currentTime + i * noteDuration);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + (i + 1) * noteDuration);
+    
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    
+    osc.start(ctx.currentTime + i * noteDuration);
+    osc.stop(ctx.currentTime + (i + 1) * noteDuration);
+  });
 }
 
 export function playSound(id: SoundId) {
-  if (mute) return;
-  const sources = SOUND_SOURCES[id];
-  if (!sources) return;
-  const audio = new Audio();
-  const source = sources.find((s) => audio.canPlayType(s.type));
-  const src = source?.src ?? sources[0]?.src;
-  if (!src) return;
-  audio.src = src;
-  audio.volume = 0.35;
-  void audio.play();
+  if (muted) return;
+  
+  const ctx = getAudioContext();
+  if (!ctx) return;
+  
+  switch (id) {
+    case "click":
+      beep(ctx, 800, 0.05, "square", 0.08);
+      break;
+    case "positive":
+      twoTone(ctx, 523, 659, 0.15, "square", 0.1); // C5 → E5 rising
+      break;
+    case "negative":
+      twoTone(ctx, 440, 294, 0.2, "sawtooth", 0.1); // A4 → D4 falling
+      break;
+    case "crisis":
+      warble(ctx, 600, 0.4, 0.12);
+      break;
+    case "gameover":
+      sadTrombone(ctx, 0.12);
+      break;
+  }
 }
 
-
+// Initialize audio context on first user interaction (iOS requirement)
+export function initAudio() {
+  const ctx = getAudioContext();
+  if (ctx && ctx.state === "suspended") {
+    void ctx.resume();
+  }
+}
