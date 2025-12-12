@@ -8,18 +8,21 @@ interface Props {
 }
 
 export const ShareCard: React.FC<Props> = ({ state }) => {
-  const reason = state.gameOverReason ?? "Run over";
   const scoring = calculateFinalScore(state);
   const appliedCombos = scoring.combos.filter(c => c.applied);
+  const survived = state.turn >= state.maxTurns;
+
+  // Calculate extraction rate (what % of original treasury you got)
+  const initialTreasury = 1_000_000_000; // $1B starting
+  const extractionRate = ((state.siphoned / initialTreasury) * 100).toFixed(1);
 
   const generateShareText = () => {
     const lines = [
-      `🏦 Treasury Wars - Run Complete`,
+      `🏦 Treasury Wars`,
       ``,
-      `💰 Siphoned: ${formatScore(scoring.finalScore)}`,
-      scoring.totalMultiplier > 1 ? `🎯 Combo Bonus: ${((scoring.totalMultiplier - 1) * 100).toFixed(0)}%` : null,
-      ``,
-      `${reason}`,
+      survived ? `✅ Survived ${state.turn} turns` : `💀 Fell on turn ${state.turn}`,
+      `💰 Extracted: ${formatScore(scoring.finalScore)}`,
+      scoring.totalMultiplier > 1 ? `🎯 +${((scoring.totalMultiplier - 1) * 100).toFixed(0)}% combo bonus` : null,
       ``,
       `Play: treasury-game.vercel.app`
     ].filter(Boolean);
@@ -47,29 +50,32 @@ export const ShareCard: React.FC<Props> = ({ state }) => {
   };
 
   return (
-    <div className="mt-4 space-y-4">
-      {/* Final Score - BIG */}
-      <div className="text-center py-4">
-        <div className="text-[10px] uppercase tracking-wide text-slate-500 mb-1">Final Score</div>
-        <div className="text-4xl font-bold text-emerald-400">{formatScore(scoring.finalScore)}</div>
+    <div className="space-y-4">
+      {/* The Bag - Hero Number */}
+      <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-5 text-center">
+        <div className="text-3xl mb-2">💰</div>
+        <div className="text-[10px] uppercase tracking-wide text-emerald-400 mb-1">You Extracted</div>
+        <div className="text-4xl font-bold text-emerald-300 tabular-nums">{formatScore(scoring.finalScore)}</div>
         {scoring.totalMultiplier > 1 && (
-          <div className="text-sm text-amber-400 mt-1">
-            +{((scoring.totalMultiplier - 1) * 100).toFixed(0)}% combo bonus
+          <div className="text-sm text-amber-400 mt-2">
+            +{((scoring.totalMultiplier - 1) * 100).toFixed(0)}% combo bonus applied
           </div>
         )}
+        <div className="text-xs text-slate-500 mt-2">
+          {extractionRate}% extraction rate
+        </div>
       </div>
 
       {/* Combos Unlocked */}
       {appliedCombos.length > 0 && (
         <div className="game-card">
-          <div className="text-[10px] uppercase tracking-wide text-slate-500 mb-2">Combos Unlocked</div>
+          <div className="text-[10px] uppercase tracking-wide text-slate-500 mb-2">Achievements Unlocked</div>
           <div className="space-y-2">
             {appliedCombos.map(({ combo }) => (
               <div key={combo.id} className="flex items-center gap-2 bg-slate-800/50 rounded-lg p-2">
                 <span className="text-xl">{combo.emoji}</span>
                 <div className="flex-1">
                   <div className="text-sm font-semibold text-amber-400">{combo.name}</div>
-                  <div className="text-[10px] text-slate-400">{combo.description}</div>
                 </div>
                 <span className="text-xs text-emerald-400 font-semibold">
                   +{((combo.multiplier - 1) * 100).toFixed(0)}%
@@ -80,30 +86,24 @@ export const ShareCard: React.FC<Props> = ({ state }) => {
         </div>
       )}
 
-      {/* Stats Summary */}
+      {/* What you left behind */}
       <div className="game-card">
-        <div className="text-[10px] uppercase tracking-wide text-slate-500 mb-3">Run Stats</div>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="text-[10px] uppercase tracking-wide text-slate-500 mb-3">The Aftermath</div>
+        <div className="grid grid-cols-3 gap-2 text-center">
           <div className="bg-slate-800/50 rounded-lg p-3">
-            <div className="text-[10px] text-slate-500 uppercase">Raw Siphoned</div>
-            <div className="text-lg font-bold text-slate-200">{formatMoney(state.siphoned)}</div>
+            <div className="text-[10px] text-slate-500 uppercase">Left Behind</div>
+            <div className="text-sm font-bold text-slate-200">{formatMoney(state.officialTreasury)}</div>
           </div>
           <div className="bg-slate-800/50 rounded-lg p-3">
-            <div className="text-[10px] text-slate-500 uppercase">Treasury Left</div>
-            <div className="text-lg font-bold text-slate-200">{formatMoney(state.officialTreasury)}</div>
-          </div>
-          <div className="bg-slate-800/50 rounded-lg p-3">
-            <div className="text-[10px] text-slate-500 uppercase">Token Price</div>
-            <div className="text-lg font-bold">{formatTokenPrice(state.tokenPrice)}</div>
+            <div className="text-[10px] text-slate-500 uppercase">Token</div>
+            <div className={`text-sm font-bold ${state.tokenPrice < 0.5 ? "text-red-400" : state.tokenPrice > 1.2 ? "text-emerald-400" : "text-slate-200"}`}>
+              {formatTokenPrice(state.tokenPrice)}
+            </div>
           </div>
           <div className="bg-slate-800/50 rounded-lg p-3">
             <div className="text-[10px] text-slate-500 uppercase">TVL</div>
-            <div className="text-lg font-bold">{formatMoney(state.tvl)}</div>
+            <div className="text-sm font-bold text-slate-200">{formatMoney(state.tvl)}</div>
           </div>
-        </div>
-
-        <div className="mt-3 pt-3 border-t border-slate-700/50">
-          <div className="text-sm text-amber-300">{reason}</div>
         </div>
       </div>
 
