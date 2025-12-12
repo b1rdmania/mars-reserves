@@ -150,12 +150,12 @@ export const ACTIONS: ActionDef[] = [
     description: "Charge hotels, jets, 'strategy dinners'.",
     tags: ["+Siphon", "+Rage", "+Heat", "-Cred", "-Treasury"],
     apply: (s) => {
-      const amount = 60;
+      const amount = Math.floor(s.officialTreasury * 0.06);
       const log = `You ran a wave of expenses through the foundation.`;
       return {
         ...s,
         officialTreasury: Math.max(0, s.officialTreasury - amount),
-        siphoned: s.siphoned + Math.floor(amount * 0.5),
+        siphoned: s.siphoned + Math.floor(amount * 0.8),
         rage: clamp(s.rage + 12),
         heat: clamp(s.heat + 6),
         cred: clamp(s.cred - 4),
@@ -213,12 +213,12 @@ export const ACTIONS: ActionDef[] = [
     description: "Prop up price while quietly dumping your own stack.",
     tags: ["+Siphon", "+Tech", "+Heat", "+Rage", "-Treasury"],
     apply: (s) => {
-      const cost = 120;
+      const cost = Math.floor(s.officialTreasury * 0.08);
       const log = `You initiate a buyback. Charts look better... for now.`;
       return {
         ...s,
         officialTreasury: Math.max(0, s.officialTreasury - cost),
-        siphoned: s.siphoned + Math.floor(cost * 0.3),
+        siphoned: s.siphoned + Math.floor(cost * 0.4),
         techHype: clamp(s.techHype + 12),
         heat: clamp(s.heat + 12),
         rage: clamp(s.rage + 6),
@@ -234,7 +234,7 @@ export const ACTIONS: ActionDef[] = [
     description: "Award yourself R&D funds. Innovative.",
     tags: ["+Siphon", "+Heat", "+Rage", "-Cred", "-Treasury"],
     apply: (s) => {
-      const amount = 90;
+      const amount = Math.floor(s.officialTreasury * 0.07);
       const log = `You granted yourself a generous R&D stipend.`;
       return {
         ...s,
