@@ -24,7 +24,7 @@ export const HowToPlayModal: React.FC<HowToPlayModalProps> = ({ open, onClose })
                 <div className="mb-6">
                     <h3 className="text-sm uppercase tracking-wide text-amber-400 mb-2">🎯 Goal</h3>
                     <p className="text-sm text-slate-300 leading-relaxed">
-                        You run a crypto project. You have access to the treasury. <span className="text-emerald-400">Take what you can</span> before the community revolts, regulators arrive, or nobody believes you anymore. Survive 20 turns.
+                        You run a blockchain. You have access to the treasury. <span className="text-emerald-400">Take what you can</span> before the community revolts, regulators arrive, or nobody believes you anymore. Survive 20 turns.
                     </p>
                 </div>
 
@@ -63,16 +63,9 @@ export const HowToPlayModal: React.FC<HowToPlayModalProps> = ({ open, onClose })
                     </div>
                 </div>
 
-                {/* Win/Lose */}
                 <div className="mb-6">
-                    <h3 className="text-sm uppercase tracking-wide text-amber-400 mb-2">🏆 Win / Lose</h3>
-                    <div className="space-y-2 text-sm">
-                        <p className="text-emerald-400">✅ Survive 20 turns. Keep what you took.</p>
-                        <p className="text-rose-400">❌ Rage hits 100 → coup</p>
-                        <p className="text-rose-400">❌ Heat hits 100 → shutdown</p>
-                        <p className="text-rose-400">❌ Cred hits 0 → ignored</p>
-                        <p className="text-rose-400">❌ Treasury empty → game over</p>
-                    </div>
+                    <h3 className="text-sm uppercase tracking-wide text-amber-400 mb-2">🏆 Win</h3>
+                    <p className="text-emerald-400 text-sm">✅ Survive 20 turns. Keep what you took.</p>
                 </div>
 
                 {/* Pro Tips */}
