@@ -104,7 +104,7 @@ function applyDrift(state: GameState, rng: RNG): GameState {
 function checkGameOver(state: GameState): GameState {
   if (state.gameOver) return state;
   if (state.rage >= 100) {
-    return { ...state, gameOver: true, gameOverReason: "DAO coup: community overthrew you." };
+    return { ...state, gameOver: true, gameOverReason: "Community coup: they voted you out." };
   }
   if (state.heat >= 100) {
     return { ...state, gameOver: true, gameOverReason: "Regulatory shutdown: treasury frozen." };

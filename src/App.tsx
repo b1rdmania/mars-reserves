@@ -209,8 +209,8 @@ const App: React.FC = () => {
               <span className="text-[10px] uppercase tracking-wide bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded-full">V1 Beta</span>
             </div>
             <p className="text-sm text-slate-400 leading-relaxed">
-              Over {maxTurnsDisplay} turns, drain as much of the chain&apos;s official treasury
-              into your off-chain founder funds as possible — without triggering a DAO coup, regulatory enforcement, or worse.
+              Over {maxTurnsDisplay} turns, drain the foundation&apos;s treasury
+              into your personal funds — without triggering a community coup, regulatory enforcement, or worse.
             </p>
           </div>
 

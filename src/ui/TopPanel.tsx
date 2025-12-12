@@ -77,7 +77,7 @@ export const TopPanel: React.FC<Props> = ({ state, maxTurns, showDescription = t
           </div>
           {showDescription && (
             <p className="text-xs text-slate-400 leading-snug mt-1 max-w-md">
-              Drain as much treasury as you can in {maxTurns} turns without triggering a DAO coup or regulatory shutdown.
+              Drain the foundation treasury in {maxTurns} turns without triggering a community coup or regulatory shutdown.
             </p>
           )}
         </div>
@@ -89,31 +89,20 @@ export const TopPanel: React.FC<Props> = ({ state, maxTurns, showDescription = t
         </div>
       </div>
 
-      {/* Season Badge & Effects */}
-      <div className="game-card py-3">
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="season-badge">
-            <span className="text-amber-400">◆</span>
-            <span className="capitalize">{season.name}</span>
-          </div>
-          {seasonEffects.length > 0 && (
-            <div className="flex flex-wrap gap-2">
-              {seasonEffects.map((effect, i) => (
-                <span key={i} className="text-[10px] text-slate-400 bg-slate-800/50 px-2 py-1 rounded">
-                  {effect}
-                </span>
-              ))}
-            </div>
-          )}
+      {/* Bag Secured - Hero Stat */}
+      <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-4 flex items-center gap-4">
+        <span className="text-3xl">💰</span>
+        <div>
+          <div className="text-emerald-400 font-semibold text-xs uppercase tracking-wide">Bag Secured</div>
+          <div className="text-emerald-300 text-2xl font-bold tabular-nums">{formatMoney(siphoned)}</div>
         </div>
       </div>
 
       {/* Financial Stats */}
       <div className="game-card">
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <StatBox label="Treasury" value={formatMoney(officialTreasury)} />
-          <StatBox label="Siphoned" value={formatMoney(siphoned)} highlight />
-          <StatBox label="Price" value={formatTokenPrice(tokenPrice)} />
+        <div className="grid grid-cols-3 gap-4">
+          <StatBox label="Foundation Treasury" value={formatMoney(officialTreasury)} />
+          <StatBox label="Token Price" value={formatTokenPrice(tokenPrice)} />
           <StatBox label="TVL" value={formatMoney(tvl)} />
         </div>
       </div>
