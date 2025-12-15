@@ -126,7 +126,7 @@ export const TurnResultModal: React.FC<Props> = ({ open, onClose, actionName, se
 
         {/* Stat Changes - Only show narrative-relevant stats */}
         {deltas.length > 0 && (() => {
-          // Filter to only show: Rage, Heat, Cred, Tech, Price, TVL (hide Treasury/Siphoned)
+          // Filter to only show: Rage, Oversight, Cred, Tech, Price, TVL (hide Treasury/Legacy)
           const narrativeStats = deltas.filter((d) => {
             const l = d.label.toLowerCase();
             if (l.includes("treasury") || l.includes("legacy")) return false;
