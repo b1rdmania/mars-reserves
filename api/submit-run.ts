@@ -241,8 +241,56 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             });
         }
 
-        // TODO: Save to Supabase
-        // TODO: Submit to on-chain MissionIndex
+        // Save to Supabase
+        let supabaseError: string | null = null;
+        const supabaseUrl = process.env.SUPABASE_URL;
+        const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+        if (supabaseUrl && supabaseKey) {
+            try {
+                const response = await fetch(`${supabaseUrl}/rest/v1/runs`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'apikey': supabaseKey,
+                        'Authorization': `Bearer ${supabaseKey}`,
+                        'Prefer': 'return=minimal',
+                    },
+                    body: JSON.stringify({
+                        wallet: body.wallet,
+                        score: verifiedScore,
+                        seed: body.seed,
+                        ending_id: verifiedEndingId,
+                        action_count: body.actionIds.length,
+                        run_hash: runHash,
+                        on_chain_tx: null, // Will be updated after on-chain submission
+                    }),
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    supabaseError = `Supabase error: ${errorText}`;
+                    console.error(supabaseError);
+                }
+            } catch (err) {
+                supabaseError = `Supabase connection error: ${err instanceof Error ? err.message : 'Unknown'}`;
+                console.error(supabaseError);
+            }
+        }
+
+        // On-chain submission (placeholder - requires Movement SDK integration)
+        // The actual on-chain call would use Aptos SDK to call record_run
+        // This is typically done from a backend with a funded account
+        let txHash: string | null = null;
+        const onChainEnabled = process.env.ENABLE_ONCHAIN === 'true';
+
+        if (onChainEnabled) {
+            // TODO: Integrate with Movement/Aptos SDK
+            // const client = new AptosClient(process.env.MOVEMENT_RPC_URL);
+            // const txn = await client.submitTransaction(...);
+            // txHash = txn.hash;
+            console.log('On-chain submission would happen here for run:', runHash);
+        }
 
         return res.status(200).json({
             success: true,
@@ -251,7 +299,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             verifiedEndingId,
             wallet: body.wallet,
             actionCount: body.actionIds.length,
-            // txHash: will be added after on-chain integration
+            txHash,
+            savedToLeaderboard: !supabaseError,
+            supabaseError,
         });
 
     } catch (err) {
@@ -262,3 +312,4 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         });
     }
 }
+
