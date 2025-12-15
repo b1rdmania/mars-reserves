@@ -217,8 +217,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             state.gameOverReason = 'complete';
         }
 
-        // Calculate verified values
-        const finalScore = calculateScore(state);
+        // Calculate verified values (from simplified backend engine)
+        const serverScore = calculateScore(state);
         const verifiedEndingId = determineEnding(state);
 
         // Create run hash
@@ -226,7 +226,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             seed: body.seed,
             actionIds: body.actionIds,
             wallet: body.wallet,
-            score: finalScore,
+            score: body.score,
             endingId: verifiedEndingId,
         });
         const runHash = createHash('sha256').update(runData).digest('hex').slice(0, 16);
@@ -234,14 +234,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         // HACKATHON MODE: Backend replay engine is simplified and won't match exactly
         // Log discrepancies for monitoring but accept the client's score
         // In production, this would need a full replay engine matching the client
-        const scoreDiff = Math.abs(finalScore - body.score);
+        const scoreDiff = Math.abs(serverScore - body.score);
 
         if (scoreDiff > 0) {
-            console.log(`Score discrepancy: claimed=${body.score}, verified=${finalScore}, diff=${scoreDiff}`);
+            console.log(`Score discrepancy: claimed=${body.score}, server=${serverScore}, diff=${scoreDiff}`);
         }
 
         // Use the client's claimed score (trusted for hackathon)
-        // TODO: Implement full replay engine for production anti-cheat
         const finalScore = body.score;
 
         // Save to Supabase (always use finalScore, not claimed)
