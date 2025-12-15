@@ -369,8 +369,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                     ],
                 };
 
-                // Request sponsored transaction from Shinami
-                const sponsorResponse = await fetch('https://api.shinami.com/aptos/gas/v1', {
+                // Request sponsored transaction from Shinami (Movement-specific endpoint)
+                const sponsorResponse = await fetch(`https://api.us1.shinami.com/movement/gas/v1/${shinamiApiKey}`, {
                     method: 'POST',
                     headers: {
                         'X-Api-Key': shinamiApiKey,
