@@ -32,6 +32,8 @@ export interface PersonalBest {
 }
 
 // API Functions
+// NOTE: Client only has READ access via anon key + RLS policies
+// All WRITES happen server-side via /api/submit-run.ts with service role key
 
 /**
  * Get top scores for the leaderboard
@@ -91,35 +93,6 @@ export async function getPersonalBest(wallet: string): Promise<PersonalBest | nu
 }
 
 /**
- * Submit a verified run to the leaderboard
- * Note: This should be called from server-side after verification
- */
-export async function submitRun(run: {
-    wallet: string;
-    score: number;
-    seed: number;
-    ending_id: string;
-    action_count: number;
-    run_hash: string;
-    on_chain_tx?: string;
-}): Promise<{ success: boolean; error?: string }> {
-    if (!supabase) {
-        return { success: false, error: 'Supabase not configured' };
-    }
-
-    const { error } = await supabase
-        .from('runs')
-        .insert([run]);
-
-    if (error) {
-        console.error('Error inserting run:', error);
-        return { success: false, error: error.message };
-    }
-
-    return { success: true };
-}
-
-/**
  * Check if a run hash already exists (prevent duplicates)
  */
 export async function runExists(runHash: string): Promise<boolean> {
@@ -138,3 +111,4 @@ export async function runExists(runHash: string): Promise<boolean> {
 
     return (data?.length ?? 0) > 0;
 }
+

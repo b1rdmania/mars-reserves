@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import type { GameState } from "../engine/state";
 import { formatMoney, formatTokenPrice } from "./format";
 import { calculateFinalScore, formatScore } from "../engine/scoring";
@@ -7,14 +7,26 @@ import type { EndingDef } from "../engine/endings";
 interface Props {
   state: GameState;
   ending?: EndingDef;
+  runHash?: string;
+  indexDelta?: number;
+  txHash?: string;
 }
 
-export const ShareCard: React.FC<Props> = ({ state, ending }) => {
+// Calculate index delta from score (same formula as contract)
+function calculateIndexDelta(score: number): number {
+  return Math.max(1, Math.floor(score / 1_000_000));
+}
+
+export const ShareCard: React.FC<Props> = ({ state, ending, runHash, indexDelta, txHash }) => {
+  const cardRef = useRef<HTMLDivElement>(null);
   const scoring = calculateFinalScore(state);
   const endingMultiplier = ending?.scoreMultiplier ?? 1;
   const finalScore = scoring.finalScore * endingMultiplier;
   const initialReserves = 1_000_000_000;
   const extractionRate = ((state.siphoned / initialReserves) * 100).toFixed(1);
+
+  // Calculate or use provided index delta
+  const delta = indexDelta ?? calculateIndexDelta(finalScore);
 
   const generateShareText = () => {
     const survived = state.turn >= state.maxTurns;
@@ -23,7 +35,9 @@ export const ShareCard: React.FC<Props> = ({ state, ending }) => {
       ``,
       ending ? `${ending.emoji} ${ending.headline}` : (survived ? `✅ Survived ${state.turn} cycles` : `💀 Fell on cycle ${state.turn}`),
       `🏛️ Legacy Score: ${formatScore(finalScore)}`,
+      `📈 Index +${delta}`,
       ending?.badge ? `🏷️ ${ending.badge}` : null,
+      runHash ? `#${runHash}` : null,
       ``,
       `Play: mars-reserves.vercel.app`
     ].filter(Boolean);
@@ -50,47 +64,96 @@ export const ShareCard: React.FC<Props> = ({ state, ending }) => {
     window.open(`https://twitter.com/intent/tweet?text=${text}`, '_blank');
   };
 
+  const handleDownload = async () => {
+    if (!cardRef.current) return;
+
+    try {
+      // Use html2canvas if available, otherwise copy text
+      const html2canvas = (window as unknown as { html2canvas?: (el: HTMLElement) => Promise<HTMLCanvasElement> }).html2canvas;
+      if (html2canvas) {
+        const canvas = await html2canvas(cardRef.current);
+        const link = document.createElement('a');
+        link.download = `mars-reserves-${runHash || 'run'}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      } else {
+        // Fallback: copy text
+        await handleCopy();
+      }
+    } catch {
+      await handleCopy();
+    }
+  };
+
+  const explorerUrl = txHash
+    ? `https://explorer.devnet.imola.movementlabs.xyz/tx/${txHash}`
+    : null;
+
   return (
     <div className="space-y-2">
-      {/* Compact Score Display */}
-      <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-lg p-3 text-center">
-        <div className="flex items-center justify-center gap-2">
-          <span className="text-2xl">🏛️</span>
-          <div>
-            <div className="text-[9px] uppercase tracking-wide text-emerald-400">Legacy Score</div>
-            <div className="text-2xl font-bold text-emerald-300 tabular-nums">{formatScore(finalScore)}</div>
+      {/* Share Card Content */}
+      <div ref={cardRef} className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-lg p-3 border border-slate-700">
+        {/* Score Display */}
+        <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-lg p-3 text-center">
+          <div className="flex items-center justify-center gap-2">
+            <span className="text-2xl">🏛️</span>
+            <div>
+              <div className="text-[9px] uppercase tracking-wide text-emerald-400">Legacy Score</div>
+              <div className="text-2xl font-bold text-emerald-300 tabular-nums">{formatScore(finalScore)}</div>
+            </div>
+          </div>
+          <div className="text-[10px] text-slate-500 mt-1">
+            {extractionRate}% of reserves
+            {(scoring.totalMultiplier > 1 || endingMultiplier > 1) && (
+              <span className="text-amber-400 ml-2">
+                {scoring.totalMultiplier > 1 && `+${((scoring.totalMultiplier - 1) * 100).toFixed(0)}%`}
+                {endingMultiplier > 1 && ` +${((endingMultiplier - 1) * 100).toFixed(0)}% ending`}
+              </span>
+            )}
           </div>
         </div>
-        <div className="text-[10px] text-slate-500 mt-1">
-          {extractionRate}% of reserves
-          {(scoring.totalMultiplier > 1 || endingMultiplier > 1) && (
-            <span className="text-amber-400 ml-2">
-              {scoring.totalMultiplier > 1 && `+${((scoring.totalMultiplier - 1) * 100).toFixed(0)}%`}
-              {endingMultiplier > 1 && ` +${((endingMultiplier - 1) * 100).toFixed(0)}% ending`}
-            </span>
+
+        {/* Index Delta */}
+        <div className="mt-2 flex items-center justify-center gap-2 text-center">
+          <span className="text-sky-400 text-sm">📈</span>
+          <span className="text-sky-300 font-semibold">Index +{delta}</span>
+          {runHash && (
+            <span className="text-slate-500 text-xs font-mono">#{runHash}</span>
           )}
         </div>
-      </div>
 
-      {/* Compact Aftermath - inline */}
-      <div className="grid grid-cols-3 gap-1.5 text-center">
-        <div className="bg-slate-800/50 rounded-lg p-2">
-          <div className="text-[9px] text-slate-500 uppercase">Reserves</div>
-          <div className="text-xs font-bold text-slate-200">{formatMoney(state.officialTreasury)}</div>
-        </div>
-        <div className="bg-slate-800/50 rounded-lg p-2">
-          <div className="text-[9px] text-slate-500 uppercase">Value</div>
-          <div className={`text-xs font-bold ${state.tokenPrice < 0.5 ? "text-red-400" : state.tokenPrice > 1.2 ? "text-emerald-400" : "text-slate-200"}`}>
-            {formatTokenPrice(state.tokenPrice)}
+        {/* Aftermath Stats */}
+        <div className="grid grid-cols-3 gap-1.5 text-center mt-2">
+          <div className="bg-slate-800/50 rounded-lg p-2">
+            <div className="text-[9px] text-slate-500 uppercase">Reserves</div>
+            <div className="text-xs font-bold text-slate-200">{formatMoney(state.officialTreasury)}</div>
+          </div>
+          <div className="bg-slate-800/50 rounded-lg p-2">
+            <div className="text-[9px] text-slate-500 uppercase">Value</div>
+            <div className={`text-xs font-bold ${state.tokenPrice < 0.5 ? "text-red-400" : state.tokenPrice > 1.2 ? "text-emerald-400" : "text-slate-200"}`}>
+              {formatTokenPrice(state.tokenPrice)}
+            </div>
+          </div>
+          <div className="bg-slate-800/50 rounded-lg p-2">
+            <div className="text-[9px] text-slate-500 uppercase">Infra</div>
+            <div className="text-xs font-bold text-slate-200">{formatMoney(state.tvl)}</div>
           </div>
         </div>
-        <div className="bg-slate-800/50 rounded-lg p-2">
-          <div className="text-[9px] text-slate-500 uppercase">Infra</div>
-          <div className="text-xs font-bold text-slate-200">{formatMoney(state.tvl)}</div>
-        </div>
+
+        {/* Explorer Link */}
+        {explorerUrl && (
+          <a
+            href={explorerUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block mt-2 text-center text-xs text-sky-400 hover:text-sky-300 underline"
+          >
+            View on Movement Explorer →
+          </a>
+        )}
       </div>
 
-      {/* Compact Share Buttons */}
+      {/* Share Buttons */}
       <div className="flex gap-2">
         <button onClick={handleShareTwitter} className="share-btn twitter flex-1 justify-center py-2">
           <span>𝕏</span>
@@ -100,7 +163,12 @@ export const ShareCard: React.FC<Props> = ({ state, ending }) => {
           <span>📋</span>
           <span className="text-xs">Copy</span>
         </button>
+        <button onClick={handleDownload} className="share-btn flex-1 justify-center py-2">
+          <span>📥</span>
+          <span className="text-xs">Save</span>
+        </button>
       </div>
     </div>
   );
 };
+

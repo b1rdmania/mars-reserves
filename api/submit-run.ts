@@ -229,19 +229,28 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         });
         const runHash = createHash('sha256').update(runData).digest('hex').slice(0, 16);
 
-        // Score tolerance for verification (client/server may have small differences)
-        const scoreTolerance = Math.max(body.score * 0.2, 1000000); // 20% or 1M minimum
+        // SECURITY: Score validation
+        // Server's verifiedScore is CANONICAL - we don't trust client's claimed score
+        // We only reject if the difference is so large it indicates cheating/manipulation
+        // A small difference (±1) could be rounding, but we always use server's score
+        const scoreDiff = Math.abs(verifiedScore - body.score);
+        const maxAllowedDiff = 1; // Strict: only allow ±1 rounding difference
 
-        if (Math.abs(verifiedScore - body.score) > scoreTolerance) {
+        if (scoreDiff > maxAllowedDiff && body.score > verifiedScore) {
+            // Client claiming higher score than verified = potential cheat
             return res.status(400).json({
-                error: 'Score verification failed',
+                error: 'Score verification failed - claimed score exceeds verified',
                 claimed: body.score,
                 verified: verifiedScore,
-                tolerance: scoreTolerance,
             });
         }
 
-        // Save to Supabase
+        // Log any discrepancy for monitoring
+        if (scoreDiff > 0) {
+            console.log(`Score discrepancy: claimed=${body.score}, verified=${verifiedScore}, diff=${scoreDiff}`);
+        }
+
+        // Save to Supabase (always use verifiedScore, not claimed)
         let supabaseError: string | null = null;
         const supabaseUrl = process.env.SUPABASE_URL;
         const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -258,12 +267,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                     },
                     body: JSON.stringify({
                         wallet: body.wallet,
-                        score: verifiedScore,
+                        score: verifiedScore, // CANONICAL: always use server's verified score
                         seed: body.seed,
                         ending_id: verifiedEndingId,
                         action_count: body.actionIds.length,
                         run_hash: runHash,
-                        on_chain_tx: null, // Will be updated after on-chain submission
+                        on_chain_tx: null, // Updated after on-chain submission
                     }),
                 });
 
@@ -278,30 +287,47 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             }
         }
 
-        // On-chain submission (placeholder - requires Movement SDK integration)
-        // The actual on-chain call would use Aptos SDK to call record_run
-        // This is typically done from a backend with a funded account
-        let txHash: string | null = null;
+        // On-chain submission
         const onChainEnabled = process.env.ENABLE_ONCHAIN === 'true';
+        let txHash: string | null = null;
+        let onChainStatus: 'disabled' | 'queued' | 'submitted' | 'error' = 'disabled';
+        let indexDelta: number | null = null;
 
         if (onChainEnabled) {
-            // TODO: Integrate with Movement/Aptos SDK
-            // const client = new AptosClient(process.env.MOVEMENT_RPC_URL);
-            // const txn = await client.submitTransaction(...);
-            // txHash = txn.hash;
-            console.log('On-chain submission would happen here for run:', runHash);
+            try {
+                // Calculate index delta (score / 1M, min 1)
+                indexDelta = Math.max(1, Math.floor(verifiedScore / 1_000_000));
+
+                // TODO: Integrate with Movement/Aptos SDK
+                // const client = new AptosClient(process.env.MOVEMENT_RPC_URL);
+                // const txn = await client.submitTransaction(...);
+                // txHash = txn.hash;
+
+                // For now, mark as queued (backend would process async)
+                onChainStatus = 'queued';
+                console.log('On-chain submission queued for run:', runHash, 'delta:', indexDelta);
+            } catch (err) {
+                onChainStatus = 'error';
+                console.error('On-chain submission error:', err);
+            }
         }
 
+        // Always return stable response structure
         return res.status(200).json({
             success: true,
             runHash,
-            verifiedScore,
+            verifiedScore,  // This is the CANONICAL score
             verifiedEndingId,
             wallet: body.wallet,
             actionCount: body.actionIds.length,
-            txHash,
             savedToLeaderboard: !supabaseError,
-            supabaseError,
+            onChain: {
+                enabled: onChainEnabled,
+                status: onChainStatus,
+                txHash,
+                indexDelta,
+            },
+            ...(supabaseError && { supabaseError }),
         });
 
     } catch (err) {
@@ -312,4 +338,5 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         });
     }
 }
+
 
