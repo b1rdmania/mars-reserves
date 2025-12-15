@@ -21,7 +21,7 @@ function formatDelta(delta: number, unit?: string, label?: string) {
   const moneyLike =
     label &&
     (label.toLowerCase().includes("treasury") ||
-      label.toLowerCase().includes("siphoned") ||
+      label.toLowerCase().includes("legacy") ||
       label.toLowerCase().includes("tvl"));
   const isPrice = label?.toLowerCase().includes("price");
   const sign = delta >= 0 ? "+" : "";
@@ -66,7 +66,7 @@ function isNegativeDelta(label: string, delta: number): boolean {
 function getStatEmoji(label: string): string {
   const l = label.toLowerCase();
   if (l.includes("treasury")) return "🏦";
-  if (l.includes("siphoned")) return "💰";
+  if (l.includes("legacy")) return "💰";
   if (l.includes("rage")) return "😤";
   if (l.includes("heat")) return "🔥";
   if (l.includes("cred")) return "⭐";
@@ -81,7 +81,7 @@ export const TurnResultModal: React.FC<Props> = ({ open, onClose, actionName, se
 
   // Determine overall vibe for the card
   const hasNegative = deltas.some((d) => isNegativeDelta(d.label, d.delta));
-  const hasSiphoned = deltas.some((d) => d.label.toLowerCase().includes("siphoned") && d.delta > 0);
+  const hasSiphoned = deltas.some((d) => d.label.toLowerCase().includes("legacy") && d.delta > 0);
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
@@ -118,7 +118,7 @@ export const TurnResultModal: React.FC<Props> = ({ open, onClose, actionName, se
             <div>
               <div className="text-emerald-400 font-semibold text-sm uppercase tracking-wide">Resources Secured</div>
               <div className="text-emerald-300 text-lg font-bold">
-                {formatDelta(deltas.find(d => d.label.toLowerCase().includes("siphoned"))?.delta ?? 0, undefined, "siphoned")}
+                {formatDelta(deltas.find(d => d.label.toLowerCase().includes("legacy"))?.delta ?? 0, undefined, "legacy")}
               </div>
             </div>
           </div>
@@ -129,7 +129,7 @@ export const TurnResultModal: React.FC<Props> = ({ open, onClose, actionName, se
           // Filter to only show: Rage, Heat, Cred, Tech, Price, TVL (hide Treasury/Siphoned)
           const narrativeStats = deltas.filter((d) => {
             const l = d.label.toLowerCase();
-            if (l.includes("treasury") || l.includes("siphoned")) return false;
+            if (l.includes("treasury") || l.includes("legacy")) return false;
             return true;
           });
 

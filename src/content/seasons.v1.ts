@@ -18,7 +18,7 @@ export const SEASONS_V1: SeasonDef[] = [
     id: "solar_maximum",
     name: "Solar Maximum",
     description: "Radiation risks increase. Earth scrutiny intensifies.",
-    heatDriftDelta: 3,
+    oversightDriftDelta: 3,
     crisisFactor: 1.3,
     eventWeightMods: {
       solar_flare: 2.0,

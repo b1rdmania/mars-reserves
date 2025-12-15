@@ -84,16 +84,16 @@ export const ACTIONS: ActionDef[] = [
     description: "Push extraction beyond safe limits. Legacy grows, but risks accumulate.",
     tags: ["+Legacy", "+Unrest", "+Oversight", "-Trust", "-Reserves"],
     apply: (s) => {
-      const amount = Math.floor(s.officialTreasury * 0.1);
+      const amount = Math.floor(s.colonyReserves * 0.1);
       const log = `Accelerated mining extracted ${amount} in legacy value.`;
       return {
         ...s,
-        officialTreasury: Math.max(0, s.officialTreasury - amount),
-        siphoned: s.siphoned + amount,
+        colonyReserves: Math.max(0, s.colonyReserves - amount),
+        legacy: s.legacy + amount,
         rage: clamp(s.rage + 10),
-        heat: clamp(s.heat + 5),
+        oversightPressure: clamp(s.oversightPressure + 5),
         cred: clamp(s.cred - 5),
-        hidden: { ...s.hidden, auditRisk: s.hidden.auditRisk + 0.1 },
+        hidden: { ...s.hidden, scrutiny: s.hidden.scrutiny + 0.1 },
         log: [log, ...s.log],
       };
     },
@@ -105,16 +105,16 @@ export const ACTIONS: ActionDef[] = [
     description: "Bring in 'specialists' with creative accounting.",
     tags: ["+Legacy", "+Unrest", "+Oversight", "-Trust", "-Reserves"],
     apply: (s) => {
-      const amount = Math.floor(s.officialTreasury * 0.12);
+      const amount = Math.floor(s.colonyReserves * 0.12);
       const log = `External contractors processed ${amount}. Invoices are... flexible.`;
       return {
         ...s,
-        officialTreasury: Math.max(0, s.officialTreasury - amount),
-        siphoned: s.siphoned + Math.floor(amount * 0.5),
+        colonyReserves: Math.max(0, s.colonyReserves - amount),
+        legacy: s.legacy + Math.floor(amount * 0.5),
         rage: clamp(s.rage + 12),
-        heat: clamp(s.heat + 8),
+        oversightPressure: clamp(s.oversightPressure + 8),
         cred: clamp(s.cred - 6),
-        hidden: { ...s.hidden, auditRisk: s.hidden.auditRisk + 0.15 },
+        hidden: { ...s.hidden, scrutiny: s.hidden.scrutiny + 0.15 },
         log: [log, ...s.log],
       };
     },
@@ -126,16 +126,16 @@ export const ACTIONS: ActionDef[] = [
     description: "Award yourself hazard pay. For 'leadership under pressure'.",
     tags: ["+Legacy", "+Unrest", "-Trust", "-Reserves"],
     apply: (s) => {
-      const amount = Math.floor(s.officialTreasury * 0.05);
+      const amount = Math.floor(s.colonyReserves * 0.05);
       const log = `Commander bonus approved. Crew notices the allocation.`;
       return {
         ...s,
-        officialTreasury: Math.max(0, s.officialTreasury - amount),
-        siphoned: s.siphoned + amount,
+        colonyReserves: Math.max(0, s.colonyReserves - amount),
+        legacy: s.legacy + amount,
         rage: clamp(s.rage + 20),
         cred: clamp(s.cred - 10),
-        heat: clamp(s.heat + 5),
-        hidden: { ...s.hidden, auditRisk: s.hidden.auditRisk + 0.1, founderStability: s.hidden.founderStability - 0.05 },
+        oversightPressure: clamp(s.oversightPressure + 5),
+        hidden: { ...s.hidden, scrutiny: s.hidden.scrutiny + 0.1, founderStability: s.hidden.founderStability - 0.05 },
         log: [log, ...s.log],
       };
     },
@@ -147,14 +147,14 @@ export const ACTIONS: ActionDef[] = [
     description: "Personal quarters upgrades, 'morale supplies', transport privileges.",
     tags: ["+Legacy", "+Unrest", "+Oversight", "-Trust", "-Reserves"],
     apply: (s) => {
-      const amount = Math.floor(s.officialTreasury * 0.06);
+      const amount = Math.floor(s.colonyReserves * 0.06);
       const log = `Discretionary spending approved across multiple line items.`;
       return {
         ...s,
-        officialTreasury: Math.max(0, s.officialTreasury - amount),
-        siphoned: s.siphoned + Math.floor(amount * 0.8),
+        colonyReserves: Math.max(0, s.colonyReserves - amount),
+        legacy: s.legacy + Math.floor(amount * 0.8),
         rage: clamp(s.rage + 12),
-        heat: clamp(s.heat + 6),
+        oversightPressure: clamp(s.oversightPressure + 6),
         cred: clamp(s.cred - 4),
         hidden: { ...s.hidden, communityMemory: s.hidden.communityMemory + 0.1 },
         log: [log, ...s.log],
@@ -168,16 +168,16 @@ export const ACTIONS: ActionDef[] = [
     description: "Route resources to a 'contingency' fund only you control.",
     tags: ["+Legacy", "+Unrest", "+Oversight", "-Trust", "-Reserves"],
     apply: (s) => {
-      const amount = Math.floor(s.officialTreasury * 0.25);
+      const amount = Math.floor(s.colonyReserves * 0.25);
       const log = `Private reserve fund established. Substantial allocation.`;
       return {
         ...s,
-        officialTreasury: Math.max(0, s.officialTreasury - amount),
-        siphoned: s.siphoned + Math.floor(amount * 0.6),
+        colonyReserves: Math.max(0, s.colonyReserves - amount),
+        legacy: s.legacy + Math.floor(amount * 0.6),
         rage: clamp(s.rage + 18),
-        heat: clamp(s.heat + 15),
+        oversightPressure: clamp(s.oversightPressure + 15),
         cred: clamp(s.cred - 8),
-        hidden: { ...s.hidden, auditRisk: s.hidden.auditRisk + 0.2 },
+        hidden: { ...s.hidden, scrutiny: s.hidden.scrutiny + 0.2 },
         log: [log, ...s.log],
       };
     },
@@ -189,16 +189,16 @@ export const ACTIONS: ActionDef[] = [
     description: "Build a 'command center' that looks suspiciously like a mansion.",
     tags: ["+Legacy", "+Unrest", "+Oversight", "-Trust", "-Reserves"],
     apply: (s) => {
-      const amount = Math.floor(s.officialTreasury * 0.3);
+      const amount = Math.floor(s.colonyReserves * 0.3);
       const log = `Luxury habitat construction complete. Photos circulate on Earth.`;
       return {
         ...s,
-        officialTreasury: Math.max(0, s.officialTreasury - amount),
-        siphoned: s.siphoned + Math.floor(amount * 0.5),
+        colonyReserves: Math.max(0, s.colonyReserves - amount),
+        legacy: s.legacy + Math.floor(amount * 0.5),
         rage: clamp(s.rage + 25),
-        heat: clamp(s.heat + 12),
+        oversightPressure: clamp(s.oversightPressure + 12),
         cred: clamp(s.cred - 12),
-        hidden: { ...s.hidden, auditRisk: s.hidden.auditRisk + 0.25, communityMemory: s.hidden.communityMemory + 0.15 },
+        hidden: { ...s.hidden, scrutiny: s.hidden.scrutiny + 0.25, communityMemory: s.hidden.communityMemory + 0.15 },
         log: [log, ...s.log],
       };
     },
@@ -210,16 +210,16 @@ export const ACTIONS: ActionDef[] = [
     description: "Manipulate resource valuations while skimming the difference.",
     tags: ["+Legacy", "+Momentum", "+Oversight", "+Unrest", "-Reserves"],
     apply: (s) => {
-      const cost = Math.floor(s.officialTreasury * 0.08);
+      const cost = Math.floor(s.colonyReserves * 0.08);
       const log = `Resource speculation initiated. Numbers look good... for now.`;
       return {
         ...s,
-        officialTreasury: Math.max(0, s.officialTreasury - cost),
-        siphoned: s.siphoned + Math.floor(cost * 0.4),
+        colonyReserves: Math.max(0, s.colonyReserves - cost),
+        legacy: s.legacy + Math.floor(cost * 0.4),
         techHype: clamp(s.techHype + 12),
-        heat: clamp(s.heat + 12),
+        oversightPressure: clamp(s.oversightPressure + 12),
         rage: clamp(s.rage + 6),
-        hidden: { ...s.hidden, auditRisk: s.hidden.auditRisk + 0.15 },
+        hidden: { ...s.hidden, scrutiny: s.hidden.scrutiny + 0.15 },
         log: [log, ...s.log],
       };
     },
@@ -231,14 +231,14 @@ export const ACTIONS: ActionDef[] = [
     description: "Award yourself research funds. For 'critical investigation'.",
     tags: ["+Legacy", "+Oversight", "+Unrest", "-Trust", "-Reserves"],
     apply: (s) => {
-      const amount = Math.floor(s.officialTreasury * 0.07);
+      const amount = Math.floor(s.colonyReserves * 0.07);
       const log = `Research grant approved. You are the sole recipient.`;
       return {
         ...s,
-        officialTreasury: Math.max(0, s.officialTreasury - amount),
-        siphoned: s.siphoned + amount,
+        colonyReserves: Math.max(0, s.colonyReserves - amount),
+        legacy: s.legacy + amount,
         rage: clamp(s.rage + 15),
-        heat: clamp(s.heat + 10),
+        oversightPressure: clamp(s.oversightPressure + 10),
         cred: clamp(s.cred - 8),
         log: [log, ...s.log],
       };
@@ -251,15 +251,15 @@ export const ACTIONS: ActionDef[] = [
     description: "Raid the colony's emergency fund. It's for emergencies, right?",
     tags: ["+Legacy", "+Unrest", "+Oversight", "-Reserves"],
     apply: (s) => {
-      const amount = Math.floor(s.officialTreasury * 0.15);
+      const amount = Math.floor(s.colonyReserves * 0.15);
       const log = `Emergency reserves accessed. 'Protocol override.'`;
       return {
         ...s,
-        officialTreasury: Math.max(0, s.officialTreasury - amount),
-        siphoned: s.siphoned + amount,
+        colonyReserves: Math.max(0, s.colonyReserves - amount),
+        legacy: s.legacy + amount,
         rage: clamp(s.rage + 12),
-        heat: clamp(s.heat + 10),
-        hidden: { ...s.hidden, auditRisk: s.hidden.auditRisk + 0.2 },
+        oversightPressure: clamp(s.oversightPressure + 10),
+        hidden: { ...s.hidden, scrutiny: s.hidden.scrutiny + 0.2 },
         log: [log, ...s.log],
       };
     },
@@ -271,14 +271,14 @@ export const ACTIONS: ActionDef[] = [
     description: "Send 'samples' to Earth via unofficial channels.",
     tags: ["+Legacy", "+Oversight", "-Reserves"],
     apply: (s) => {
-      const amount = Math.floor(s.officialTreasury * 0.08);
+      const amount = Math.floor(s.colonyReserves * 0.08);
       const log = `Private shipment dispatched. Value extraction in progress.`;
       return {
         ...s,
-        siphoned: s.siphoned + amount,
+        legacy: s.legacy + amount,
         tokenPrice: s.tokenPrice * 0.9,
-        heat: clamp(s.heat + 15),
-        hidden: { ...s.hidden, auditRisk: s.hidden.auditRisk + 0.1 },
+        oversightPressure: clamp(s.oversightPressure + 15),
+        hidden: { ...s.hidden, scrutiny: s.hidden.scrutiny + 0.1 },
         log: [log, ...s.log],
       };
     },
@@ -290,13 +290,13 @@ export const ACTIONS: ActionDef[] = [
     description: "Push timelines forward 'for operational needs.' Classic.",
     tags: ["+Legacy", "+++Unrest", "+Oversight"],
     apply: (s) => {
-      const amount = Math.floor(s.officialTreasury * 0.2);
+      const amount = Math.floor(s.colonyReserves * 0.2);
       const log = `Extraction accelerated. Crew notices immediately.`;
       return {
         ...s,
-        siphoned: s.siphoned + amount,
+        legacy: s.legacy + amount,
         rage: clamp(s.rage + 25),
-        heat: clamp(s.heat + 8),
+        oversightPressure: clamp(s.oversightPressure + 8),
         cred: clamp(s.cred - 15),
         tokenPrice: s.tokenPrice * 0.85,
         log: [log, ...s.log],
@@ -310,17 +310,17 @@ export const ACTIONS: ActionDef[] = [
     description: "Set up systems that subtly redirect small amounts. Plausible deniability.",
     tags: ["+Legacy gradual", "+Oversight if discovered"],
     apply: (s) => {
-      const amount = Math.floor(s.officialTreasury * (0.03 + Math.random() * 0.03));
+      const amount = Math.floor(s.colonyReserves * (0.03 + Math.random() * 0.03));
       const discovered = Math.random() < 0.3;
       const log = discovered
         ? `Automated skimming detected by audit systems. Investigation beginning.`
         : `Automated resource allocation operational. Passive extraction engaged.`;
       return {
         ...s,
-        siphoned: s.siphoned + amount,
+        legacy: s.legacy + amount,
         rage: clamp(s.rage + (discovered ? 20 : 0)),
-        heat: clamp(s.heat + (discovered ? 15 : 3)),
-        hidden: { ...s.hidden, auditRisk: s.hidden.auditRisk + (discovered ? 0.25 : 0.05) },
+        oversightPressure: clamp(s.oversightPressure + (discovered ? 15 : 3)),
+        hidden: { ...s.hidden, scrutiny: s.hidden.scrutiny + (discovered ? 0.25 : 0.05) },
         log: [log, ...s.log],
       };
     },
@@ -340,10 +340,10 @@ export const ACTIONS: ActionDef[] = [
       const log = `Emergency rationing implemented. Reserves restored, crew seethes.`;
       return {
         ...s,
-        officialTreasury: s.officialTreasury + inflow,
+        colonyReserves: s.colonyReserves + inflow,
         rage: clamp(s.rage + 25),
         cred: clamp(s.cred - 15),
-        heat: clamp(s.heat + 10),
+        oversightPressure: clamp(s.oversightPressure + 10),
         log: [log, ...s.log],
       };
     },
@@ -355,11 +355,11 @@ export const ACTIONS: ActionDef[] = [
     description: "Restructure incentives. Some benefit, most don't.",
     tags: ["-Reserves", "+Momentum", "+/-Unrest", "-Trust"],
     apply: (s) => {
-      const cost = Math.floor(s.officialTreasury * 0.02);
+      const cost = Math.floor(s.colonyReserves * 0.02);
       const log = `Work incentives restructured. Mixed response from crew.`;
       return {
         ...s,
-        officialTreasury: Math.max(0, s.officialTreasury - cost),
+        colonyReserves: Math.max(0, s.colonyReserves - cost),
         techHype: clamp(s.techHype + 8),
         rage: s.cred > 60 ? clamp(s.rage - 5) : clamp(s.rage + 5),
         cred: clamp(s.cred - 3),
@@ -374,14 +374,14 @@ export const ACTIONS: ActionDef[] = [
     description: "Redistribute supplies with suspicious efficiency losses.",
     tags: ["-Reserves", "+Oversight", "-Trust", "+Legacy"],
     apply: (s) => {
-      const slip = Math.floor(s.officialTreasury * 0.05);
+      const slip = Math.floor(s.colonyReserves * 0.05);
       const log = `Resources reallocated. Some went missing in the process.`;
       return {
         ...s,
-        officialTreasury: Math.max(0, s.officialTreasury - slip),
-        siphoned: s.siphoned + Math.floor(slip * 0.2),
+        colonyReserves: Math.max(0, s.colonyReserves - slip),
+        legacy: s.legacy + Math.floor(slip * 0.2),
         cred: clamp(s.cred - 6),
-        heat: clamp(s.heat + 8),
+        oversightPressure: clamp(s.oversightPressure + 8),
         rage: clamp(s.rage + 6),
         log: [log, ...s.log],
       };
@@ -394,13 +394,13 @@ export const ACTIONS: ActionDef[] = [
     description: "Appoint loyal deputies to 'share responsibility'.",
     tags: ["-Reserves", "-Unrest", "+Trust", "+Oversight"],
     apply: (s) => {
-      const cost = Math.floor(s.officialTreasury * 0.015);
+      const cost = Math.floor(s.colonyReserves * 0.015);
       const log = `Authority delegation program launched. Deputies are... reliable.`;
       return {
         ...s,
-        officialTreasury: Math.max(0, s.officialTreasury - cost),
+        colonyReserves: Math.max(0, s.colonyReserves - cost),
         rage: clamp(s.rage - 8),
-        heat: clamp(s.heat + 6),
+        oversightPressure: clamp(s.oversightPressure + 6),
         cred: clamp(s.cred + 4),
         log: [log, ...s.log],
       };
@@ -417,9 +417,9 @@ export const ACTIONS: ActionDef[] = [
       return {
         ...s,
         rage: clamp(s.rage + 18),
-        heat: clamp(s.heat + 8),
+        oversightPressure: clamp(s.oversightPressure + 8),
         cred: clamp(s.cred - 8),
-        hidden: { ...s.hidden, auditRisk: s.hidden.auditRisk + 0.05 },
+        hidden: { ...s.hidden, scrutiny: s.hidden.scrutiny + 0.05 },
         log: [log, ...s.log],
       };
     },
@@ -436,7 +436,7 @@ export const ACTIONS: ActionDef[] = [
         ...s,
         cred: clamp(s.cred + 8),
         rage: clamp(s.rage - 10),
-        heat: clamp(s.heat + 5),
+        oversightPressure: clamp(s.oversightPressure + 5),
         log: [log, ...s.log],
       };
     },
@@ -448,11 +448,11 @@ export const ACTIONS: ActionDef[] = [
     description: "Push through orders when most crew is in sleep cycle.",
     tags: ["+Reserves", "++Unrest next cycle", "-Trust"],
     apply: (s) => {
-      const amount = Math.floor(s.officialTreasury * 0.02);
+      const amount = Math.floor(s.colonyReserves * 0.02);
       const log = `Directive issued during sleep cycle. Crew waking up unhappy.`;
       return {
         ...s,
-        officialTreasury: s.officialTreasury + amount,
+        colonyReserves: s.colonyReserves + amount,
         rage: clamp(s.rage + 18),
         cred: clamp(s.cred - 10),
         hidden: { ...s.hidden, communityMemory: s.hidden.communityMemory + 0.15 },
@@ -497,7 +497,7 @@ export const ACTIONS: ActionDef[] = [
         techHype: clamp(s.techHype + 15),
         cred: clamp(s.cred + 8),
         rage: clamp(s.rage - 8),
-        heat: clamp(s.heat + 8),
+        oversightPressure: clamp(s.oversightPressure + 8),
         log: [log, ...s.log],
       };
     },
@@ -509,11 +509,11 @@ export const ACTIONS: ActionDef[] = [
     description: "Actually deliver something. Calms people down.",
     tags: ["-Unrest", "+Trust", "+Momentum", "-Reserves"],
     apply: (s) => {
-      const cost = Math.floor(s.officialTreasury * 0.02);
+      const cost = Math.floor(s.colonyReserves * 0.02);
       const log = `Technical milestone achieved. Communications channels are impressed.`;
       return {
         ...s,
-        officialTreasury: Math.max(0, s.officialTreasury - cost),
+        colonyReserves: Math.max(0, s.colonyReserves - cost),
         rage: clamp(s.rage - 10),
         cred: clamp(s.cred + 10),
         techHype: clamp(s.techHype + 20),
@@ -534,7 +534,7 @@ export const ACTIONS: ActionDef[] = [
         rage: clamp(s.rage - 5),
         cred: clamp(s.cred + 5),
         techHype: clamp(s.techHype + 15),
-        heat: clamp(s.heat + 5),
+        oversightPressure: clamp(s.oversightPressure + 5),
         log: [log, ...s.log],
       };
     },
@@ -552,7 +552,7 @@ export const ACTIONS: ActionDef[] = [
         cred: clamp(s.cred + 6),
         rage: clamp(s.rage - 6),
         techHype: clamp(s.techHype + 6),
-        heat: clamp(s.heat + 3),
+        oversightPressure: clamp(s.oversightPressure + 3),
         log: [log, ...s.log],
       };
     },
@@ -583,15 +583,15 @@ export const ACTIONS: ActionDef[] = [
     description: "Fund an over-the-top media event on Earth.",
     tags: ["-Reserves", "-Unrest", "+Trust", "+Momentum", "+Oversight"],
     apply: (s) => {
-      const cost = Math.floor(s.officialTreasury * 0.025);
+      const cost = Math.floor(s.colonyReserves * 0.025);
       const log = `Earth broadcast trends globally. Oversight agencies also notice.`;
       return {
         ...s,
-        officialTreasury: Math.max(0, s.officialTreasury - cost),
+        colonyReserves: Math.max(0, s.colonyReserves - cost),
         rage: clamp(s.rage - 10),
         cred: clamp(s.cred + 5),
         techHype: clamp(s.techHype + 10),
-        heat: clamp(s.heat + 15),
+        oversightPressure: clamp(s.oversightPressure + 15),
         hidden: { ...s.hidden, founderStability: s.hidden.founderStability - 0.05 },
         log: [log, ...s.log],
       };
@@ -609,7 +609,7 @@ export const ACTIONS: ActionDef[] = [
         ...s,
         techHype: clamp(s.techHype + 25),
         cred: clamp(s.cred + 10),
-        heat: clamp(s.heat + 5),
+        oversightPressure: clamp(s.oversightPressure + 5),
         tokenPrice: s.tokenPrice * 1.08,
         log: [log, ...s.log],
       };
@@ -643,10 +643,10 @@ export const ACTIONS: ActionDef[] = [
       return {
         ...s,
         techHype: clamp(s.techHype + 15),
-        heat: clamp(s.heat + 20),
+        oversightPressure: clamp(s.oversightPressure + 20),
         cred: clamp(s.cred + 5),
         tokenPrice: s.tokenPrice * 1.05,
-        hidden: { ...s.hidden, auditRisk: s.hidden.auditRisk + 0.1 },
+        hidden: { ...s.hidden, scrutiny: s.hidden.scrutiny + 0.1 },
         log: [log, ...s.log],
       };
     },
@@ -681,12 +681,12 @@ export const ACTIONS: ActionDef[] = [
     tags: ["-Reserves", "-Oversight", "+Unrest", "+Trust"],
     defensive: true,
     apply: (s) => {
-      const cost = Math.floor(s.officialTreasury * 0.02);
+      const cost = Math.floor(s.colonyReserves * 0.02);
       const log = `Legal counsel retained. The bill is... substantial.`;
       return {
         ...s,
-        officialTreasury: Math.max(0, s.officialTreasury - cost),
-        heat: clamp(s.heat - 15),
+        colonyReserves: Math.max(0, s.colonyReserves - cost),
+        oversightPressure: clamp(s.oversightPressure - 15),
         rage: clamp(s.rage + 4),
         cred: clamp(s.cred + 3),
         log: [log, ...s.log],
@@ -706,7 +706,7 @@ export const ACTIONS: ActionDef[] = [
         ...s,
         rage: clamp(s.rage - 6),
         cred: clamp(s.cred + 4),
-        heat: clamp(s.heat + 4),
+        oversightPressure: clamp(s.oversightPressure + 4),
         log: [log, ...s.log],
       };
     },
@@ -719,17 +719,17 @@ export const ACTIONS: ActionDef[] = [
     tags: ["-Reserves", "-Oversight", "+Trust", "-Unrest"],
     defensive: true,
     apply: (s) => {
-      const cost = Math.floor(s.officialTreasury * 0.015);
+      const cost = Math.floor(s.colonyReserves * 0.015);
       const log = `Systems audit initiative launched.`;
       return {
         ...s,
-        officialTreasury: Math.max(0, s.officialTreasury - cost),
-        heat: clamp(s.heat - 12),
+        colonyReserves: Math.max(0, s.colonyReserves - cost),
+        oversightPressure: clamp(s.oversightPressure - 12),
         cred: clamp(s.cred + 6),
         rage: clamp(s.rage - 8),
         hidden: {
           ...s.hidden,
-          auditRisk: s.hidden.auditRisk + 0.1,
+          scrutiny: s.hidden.scrutiny + 0.1,
           stablecoinRatio: Math.min(0.6, s.hidden.stablecoinRatio + 0.05),
         },
         log: [log, ...s.log],
@@ -748,7 +748,7 @@ export const ACTIONS: ActionDef[] = [
       return {
         ...s,
         rage: clamp(s.rage + rageChange),
-        heat: clamp(s.heat + 6),
+        oversightPressure: clamp(s.oversightPressure + 6),
         cred: clamp(s.cred - 4),
         hidden: { ...s.hidden, founderStability: s.hidden.founderStability - 0.05 },
         log: [log, ...s.log],
@@ -767,7 +767,7 @@ export const ACTIONS: ActionDef[] = [
         ...s,
         rage: clamp(s.rage - 8),
         cred: clamp(s.cred - 4),
-        heat: clamp(s.heat + 6),
+        oversightPressure: clamp(s.oversightPressure + 6),
         log: [log, ...s.log],
       };
     },
@@ -782,7 +782,7 @@ export const ACTIONS: ActionDef[] = [
       const log = `Equipment failure blamed. Technical team is furious.`;
       return {
         ...s,
-        heat: clamp(s.heat - 12),
+        oversightPressure: clamp(s.oversightPressure - 12),
         cred: clamp(s.cred - 8),
         rage: clamp(s.rage + 10),
         log: [log, ...s.log],
@@ -816,13 +816,13 @@ export const ACTIONS: ActionDef[] = [
     description: "Yes, this is a real thing colony commanders do.",
     tags: ["-Unrest", "-Oversight", "-Reserves"],
     apply: (s) => {
-      const cost = Math.floor(s.officialTreasury * 0.015);
+      const cost = Math.floor(s.colonyReserves * 0.015);
       const log = `Earth lobbyist deployed. Narrative starting to shift.`;
       return {
         ...s,
-        officialTreasury: Math.max(0, s.officialTreasury - cost),
+        colonyReserves: Math.max(0, s.colonyReserves - cost),
         rage: clamp(s.rage - 12),
-        heat: clamp(s.heat - 8),
+        oversightPressure: clamp(s.oversightPressure - 8),
         cred: clamp(s.cred + 5),
         log: [log, ...s.log],
       };
@@ -843,7 +843,7 @@ export const ACTIONS: ActionDef[] = [
         ...s,
         rage: clamp(s.rage + (backfires ? 15 : -15)),
         cred: clamp(s.cred - 10),
-        heat: clamp(s.heat + 12),
+        oversightPressure: clamp(s.oversightPressure + 12),
         hidden: { ...s.hidden, founderStability: s.hidden.founderStability - 0.15 },
         log: [log, ...s.log],
       };
@@ -903,7 +903,7 @@ export const ACTIONS: ActionDef[] = [
       return {
         ...s,
         rage: clamp(s.rage + (leak ? 20 : -10)),
-        heat: clamp(s.heat + (leak ? 10 : 0)),
+        oversightPressure: clamp(s.oversightPressure + (leak ? 10 : 0)),
         cred: clamp(s.cred + (leak ? -6 : 5)),
         techHype: clamp(s.techHype + (leak ? -2 : 8)),
         hidden: { ...s.hidden, communityMemory: s.hidden.communityMemory + (leak ? 0.1 : 0) },
@@ -923,7 +923,7 @@ export const ACTIONS: ActionDef[] = [
         ...s,
         techHype: clamp(s.techHype + 6),
         cred: clamp(s.cred - 10),
-        heat: clamp(s.heat + 15),
+        oversightPressure: clamp(s.oversightPressure + 15),
         hidden: { ...s.hidden, founderStability: s.hidden.founderStability - 0.2 },
         log: [log, ...s.log],
       };
@@ -942,7 +942,7 @@ export const ACTIONS: ActionDef[] = [
         ...s,
         cred: clamp(s.cred + (success ? 18 : -6)),
         rage: clamp(s.rage + (success ? -8 : 4)),
-        heat: clamp(s.heat + (success ? 6 : 0)),
+        oversightPressure: clamp(s.oversightPressure + (success ? 6 : 0)),
         log: [log, ...s.log],
       };
     },
@@ -958,9 +958,9 @@ export const ACTIONS: ActionDef[] = [
       const log = `Morale event launched. Excitement spreads.`;
       return {
         ...s,
-        officialTreasury: s.officialTreasury + inflow,
+        colonyReserves: s.colonyReserves + inflow,
         rage: clamp(s.rage - 10),
-        heat: clamp(s.heat + 10),
+        oversightPressure: clamp(s.oversightPressure + 10),
         cred: clamp(s.cred - 5),
         techHype: clamp(s.techHype + 15),
         log: [log, ...s.log],
@@ -1032,7 +1032,7 @@ export const ACTIONS: ActionDef[] = [
       return {
         ...s,
         cred: clamp(s.cred + 18),
-        heat: clamp(s.heat + 8),
+        oversightPressure: clamp(s.oversightPressure + 8),
         rage: clamp(s.rage - 10),
         tokenPrice: s.tokenPrice * 1.03,
         log: [log, ...s.log],

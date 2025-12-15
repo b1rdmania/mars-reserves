@@ -8,10 +8,10 @@ export const StatsBoard: React.FC<{ state: GameState }> = ({ state }) => {
     ["CHAIN", `${state.chainName} (${state.ticker})`],
     ["PRICE", `$${state.tokenPrice.toFixed(2)}`],
     ["TVL", `$${formatMillions(state.tvl)}`],
-    ["TREASURY", `$${formatMillions(state.officialTreasury)}`],
-    ["SIPHONED", `$${formatMillions(state.siphoned)}`],
+    ["TREASURY", `$${formatMillions(state.colonyReserves)}`],
+    ["LEGACY", `$${formatMillions(state.legacy)}`],
     ["RAGE", state.rage],
-    ["HEAT", state.heat],
+    ["HEAT", state.oversightPressure],
     ["CRED", state.cred],
     ["TECH", state.techHype],
   ];

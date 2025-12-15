@@ -6,7 +6,7 @@ export interface SeasonDef {
   description: string;
   // modifiers that influence drift/probabilities
   rageDecayDelta?: number;
-  heatDriftDelta?: number;
+  oversightDriftDelta?: number;
   credDecayDelta?: number;
   techHypeDecayDelta?: number;
   crisisFactor?: number;
@@ -30,7 +30,7 @@ export const SEASONS: SeasonDef[] = [
     id: "solar_maximum",
     name: "Solar Maximum",
     description: "Radiation risks increase. Earth scrutiny intensifies.",
-    heatDriftDelta: 3, // more attention from Earth
+    oversightDriftDelta: 3, // more attention from Earth
     crisisFactor: 1.3,
     eventWeightMods: {
       solar_flare: 2.0,

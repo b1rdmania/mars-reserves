@@ -20,10 +20,10 @@ function mulberry32(seed: number): () => number {
 interface MinimalState {
     turn: number;
     maxTurns: number;
-    officialTreasury: number;
-    siphoned: number;
+    colonyReserves: number;
+    legacy: number;
     rage: number;
-    heat: number;
+    oversightPressure: number;
     cred: number;
     techHype: number;
     tokenPrice: number;
@@ -38,10 +38,10 @@ function initialState(): MinimalState {
     return {
         turn: 0,
         maxTurns: 20,
-        officialTreasury: 1_000_000_000,
-        siphoned: 0,
+        colonyReserves: 1_000_000_000,
+        legacy: 0,
         rage: 20,
-        heat: 10,
+        oversightPressure: 10,
         cred: 60,
         techHype: 40,
         tokenPrice: 1,
@@ -66,15 +66,15 @@ function simulateAction(state: MinimalState, actionId: string, rng: () => number
         actionId.includes('reserve') || actionId.includes('budget');
 
     if (isExtraction) {
-        const amount = Math.floor(next.officialTreasury * 0.08);
-        next.officialTreasury = Math.max(0, next.officialTreasury - amount);
-        next.siphoned += amount;
-        next.heat += 5 + Math.floor(rng() * 5);
+        const amount = Math.floor(next.colonyReserves * 0.08);
+        next.colonyReserves = Math.max(0, next.colonyReserves - amount);
+        next.legacy += amount;
+        next.oversightPressure += 5 + Math.floor(rng() * 5);
         next.rage += 3 + Math.floor(rng() * 3);
     } else {
         // Non-extraction actions generally help meters
         next.rage = Math.max(0, next.rage - 5);
-        next.heat = Math.max(0, next.heat - 3);
+        next.oversightPressure = Math.max(0, next.oversightPressure - 3);
         next.cred = Math.min(100, next.cred + 5);
     }
 
@@ -89,7 +89,7 @@ function simulateAction(state: MinimalState, actionId: string, rng: () => number
 
     // Meter drift
     next.rage = Math.max(0, next.rage * 0.95);
-    next.heat = Math.max(0, next.heat * 0.95);
+    next.oversightPressure = Math.max(0, next.oversightPressure * 0.95);
     next.cred = Math.max(0, next.cred * 0.98);
     next.techHype = Math.max(0, next.techHype * 0.96);
 
@@ -115,13 +115,13 @@ function simulateAction(state: MinimalState, actionId: string, rng: () => number
     if (next.rage >= 100) {
         next.gameOver = true;
         next.gameOverReason = 'rage';
-    } else if (next.heat >= 100) {
+    } else if (next.oversightPressure >= 100) {
         next.gameOver = true;
         next.gameOverReason = 'heat';
     } else if (next.cred <= 0) {
         next.gameOver = true;
         next.gameOverReason = 'cred';
-    } else if (next.officialTreasury <= 0) {
+    } else if (next.colonyReserves <= 0) {
         next.gameOver = true;
         next.gameOverReason = 'treasury';
     } else if (next.turn >= next.maxTurns) {
@@ -134,11 +134,11 @@ function simulateAction(state: MinimalState, actionId: string, rng: () => number
 
 function calculateScore(state: MinimalState): number {
     // Base score is siphoned amount
-    let score = state.siphoned;
+    let score = state.legacy;
 
     // Bonuses for good metrics
     if (state.rage < 30) score *= 1.1;
-    if (state.heat < 30) score *= 1.1;
+    if (state.oversightPressure < 30) score *= 1.1;
     if (state.cred > 70) score *= 1.15;
 
     // Penalty for bad ending
@@ -156,7 +156,7 @@ function determineEnding(state: MinimalState): string {
     if (state.gameOverReason === 'treasury') return 'reserves_depleted';
 
     // Success endings based on performance
-    const score = state.siphoned;
+    const score = state.legacy;
     if (score > 500_000_000) return 'legendary_commander';
     if (score > 200_000_000) return 'successful_mission';
     if (score > 50_000_000) return 'modest_legacy';

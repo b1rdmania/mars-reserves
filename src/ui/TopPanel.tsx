@@ -51,7 +51,7 @@ const StatBox: React.FC<{ label: string; value: string; highlight?: boolean }> =
 );
 
 export const TopPanel: React.FC<Props> = ({ state, maxTurns, showDescription = true }) => {
-  const { tokenPrice, tvl, officialTreasury, siphoned, rage, heat, cred, techHype } = state;
+  const { tokenPrice, tvl, colonyReserves, legacy, rage, oversightPressure, cred, techHype } = state;
   const { user, authenticated } = usePrivy();
   const [commanderName, setCommanderName] = useState<string | null>(null);
 
@@ -127,14 +127,14 @@ export const TopPanel: React.FC<Props> = ({ state, maxTurns, showDescription = t
         <span className="text-3xl">🏛️</span>
         <div>
           <div className="text-emerald-400 font-semibold text-xs uppercase tracking-wide">{THEME.ui.score}</div>
-          <div className="text-emerald-300 text-2xl font-bold tabular-nums">{formatMoney(siphoned)}</div>
+          <div className="text-emerald-300 text-2xl font-bold tabular-nums">{formatMoney(legacy)}</div>
         </div>
       </div>
 
       {/* Colony Stats */}
       <div className="game-card">
         <div className="grid grid-cols-3 gap-4">
-          <StatBox label="Colony Reserves" value={formatMoney(officialTreasury)} />
+          <StatBox label="Colony Reserves" value={formatMoney(colonyReserves)} />
           <StatBox label="Mission Value" value={formatTokenPrice(tokenPrice)} />
           <StatBox label="Infrastructure" value={formatMoney(tvl)} />
         </div>
@@ -144,7 +144,7 @@ export const TopPanel: React.FC<Props> = ({ state, maxTurns, showDescription = t
       <div className="game-card">
         <div className="flex flex-wrap gap-4">
           <MeterBar label="Crew Unrest" value={rage} type="rage" />
-          <MeterBar label="Earth Oversight" value={heat} type="heat" />
+          <MeterBar label="Earth Oversight" value={oversightPressure} type="heat" />
           <MeterBar label="Command Trust" value={cred} type="cred" />
           <MeterBar label="Research Momentum" value={techHype} type="tech" />
         </div>

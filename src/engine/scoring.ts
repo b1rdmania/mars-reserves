@@ -72,7 +72,7 @@ export const OPERATIVE_COMBOS: OperativeCombo[] = [
         description: "Survived 5+ crises while extracting >50% of reserves",
         multiplier: 1.20,
         check: (state) => {
-            return state.crisisCount >= 5 && state.siphoned > state.officialTreasury * 0.5;
+            return state.crisisCount >= 5 && state.legacy > state.colonyReserves * 0.5;
         },
     },
     {
@@ -135,7 +135,7 @@ export const OPERATIVE_COMBOS: OperativeCombo[] = [
         multiplier: 1.15,
         check: (state) => {
             const survived = state.turn >= state.maxTurns;
-            return survived && state.hidden.auditRisk > 0.5;
+            return survived && state.hidden.scrutiny > 0.5;
         },
     },
 ];
@@ -150,7 +150,7 @@ export function calculateFinalScore(state: GameState): {
     totalMultiplier: number;
     finalScore: number;
 } {
-    const baseScore = state.siphoned;
+    const baseScore = state.legacy;
     const combos = DEGEN_COMBOS.map((combo) => ({
         combo,
         applied: combo.check(state),

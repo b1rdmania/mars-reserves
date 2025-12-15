@@ -66,14 +66,14 @@ const BASE_EVENTS: EventDef[] = [
     name: "Influencer Threads You",
     weight: (s, season) => {
       void season;
-      return s.hidden.auditRisk > 0.2 ? 2 : 0.5;
+      return s.hidden.scrutiny > 0.2 ? 2 : 0.5;
     },
     apply: (s) => {
       const log = `Influencer posts a 19-tweet thread about your treasury flows.`;
       return {
         ...s,
         rage: Math.min(100, s.rage + 10),
-        heat: Math.min(100, s.heat + 10),
+        oversightPressure: Math.min(100, s.oversightPressure + 10),
         recentEvents: ["influencer_thread", ...s.recentEvents].slice(0, 5),
         log: [log, ...s.log],
       };
@@ -91,7 +91,7 @@ const BASE_EVENTS: EventDef[] = [
       return {
         ...s,
         cred: Math.min(100, s.cred + 20),
-        heat: Math.min(100, s.heat + 5),
+        oversightPressure: Math.min(100, s.oversightPressure + 5),
         log: [log, ...s.log],
       };
     },
@@ -126,7 +126,7 @@ const BASE_EVENTS: EventDef[] = [
       return {
         ...s,
         rage: Math.min(100, s.rage + rageSpike),
-        heat: Math.min(100, s.heat + 10),
+        oversightPressure: Math.min(100, s.oversightPressure + 10),
         cred: Math.max(0, s.cred - 10),
         hidden: {
           ...s.hidden,
@@ -149,7 +149,7 @@ const BASE_EVENTS: EventDef[] = [
       return {
         ...s,
         cred: Math.min(100, s.cred + 10),
-        heat: Math.min(100, s.heat + 8),
+        oversightPressure: Math.min(100, s.oversightPressure + 8),
         log: [log, ...s.log],
         recentEvents: ["conference_backroom_rumour", ...s.recentEvents].slice(0, 5),
       };
@@ -189,7 +189,7 @@ const BASE_EVENTS: EventDef[] = [
       return {
         ...s,
         techHype: Math.min(100, s.techHype + 30),
-        heat: Math.min(100, s.heat + 10),
+        oversightPressure: Math.min(100, s.oversightPressure + 10),
         cred: Math.min(100, s.cred + 5),
         log: [log, ...s.log],
         recentEvents: ["vc_tweetstorm", ...s.recentEvents].slice(0, 5),
@@ -208,7 +208,7 @@ const BASE_EVENTS: EventDef[] = [
       return {
         ...s,
         rage: Math.max(0, s.rage - 15),
-        heat: Math.max(0, s.heat - 5),
+        oversightPressure: Math.max(0, s.oversightPressure - 5),
         techHype: Math.min(100, s.techHype + 5),
         log: [log, ...s.log],
         recentEvents: ["solana_outage", ...s.recentEvents].slice(0, 5),
@@ -221,7 +221,7 @@ const BASE_EVENTS: EventDef[] = [
     weight: (s, season) => {
       void season;
       // More likely if audit risk is high
-      return s.hidden.auditRisk > 0.3 ? 0.8 : 0.15;
+      return s.hidden.scrutiny > 0.3 ? 0.8 : 0.15;
     },
     apply: (s) => {
       const hackAmount = Math.floor(s.tvl * (0.1 + Math.random() * 0.2)); // 10-30% of TVL
@@ -230,13 +230,13 @@ const BASE_EVENTS: EventDef[] = [
         ...s,
         tvl: Math.max(10_000_000, s.tvl - hackAmount),
         tokenPrice: s.tokenPrice * 0.6, // 40% crash
-        officialTreasury: s.officialTreasury * 0.85, // Treasury takes a hit too
+        colonyReserves: s.colonyReserves * 0.85, // Treasury takes a hit too
         rage: Math.min(100, s.rage + 35),
-        heat: Math.min(100, s.heat + 25),
+        oversightPressure: Math.min(100, s.oversightPressure + 25),
         cred: Math.max(0, s.cred - 30),
         hidden: {
           ...s.hidden,
-          auditRisk: Math.min(1, s.hidden.auditRisk + 0.3),
+          scrutiny: Math.min(1, s.hidden.scrutiny + 0.3),
           communityMemory: s.hidden.communityMemory + 0.3,
         },
         log: [log, ...s.log],
@@ -272,7 +272,7 @@ const BASE_EVENTS: EventDef[] = [
       const log = `🐛 Bug bounty payout: researcher found an edge case. Fixed before exploit.`;
       return {
         ...s,
-        officialTreasury: Math.max(0, s.officialTreasury - Math.floor(s.officialTreasury * 0.005)), // Bounty payment
+        colonyReserves: Math.max(0, s.colonyReserves - Math.floor(s.colonyReserves * 0.005)), // Bounty payment
         techHype: Math.max(0, s.techHype - 10),
         cred: Math.max(0, s.cred - 5),
         log: [log, ...s.log],
@@ -306,20 +306,20 @@ const BASE_EVENTS: EventDef[] = [
     name: "Audit Firm Sends Notice",
     weight: (s, season) => {
       void season;
-      return s.hidden.auditRisk > 0.4 ? 1.5 : 0; // Only triggers if audit risk is high
+      return s.hidden.scrutiny > 0.4 ? 1.5 : 0; // Only triggers if audit risk is high
     },
     apply: (s) => {
-      const isSevere = s.hidden.auditRisk > 0.7;
+      const isSevere = s.hidden.scrutiny > 0.7;
       const log = isSevere
         ? `📋 Big 4 firm requests 'urgent clarification' on treasury movements. This is bad.`
         : `📋 Auditors asking questions about 'expense categorization.' Stay calm.`;
       return {
         ...s,
-        heat: Math.min(100, s.heat + (isSevere ? 25 : 12)),
+        oversightPressure: Math.min(100, s.oversightPressure + (isSevere ? 25 : 12)),
         cred: Math.max(0, s.cred - (isSevere ? 10 : 5)),
         hidden: {
           ...s.hidden,
-          auditRisk: s.hidden.auditRisk + 0.1, // Gets worse if you ignore it
+          scrutiny: s.hidden.scrutiny + 0.1, // Gets worse if you ignore it
         },
         log: [log, ...s.log],
         recentEvents: ["audit_notice", ...s.recentEvents].slice(0, 5),
@@ -384,7 +384,7 @@ const BASE_EVENTS: EventDef[] = [
         ...s,
         cred: Math.min(100, s.cred + 10),
         rage: Math.max(0, s.rage - 8),
-        heat: Math.max(0, s.heat - 5),
+        oversightPressure: Math.max(0, s.oversightPressure - 5),
         log: [log, ...s.log],
         recentEvents: ["diversification_pays_off", ...s.recentEvents].slice(0, 5),
       };
@@ -399,11 +399,11 @@ const BASE_EVENTS: EventDef[] = [
       const log = `🌪️ Massive dust storm blankets the colony. Operations halted for emergency protocols.`;
       return {
         ...s,
-        officialTreasury: Math.max(0, s.officialTreasury * 0.95),
+        colonyReserves: Math.max(0, s.colonyReserves * 0.95),
         techHype: Math.max(0, s.techHype - 8),
         hidden: {
           ...s.hidden,
-          auditRisk: s.hidden.auditRisk + 0.05,
+          scrutiny: s.hidden.scrutiny + 0.05,
         },
         log: [log, ...s.log],
         recentEvents: ["dust_storm", ...s.recentEvents].slice(0, 5),
@@ -418,7 +418,7 @@ const BASE_EVENTS: EventDef[] = [
       const log = `☀️ Solar flare disrupts communications. Earth oversight temporarily blinded.`;
       return {
         ...s,
-        heat: Math.max(0, s.heat - 15),
+        oversightPressure: Math.max(0, s.oversightPressure - 15),
         techHype: Math.max(0, s.techHype - 5),
         log: [log, ...s.log],
         recentEvents: ["solar_flare", ...s.recentEvents].slice(0, 5),
@@ -430,11 +430,11 @@ const BASE_EVENTS: EventDef[] = [
     name: "Supply Ship Delay",
     weight: () => 0.5,
     apply: (s) => {
-      const lostReserves = Math.floor(s.officialTreasury * 0.15);
+      const lostReserves = Math.floor(s.colonyReserves * 0.15);
       const log = `🚀 Supply ship delayed by 6 months. Rationing protocols engaged. Reserves -15%.`;
       return {
         ...s,
-        officialTreasury: Math.max(0, s.officialTreasury - lostReserves),
+        colonyReserves: Math.max(0, s.colonyReserves - lostReserves),
         rage: Math.min(100, s.rage + 10),
         log: [log, ...s.log],
         recentEvents: ["supply_ship_delay", ...s.recentEvents].slice(0, 5),
@@ -444,15 +444,15 @@ const BASE_EVENTS: EventDef[] = [
   {
     id: "hab_malfunction",
     name: "Habitat Malfunction",
-    weight: (s) => s.hidden.auditRisk > 0.3 ? 0.8 : 0.3,
+    weight: (s) => s.hidden.scrutiny > 0.3 ? 0.8 : 0.3,
     apply: (s) => {
       const log = `🔧 Critical habitat malfunction. Emergency repairs drain resources and spike system strain.`;
       return {
         ...s,
-        officialTreasury: Math.max(0, s.officialTreasury * 0.9),
+        colonyReserves: Math.max(0, s.colonyReserves * 0.9),
         hidden: {
           ...s.hidden,
-          auditRisk: s.hidden.auditRisk + 0.2,
+          scrutiny: s.hidden.scrutiny + 0.2,
         },
         rage: Math.min(100, s.rage + 8),
         log: [log, ...s.log],
@@ -463,17 +463,17 @@ const BASE_EVENTS: EventDef[] = [
   {
     id: "water_reclaimer_failure",
     name: "Water Reclaimer Failure",
-    weight: (s) => s.hidden.auditRisk > 0.5 ? 1.0 : 0.2,
+    weight: (s) => s.hidden.scrutiny > 0.5 ? 1.0 : 0.2,
     apply: (s) => {
       const log = `💧 Water reclaimer failure! This could trigger a full crisis if not addressed.`;
       return {
         ...s,
-        officialTreasury: Math.max(0, s.officialTreasury * 0.85),
+        colonyReserves: Math.max(0, s.colonyReserves * 0.85),
         rage: Math.min(100, s.rage + 20),
         cred: Math.max(0, s.cred - 10),
         hidden: {
           ...s.hidden,
-          auditRisk: s.hidden.auditRisk + 0.15,
+          scrutiny: s.hidden.scrutiny + 0.15,
           communityMemory: s.hidden.communityMemory + 0.1,
         },
         log: [log, ...s.log],
@@ -508,7 +508,7 @@ const BASE_EVENTS: EventDef[] = [
         : `📰 Earth media runs hit piece on colony management. Oversight intensifies.`;
       return {
         ...s,
-        heat: positive ? Math.max(0, s.heat - 10) : Math.min(100, s.heat + 10),
+        oversightPressure: positive ? Math.max(0, s.oversightPressure - 10) : Math.min(100, s.oversightPressure + 10),
         cred: positive ? Math.min(100, s.cred + 5) : Math.max(0, s.cred - 5),
         log: [log, ...s.log],
         recentEvents: ["earth_news_cycle", ...s.recentEvents].slice(0, 5),
@@ -566,12 +566,12 @@ const SCANDAL_EVENTS: EventDef[] = SCANDAL_FRAGMENTS.map((frag) => ({
     return {
       ...s,
       rage: Math.min(100, s.rage + rageBump),
-      heat: Math.min(100, s.heat + heatBump),
+      oversightPressure: Math.min(100, s.oversightPressure + heatBump),
       cred: Math.max(0, s.cred - credDrop),
       hidden: {
         ...s.hidden,
         communityMemory: s.hidden.communityMemory + 0.1,
-        auditRisk: s.hidden.auditRisk + 0.05,
+        scrutiny: s.hidden.scrutiny + 0.05,
       },
       recentEvents: [frag.key, ...s.recentEvents].slice(0, 5),
       log: [log, ...s.log],

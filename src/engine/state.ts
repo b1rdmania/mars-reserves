@@ -1,12 +1,12 @@
 import type { CrisisDef } from "./crises";
 
-export type Meter = "officialTreasury" | "siphoned" | "rage" | "heat" | "cred" | "techHype";
+export type Meter = "colonyReserves" | "legacy" | "rage" | "oversightPressure" | "cred" | "techHype";
 
 export interface HiddenState {
-  auditRisk: number;
+  scrutiny: number;           // Was scrutiny
   founderStability: number;
   communityMemory: number;
-  stablecoinRatio: number; // 0-1: portion of treasury in stablecoins (default 0.3)
+  stablecoinRatio: number;
 }
 
 export interface GameState {
@@ -16,16 +16,16 @@ export interface GameState {
   founderName: string;
   ticker: string;
   availableActions: string[];
-  usedActionIds: string[]; // Track all actions used this run for combo detection
-  crisisCount: number; // Track number of crises survived
-  tokenPrice: number; // e.g. 1.0
-  tvl: number; // total value locked (USD)
-  officialTreasury: number; // protocol treasury (USD)
-  siphoned: number; // off-chain for founder
-  rage: number; // 0–100
-  heat: number; // 0–100
-  cred: number; // 0–100
-  techHype: number; // 0–100
+  usedActionIds: string[];
+  crisisCount: number;
+  tokenPrice: number;
+  tvl: number;
+  colonyReserves: number;     // Was colonyReserves
+  legacy: number;             // Was siphoned — your historical footprint
+  rage: number;               // Crew unrest (0–100)
+  oversightPressure: number;  // Was heat — Earth oversight (0–100)
+  cred: number;               // Command trust (0–100)
+  techHype: number;           // Research momentum (0–100)
   seasonId: string;
   hidden: HiddenState;
   log: string[];
@@ -34,4 +34,5 @@ export interface GameState {
   gameOverReason?: string;
   pendingCrisis?: CrisisDef;
 }
+
 

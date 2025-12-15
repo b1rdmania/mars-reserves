@@ -79,10 +79,10 @@ const App: React.FC = () => {
       const before = { ...s };
       const after = step(s, id, rng);
       const deltas = [
-        { label: "Official Treasury", delta: after.officialTreasury - before.officialTreasury },
-        { label: "Siphoned", delta: after.siphoned - before.siphoned },
+        { label: "Official Treasury", delta: after.colonyReserves - before.colonyReserves },
+        { label: "Legacy", delta: after.legacy - before.legacy },
         { label: "Rage", delta: after.rage - before.rage },
-        { label: "Heat", delta: after.heat - before.heat },
+        { label: "Heat", delta: after.oversightPressure - before.oversightPressure },
         { label: "Cred", delta: after.cred - before.cred },
         { label: "Tech", delta: after.techHype - before.techHype },
         { label: "Price", delta: after.tokenPrice - before.tokenPrice },
@@ -186,10 +186,10 @@ const App: React.FC = () => {
       if (!result) return s;
       const after = result.state;
       const deltas = [
-        { label: "Official Treasury", delta: after.officialTreasury - before.officialTreasury },
-        { label: "Siphoned", delta: after.siphoned - before.siphoned },
+        { label: "Official Treasury", delta: after.colonyReserves - before.colonyReserves },
+        { label: "Legacy", delta: after.legacy - before.legacy },
         { label: "Community Rage", delta: after.rage - before.rage },
-        { label: "Regulatory Heat", delta: after.heat - before.heat },
+        { label: "Regulatory Heat", delta: after.oversightPressure - before.oversightPressure },
         { label: "Cred", delta: after.cred - before.cred },
         { label: "Tech", delta: after.techHype - before.techHype },
         { label: "Price", delta: after.tokenPrice - before.tokenPrice },
@@ -339,9 +339,9 @@ const App: React.FC = () => {
             <div>Ticker: {state.ticker}</div>
             <div>Price: ${state.tokenPrice.toFixed(2)}</div>
             <div>TVL: {state.tvl.toFixed(0)}</div>
-            <div>Official treasury: {state.officialTreasury.toFixed(0)}</div>
-            <div>Siphoned: {state.siphoned.toFixed(0)}</div>
-            <div>Audit risk: {state.hidden.auditRisk.toFixed(2)}</div>
+            <div>Official treasury: {state.colonyReserves.toFixed(0)}</div>
+            <div>Siphoned: {state.legacy.toFixed(0)}</div>
+            <div>Audit risk: {state.hidden.scrutiny.toFixed(2)}</div>
             <div>Founder stability: {state.hidden.founderStability.toFixed(2)}</div>
             <div>Community memory: {state.hidden.communityMemory.toFixed(2)}</div>
             <div>Recent events: {state.recentEvents.join(", ") || "None"}</div>

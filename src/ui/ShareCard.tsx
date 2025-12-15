@@ -23,7 +23,7 @@ export const ShareCard: React.FC<Props> = ({ state, ending, runHash, indexDelta,
   const endingMultiplier = ending?.scoreMultiplier ?? 1;
   const finalScore = scoring.finalScore * endingMultiplier;
   const initialReserves = 1_000_000_000;
-  const extractionRate = ((state.siphoned / initialReserves) * 100).toFixed(1);
+  const extractionRate = ((state.legacy / initialReserves) * 100).toFixed(1);
 
   // Calculate or use provided index delta
   const delta = indexDelta ?? calculateIndexDelta(finalScore);
@@ -126,7 +126,7 @@ export const ShareCard: React.FC<Props> = ({ state, ending, runHash, indexDelta,
         <div className="grid grid-cols-3 gap-1.5 text-center mt-2">
           <div className="bg-slate-800/50 rounded-lg p-2">
             <div className="text-[9px] text-slate-500 uppercase">Reserves</div>
-            <div className="text-xs font-bold text-slate-200">{formatMoney(state.officialTreasury)}</div>
+            <div className="text-xs font-bold text-slate-200">{formatMoney(state.colonyReserves)}</div>
           </div>
           <div className="bg-slate-800/50 rounded-lg p-2">
             <div className="text-[9px] text-slate-500 uppercase">Value</div>

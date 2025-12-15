@@ -42,7 +42,7 @@ export const CRISES: CrisisDef[] = [
     name: "Crew Member Accuses You of Mismanagement Live",
     description: "A senior officer is broadcasting claims about resource allocation in front of the whole colony.",
     severity: "high",
-    weight: (s) => (s.rage + s.heat) / 120,
+    weight: (s) => (s.rage + s.oversightPressure) / 120,
     options: [
       {
         id: "statement",
@@ -65,7 +65,7 @@ export const CRISES: CrisisDef[] = [
               narrative: "Earth oversight notices your statement footnote.",
               apply: (st) => ({
                 ...st,
-                heat: Math.min(100, st.heat + 15),
+                oversightPressure: Math.min(100, st.oversightPressure + 15),
                 cred: Math.max(0, st.cred - 5),
               }),
             };
@@ -131,7 +131,7 @@ export const CRISES: CrisisDef[] = [
                 ...st,
                 rage: Math.max(0, st.rage - 5),
                 cred: Math.max(0, st.cred - 5),
-                hidden: { ...st.hidden, auditRisk: st.hidden.auditRisk + 0.05 },
+                hidden: { ...st.hidden, scrutiny: st.hidden.scrutiny + 0.05 },
               }),
             };
           }
@@ -140,7 +140,7 @@ export const CRISES: CrisisDef[] = [
               narrative: "Subordinate leaks your private messages. Oversight spikes.",
               apply: (st) => ({
                 ...st,
-                heat: Math.min(100, st.heat + 20),
+                oversightPressure: Math.min(100, st.oversightPressure + 20),
                 cred: Math.max(0, st.cred - 10),
               }),
             };
@@ -149,7 +149,7 @@ export const CRISES: CrisisDef[] = [
             narrative: "Legendary leak: screenshots everywhere.",
             apply: (st) => ({
               ...st,
-              heat: Math.min(100, st.heat + 30),
+              oversightPressure: Math.min(100, st.oversightPressure + 30),
               rage: Math.min(100, st.rage + 20),
               hidden: { ...st.hidden, communityMemory: st.hidden.communityMemory + 0.2 },
             }),
@@ -169,7 +169,7 @@ export const CRISES: CrisisDef[] = [
                 ...st,
                 techHype: Math.min(100, st.techHype + 20),
                 rage: Math.max(0, st.rage - 5),
-                heat: Math.min(100, st.heat + 5),
+                oversightPressure: Math.min(100, st.oversightPressure + 5),
               }),
             };
           }
@@ -190,7 +190,7 @@ export const CRISES: CrisisDef[] = [
     name: "Life Support Failure Rumors",
     description: "Rumors of a critical system vulnerability spread. Colony morale shakes.",
     severity: "medium",
-    weight: (s) => (s.hidden.auditRisk > 0.3 ? 1.2 : 0.3),
+    weight: (s) => (s.hidden.scrutiny > 0.3 ? 1.2 : 0.3),
     options: [
       {
         id: "shutdown",
@@ -199,10 +199,10 @@ export const CRISES: CrisisDef[] = [
           narrative: "Systems paused. Crew angry but feeling safer (maybe).",
           apply: (st) => ({
             ...st,
-            heat: Math.min(100, st.heat + 10),
+            oversightPressure: Math.min(100, st.oversightPressure + 10),
             rage: Math.min(100, st.rage + 5),
             cred: Math.max(0, st.cred - 5),
-            hidden: { ...st.hidden, auditRisk: st.hidden.auditRisk - 0.1 },
+            hidden: { ...st.hidden, scrutiny: st.hidden.scrutiny - 0.1 },
           }),
         }),
       },
@@ -226,7 +226,7 @@ export const CRISES: CrisisDef[] = [
             apply: (st) => ({
               ...st,
               rage: Math.min(100, st.rage + 25),
-              heat: Math.min(100, st.heat + 15),
+              oversightPressure: Math.min(100, st.oversightPressure + 15),
               cred: Math.max(0, st.cred - 15),
             }),
           };
@@ -239,9 +239,9 @@ export const CRISES: CrisisDef[] = [
           narrative: "Engineers engage. Costs reserves but buys time.",
           apply: (st) => ({
             ...st,
-            officialTreasury: Math.max(0, st.officialTreasury - Math.floor(st.officialTreasury * 0.01)),
+            colonyReserves: Math.max(0, st.colonyReserves - Math.floor(st.colonyReserves * 0.01)),
             cred: Math.min(100, st.cred + 5),
-            heat: Math.min(100, st.heat + 5),
+            oversightPressure: Math.min(100, st.oversightPressure + 5),
           }),
         }),
       },
@@ -253,7 +253,7 @@ export const CRISES: CrisisDef[] = [
     name: "Earth Discovers Your Command Structure",
     description: "Oversight notices all key decisions go through you and your handpicked lieutenants.",
     severity: "high",
-    weight: (s) => (s.hidden.auditRisk > 0.2 ? 1.0 : 0.4),
+    weight: (s) => (s.hidden.scrutiny > 0.2 ? 1.0 : 0.4),
     options: [
       {
         id: "deny",
@@ -285,7 +285,7 @@ export const CRISES: CrisisDef[] = [
           apply: (st) => ({
             ...st,
             rage: Math.max(0, st.rage - 10),
-            heat: Math.min(100, st.heat + 10),
+            oversightPressure: Math.min(100, st.oversightPressure + 10),
             cred: Math.max(0, st.cred - 5),
           }),
         }),
@@ -367,7 +367,7 @@ export const CRISES: CrisisDef[] = [
               ...st,
               rage: Math.min(100, st.rage + 25),
               cred: Math.max(0, st.cred - 30),
-              heat: Math.min(100, st.heat + 15),
+              oversightPressure: Math.min(100, st.oversightPressure + 15),
             }),
           };
         },
@@ -395,7 +395,7 @@ export const CRISES: CrisisDef[] = [
               apply: (st) => ({
                 ...st,
                 cred: Math.max(0, st.cred - 5),
-                officialTreasury: Math.max(0, st.officialTreasury - Math.floor(st.officialTreasury * 0.01)),
+                colonyReserves: Math.max(0, st.colonyReserves - Math.floor(st.colonyReserves * 0.01)),
               }),
             };
           }
@@ -416,9 +416,9 @@ export const CRISES: CrisisDef[] = [
           narrative: "Lawyers send letters. Earth calls you 'the litigious commander'. Heat rises.",
           apply: (st) => ({
             ...st,
-            heat: Math.min(100, st.heat + 20),
+            oversightPressure: Math.min(100, st.oversightPressure + 20),
             rage: Math.min(100, st.rage + 10),
-            officialTreasury: Math.max(0, st.officialTreasury - Math.floor(st.officialTreasury * 0.02)),
+            colonyReserves: Math.max(0, st.colonyReserves - Math.floor(st.colonyReserves * 0.02)),
           }),
         }),
       },
@@ -439,7 +439,7 @@ export const CRISES: CrisisDef[] = [
           narrative: "Investor accepts new terms. Reserves take a hit. Crisis deferred.",
           apply: (st) => ({
             ...st,
-            officialTreasury: Math.max(0, st.officialTreasury - Math.floor(st.officialTreasury * 0.03)),
+            colonyReserves: Math.max(0, st.colonyReserves - Math.floor(st.colonyReserves * 0.03)),
             rage: Math.max(0, st.rage - 10),
           }),
         }),
@@ -489,7 +489,7 @@ export const CRISES: CrisisDef[] = [
             narrative: "Briefing recording leaks. 'This is totally sustainable' clip goes viral.",
             apply: (st) => ({
               ...st,
-              heat: Math.min(100, st.heat + 30),
+              oversightPressure: Math.min(100, st.oversightPressure + 30),
               rage: Math.min(100, st.rage + 15),
             }),
           };
@@ -517,7 +517,7 @@ export const CRISES: CrisisDef[] = [
     name: "\"Is This Legal?\" Analysis Goes Viral",
     description: "Law analyst with a small following just questioned everything about your operation.",
     severity: "high",
-    weight: (s) => (s.heat > 40 ? 0.7 : 0.25),
+    weight: (s) => (s.oversightPressure > 40 ? 0.7 : 0.25),
     options: [
       {
         id: "lawyer",
@@ -526,8 +526,8 @@ export const CRISES: CrisisDef[] = [
           narrative: "Lawyers advise 'no comment'. You post 'no comment'. Heat rises anyway.",
           apply: (st) => ({
             ...st,
-            heat: Math.min(100, st.heat + 15),
-            officialTreasury: Math.max(0, st.officialTreasury - Math.floor(st.officialTreasury * 0.015)),
+            oversightPressure: Math.min(100, st.oversightPressure + 15),
+            colonyReserves: Math.max(0, st.colonyReserves - Math.floor(st.colonyReserves * 0.015)),
           }),
         }),
       },
@@ -541,7 +541,7 @@ export const CRISES: CrisisDef[] = [
               narrative: "New narrative sticks. 'It's for science!'",
               apply: (st) => ({
                 ...st,
-                heat: Math.max(0, st.heat - 10),
+                oversightPressure: Math.max(0, st.oversightPressure - 10),
                 cred: Math.max(0, st.cred - 5),
               }),
             };
@@ -550,7 +550,7 @@ export const CRISES: CrisisDef[] = [
             narrative: "Oversight intern screenshots your extraction figures. Zero science found.",
             apply: (st) => ({
               ...st,
-              heat: Math.min(100, st.heat + 25),
+              oversightPressure: Math.min(100, st.oversightPressure + 25),
               cred: Math.max(0, st.cred - 15),
             }),
           };
@@ -566,7 +566,7 @@ export const CRISES: CrisisDef[] = [
               narrative: "Analysis dies. Algorithm buries it. Crisis averted.",
               apply: (st) => ({
                 ...st,
-                hidden: { ...st.hidden, auditRisk: st.hidden.auditRisk + 0.15 },
+                hidden: { ...st.hidden, scrutiny: st.hidden.scrutiny + 0.15 },
               }),
             };
           }
@@ -574,7 +574,7 @@ export const CRISES: CrisisDef[] = [
             narrative: "Analysis gets picked up by major outlets. Your comms are on fire.",
             apply: (st) => ({
               ...st,
-              heat: Math.min(100, st.heat + 35),
+              oversightPressure: Math.min(100, st.oversightPressure + 35),
               rage: Math.min(100, st.rage + 10),
             }),
           };
@@ -599,7 +599,7 @@ export const CRISES: CrisisDef[] = [
             narrative: "Earth oversight does not find this funny. Investigation incoming.",
             apply: (st) => ({
               ...st,
-              heat: Math.min(100, st.heat + 40),
+              oversightPressure: Math.min(100, st.oversightPressure + 40),
               cred: Math.max(0, st.cred - 20),
             }),
           };
@@ -707,7 +707,7 @@ export const CRISES: CrisisDef[] = [
           narrative: "Resources talk. Engineers delete the post. For now.",
           apply: (st) => ({
             ...st,
-            officialTreasury: Math.max(0, st.officialTreasury - Math.floor(st.officialTreasury * 0.025)),
+            colonyReserves: Math.max(0, st.colonyReserves - Math.floor(st.colonyReserves * 0.025)),
             cred: Math.max(0, st.cred - 5),
             hidden: { ...st.hidden, founderStability: st.hidden.founderStability + 0.1 },
           }),
@@ -747,7 +747,7 @@ export const CRISES: CrisisDef[] = [
           apply: (st) => ({
             ...st,
             techHype: Math.max(0, st.techHype - 15),
-            heat: Math.min(100, st.heat + 10),
+            oversightPressure: Math.min(100, st.oversightPressure + 10),
           }),
         }),
       },
@@ -784,7 +784,7 @@ export const CRISES: CrisisDef[] = [
     name: "Earth Threatens Mission Recall",
     description: "Earth HQ just messaged about 'operational concerns'. 72 hours to respond.",
     severity: "legendary",
-    weight: (s) => (s.heat > 50 ? 0.6 : 0.1),
+    weight: (s) => (s.oversightPressure > 50 ? 0.6 : 0.1),
     options: [
       {
         id: "pivot",
@@ -793,7 +793,7 @@ export const CRISES: CrisisDef[] = [
           narrative: "Emergency restructuring theater. Earth buys it. For now.",
           apply: (st) => ({
             ...st,
-            heat: Math.max(0, st.heat - 20),
+            oversightPressure: Math.max(0, st.oversightPressure - 20),
             cred: Math.max(0, st.cred - 10),
             rage: Math.min(100, st.rage + 10),
           }),
@@ -806,8 +806,8 @@ export const CRISES: CrisisDef[] = [
           narrative: "Reserves bleed, but recall avoided. Classic.",
           apply: (st) => ({
             ...st,
-            officialTreasury: Math.max(0, st.officialTreasury - Math.floor(st.officialTreasury * 0.05)),
-            heat: Math.max(0, st.heat - 25),
+            colonyReserves: Math.max(0, st.colonyReserves - Math.floor(st.colonyReserves * 0.05)),
+            oversightPressure: Math.max(0, st.oversightPressure - 25),
           }),
         }),
       },
@@ -821,7 +821,7 @@ export const CRISES: CrisisDef[] = [
               narrative: "Public campaign works. Recall pressure eases.",
               apply: (st) => ({
                 ...st,
-                heat: Math.max(0, st.heat - 15),
+                oversightPressure: Math.max(0, st.oversightPressure - 15),
                 cred: Math.min(100, st.cred + 10),
               }),
             };
@@ -830,7 +830,7 @@ export const CRISES: CrisisDef[] = [
             narrative: "Campaign backfires. 'Rogue commander' narrative sticks.",
             apply: (st) => ({
               ...st,
-              heat: Math.min(100, st.heat + 20),
+              oversightPressure: Math.min(100, st.oversightPressure + 20),
               cred: Math.max(0, st.cred - 15),
             }),
           };
@@ -843,7 +843,7 @@ export const CRISES: CrisisDef[] = [
           narrative: "Radio silence. Earth escalates. This is now an incident.",
           apply: (st) => ({
             ...st,
-            heat: Math.min(100, st.heat + 40),
+            oversightPressure: Math.min(100, st.oversightPressure + 40),
             hidden: { ...st.hidden, communityMemory: st.hidden.communityMemory + 0.3 },
           }),
         }),
@@ -877,7 +877,7 @@ export const CRISES: CrisisDef[] = [
             narrative: "Report war escalates. Earth is concerned about 'Mars drama'.",
             apply: (st) => ({
               ...st,
-              heat: Math.min(100, st.heat + 15),
+              oversightPressure: Math.min(100, st.oversightPressure + 15),
               rage: Math.min(100, st.rage + 10),
             }),
           };
@@ -902,7 +902,7 @@ export const CRISES: CrisisDef[] = [
           narrative: "Allied colony defends you. Costs some goodwill but works.",
           apply: (st) => ({
             ...st,
-            officialTreasury: Math.max(0, st.officialTreasury - Math.floor(st.officialTreasury * 0.01)),
+            colonyReserves: Math.max(0, st.colonyReserves - Math.floor(st.colonyReserves * 0.01)),
             rage: Math.max(0, st.rage - 10),
           }),
         }),
@@ -915,7 +915,7 @@ export const CRISES: CrisisDef[] = [
     name: "Earth Investigation Notice",
     description: "Formal notice of investigation into colony operations received.",
     severity: "legendary",
-    weight: (s) => (s.hidden.auditRisk > 0.5 ? 0.8 : 0.1),
+    weight: (s) => (s.hidden.scrutiny > 0.5 ? 0.8 : 0.1),
     options: [
       {
         id: "cooperate",
@@ -924,9 +924,9 @@ export const CRISES: CrisisDef[] = [
           narrative: "Cooperation noted. Investigation proceeds but you're not obstructing.",
           apply: (st) => ({
             ...st,
-            heat: Math.min(100, st.heat + 10),
+            oversightPressure: Math.min(100, st.oversightPressure + 10),
             cred: Math.min(100, st.cred + 5),
-            hidden: { ...st.hidden, auditRisk: st.hidden.auditRisk - 0.1 },
+            hidden: { ...st.hidden, scrutiny: st.hidden.scrutiny - 0.1 },
           }),
         }),
       },
@@ -940,7 +940,7 @@ export const CRISES: CrisisDef[] = [
               narrative: "Delays work. Investigation loses momentum.",
               apply: (st) => ({
                 ...st,
-                heat: Math.max(0, st.heat - 5),
+                oversightPressure: Math.max(0, st.oversightPressure - 5),
               }),
             };
           }
@@ -948,7 +948,7 @@ export const CRISES: CrisisDef[] = [
             narrative: "Delays seen as obstruction. Heat intensifies.",
             apply: (st) => ({
               ...st,
-              heat: Math.min(100, st.heat + 25),
+              oversightPressure: Math.min(100, st.oversightPressure + 25),
               cred: Math.max(0, st.cred - 10),
             }),
           };
@@ -961,7 +961,7 @@ export const CRISES: CrisisDef[] = [
           narrative: "Subordinate takes fall. Investigation refocuses.",
           apply: (st) => ({
             ...st,
-            heat: Math.max(0, st.heat - 15),
+            oversightPressure: Math.max(0, st.oversightPressure - 15),
             cred: Math.max(0, st.cred - 10),
             hidden: { ...st.hidden, founderStability: st.hidden.founderStability - 0.1 },
           }),
@@ -975,7 +975,7 @@ export const CRISES: CrisisDef[] = [
     name: "Infrastructure Sabotage Suspected",
     description: "Critical systems showing signs of deliberate tampering.",
     severity: "high",
-    weight: (s) => (s.hidden.auditRisk > 0.3 ? 0.7 : 0.2),
+    weight: (s) => (s.hidden.scrutiny > 0.3 ? 0.7 : 0.2),
     options: [
       {
         id: "investigate",
@@ -987,7 +987,7 @@ export const CRISES: CrisisDef[] = [
               narrative: "Saboteur found and dealt with quietly.",
               apply: (st) => ({
                 ...st,
-                hidden: { ...st.hidden, auditRisk: st.hidden.auditRisk - 0.15 },
+                hidden: { ...st.hidden, scrutiny: st.hidden.scrutiny - 0.15 },
                 rage: Math.max(0, st.rage - 5),
               }),
             };
@@ -1011,7 +1011,7 @@ export const CRISES: CrisisDef[] = [
             ...st,
             rage: Math.min(100, st.rage + 20),
             cred: Math.max(0, st.cred - 5),
-            hidden: { ...st.hidden, auditRisk: st.hidden.auditRisk - 0.1 },
+            hidden: { ...st.hidden, scrutiny: st.hidden.scrutiny - 0.1 },
           }),
         }),
       },
@@ -1022,8 +1022,8 @@ export const CRISES: CrisisDef[] = [
           narrative: "Earth sends investigators. Oversight increases significantly.",
           apply: (st) => ({
             ...st,
-            heat: Math.min(100, st.heat + 20),
-            hidden: { ...st.hidden, auditRisk: st.hidden.auditRisk - 0.2 },
+            oversightPressure: Math.min(100, st.oversightPressure + 20),
+            hidden: { ...st.hidden, scrutiny: st.hidden.scrutiny - 0.2 },
           }),
         }),
       },
@@ -1045,9 +1045,9 @@ export function pickCrisis(state: GameState, rng: RNG, _season: SeasonDef): Cris
 
 // Wrapper that applies chance-based gating
 export function maybePickCrisis(state: GameState, rng: RNG, season: SeasonDef): CrisisDef | null {
-  // Base 15% chance per turn, modified by hidden auditRisk and season
+  // Base 15% chance per turn, modified by hidden scrutiny and season
   const base = 0.15;
-  const riskBonus = state.hidden.auditRisk * 0.3; // up to +30% if auditRisk is 1.0
+  const riskBonus = state.hidden.scrutiny * 0.3; // up to +30% if scrutiny is 1.0
   const seasonFactor = season.crisisFactor ?? 1.0;
   const chance = Math.min(0.6, (base + riskBonus) * seasonFactor); // cap at 60%
 

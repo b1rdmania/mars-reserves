@@ -7,17 +7,17 @@ export const THEME = {
 
   // Metric display names
   metrics: {
-    officialTreasury: "Colony Reserves",
-    siphoned: "Legacy Score",
+    colonyReserves: "Colony Reserves",
+    legacy: "Legacy Score",
     rage: "Crew Unrest",
-    heat: "Earth Oversight",
+    oversightPressure: "Earth Oversight",
     cred: "Command Trust",
     techHype: "Research Momentum",
   },
 
   // Hidden metric display names (for debug/tooltips)
   hiddenMetrics: {
-    auditRisk: "System Strain",
+    scrutiny: "System Strain",
     founderStability: "Commander Stress",
     communityMemory: "Colony Memory",
     stablecoinRatio: "Resource Diversity",

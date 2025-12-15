@@ -59,12 +59,12 @@ function applyMarketDrift(state: GameState, rng: RNG): GameState {
   // Diversification actions can improve this ratio over time
   const stableRatio = state.hidden.stablecoinRatio ?? 0.3;
   const nativeRatio = 1 - stableRatio;
-  const nativePortion = state.officialTreasury * nativeRatio;
-  const stablePortion = state.officialTreasury * stableRatio;
+  const nativePortion = state.colonyReserves * nativeRatio;
+  const stablePortion = state.colonyReserves * stableRatio;
   const adjustedNative = nativePortion * (1 + realizedDelta);
-  const officialTreasury = Math.max(0, stablePortion + adjustedNative);
+  const colonyReserves = Math.max(0, stablePortion + adjustedNative);
 
-  return { ...state, tokenPrice, tvl, officialTreasury };
+  return { ...state, tokenPrice, tvl, colonyReserves };
 }
 
 function applyDrift(state: GameState, rng: RNG): GameState {
@@ -79,8 +79,8 @@ function applyDrift(state: GameState, rng: RNG): GameState {
   const rage = state.rage * (1 - rageDecayRate);
 
   // Heat: 5% decay base
-  const heatDecayRate = 0.05 - (season.heatDriftDelta ?? 0) * 0.015; // regulator season: +3 delta = 0.5% decay (almost stable)
-  const heat = state.heat * (1 - heatDecayRate);
+  const heatDecayRate = 0.05 - (season.oversightDriftDelta ?? 0) * 0.015; // regulator season: +3 delta = 0.5% decay (almost stable)
+  const heat = state.oversightPressure * (1 - heatDecayRate);
 
   // Tech: 4% decay base (tech is sticky - people remember your tech)
   const techDecayRate = 0.04 - (season.techHypeDecayDelta ?? 0) * 0.01;
@@ -93,7 +93,7 @@ function applyDrift(state: GameState, rng: RNG): GameState {
   let next: GameState = {
     ...state,
     rage: Math.max(0, Math.round(rage * 10) / 10), // Round to 1 decimal
-    heat: Math.max(0, Math.round(heat * 10) / 10),
+    oversightPressure: Math.max(0, Math.round(heat * 10) / 10),
     techHype: Math.max(0, Math.round(techHype * 10) / 10),
     cred: Math.max(0, Math.round(cred * 10) / 10),
   };
@@ -106,13 +106,13 @@ function checkGameOver(state: GameState): GameState {
   if (state.rage >= 100) {
     return { ...state, gameOver: true, gameOverReason: "Crew mutiny: they've taken control." };
   }
-  if (state.heat >= 100) {
+  if (state.oversightPressure >= 100) {
     return { ...state, gameOver: true, gameOverReason: "Earth recall: mission terminated." };
   }
   if (state.cred <= 0) {
     return { ...state, gameOver: true, gameOverReason: "Trust collapse: nobody follows orders." };
   }
-  if (state.officialTreasury <= 0) {
+  if (state.colonyReserves <= 0) {
     return { ...state, gameOver: true, gameOverReason: "Colony reserves depleted: mission unsustainable." };
   }
   if (state.turn >= state.maxTurns) {
@@ -140,10 +140,10 @@ export function initialState(params?: {
     ticker: ticker.toUpperCase().slice(0, 4),
     tokenPrice: 1,
     tvl: 500_000_000,
-    officialTreasury: 1_000_000_000,
-    siphoned: 0,
+    colonyReserves: 1_000_000_000,
+    legacy: 0,
     rage: 20,
-    heat: 10,
+    oversightPressure: 10,
     cred: 60,
     techHype: 40,
     seasonId,
@@ -151,7 +151,7 @@ export function initialState(params?: {
     usedActionIds: [],
     crisisCount: 0,
     hidden: {
-      auditRisk: 0,
+      scrutiny: 0,
       founderStability: 1,
       communityMemory: 0,
       stablecoinRatio: 0.3,
@@ -191,11 +191,11 @@ export function step(state: GameState, actionId: ActionId, rng: RNG): GameState 
     next = {
       ...next,
       rage: applyScale(next.rage, before.rage),
-      heat: applyScale(next.heat, before.heat),
+      oversightPressure: applyScale(next.oversightPressure, before.oversightPressure),
       cred: applyScale(next.cred, before.cred),
       techHype: applyScale(next.techHype, before.techHype),
-      officialTreasury: applyScale(next.officialTreasury, before.officialTreasury),
-      siphoned: applyScale(next.siphoned, before.siphoned),
+      colonyReserves: applyScale(next.colonyReserves, before.colonyReserves),
+      legacy: applyScale(next.legacy, before.legacy),
       log: [`${severity.label} → ${action.name}`, ...next.log],
     };
   }

@@ -28,9 +28,9 @@ function failedBy(state: GameState, type: "rage" | "heat" | "cred" | "treasury")
     const reason = state.gameOverReason?.toLowerCase() ?? "";
     switch (type) {
         case "rage": return reason.includes("mutiny") || reason.includes("coup") || state.rage >= 100;
-        case "heat": return reason.includes("oversight") || reason.includes("recall") || state.heat >= 100;
+        case "heat": return reason.includes("oversight") || reason.includes("recall") || state.oversightPressure >= 100;
         case "cred": return reason.includes("trust") || reason.includes("believes") || state.cred <= 0;
-        case "treasury": return reason.includes("reserves") || reason.includes("empty") || state.officialTreasury <= 0;
+        case "treasury": return reason.includes("reserves") || reason.includes("empty") || state.colonyReserves <= 0;
     }
 }
 
@@ -68,7 +68,7 @@ export const ENDINGS: EndingDef[] = [
         headline: "Life Support Cascade",
         subline: "Critical systems failed in sequence.",
         narrative: "That integration seemed fine. It was not fine. Emergency reserves are gone. You announce a 'mental health leave.'",
-        trigger: (s) => s.officialTreasury < 100_000_000 && s.tokenPrice < 0.3 && s.cred < 20,
+        trigger: (s) => s.colonyReserves < 100_000_000 && s.tokenPrice < 0.3 && s.cred < 20,
         weight: 12,
         badge: "System Failure",
     },
@@ -90,7 +90,7 @@ export const ENDINGS: EndingDef[] = [
         headline: "Extraction Drove Bankruptcy",
         subline: "You paid everything for equipment that produced nothing.",
         narrative: "The yield projections were optimistic. Fourteen equipment contracts extracted everything from your reserves. They thanked you before the recall.",
-        trigger: (s) => s.officialTreasury < 50_000_000 && s.siphoned < 100_000_000,
+        trigger: (s) => s.colonyReserves < 50_000_000 && s.legacy < 100_000_000,
         weight: 8,
         badge: "Over-Invested",
     },
@@ -105,7 +105,7 @@ export const ENDINGS: EndingDef[] = [
         headline: "Earth Cut You Off",
         subline: "A comprehensive exposé changed everything.",
         narrative: "Your personal quarters images. Your allocation discrepancies. Your old statements about 'crew efficiency.' You go silent and hide in the hab.",
-        trigger: (s) => failedBy(s, "cred") && s.rage < 70 && s.heat < 70,
+        trigger: (s) => failedBy(s, "cred") && s.rage < 70 && s.oversightPressure < 70,
         weight: 5,
         badge: "Main Character (Negative)",
     },
@@ -138,7 +138,7 @@ export const ENDINGS: EndingDef[] = [
         headline: "Fabricated Evidence Scandal",
         subline: "A manipulated recording of you 'confessing' went viral.",
         narrative: "It was obviously fake. The voice was wrong. Nobody cared. 'Guilty until proven innocent' hits different in deep space.",
-        trigger: (s) => failedBy(s, "cred") && s.heat > 40,
+        trigger: (s) => failedBy(s, "cred") && s.oversightPressure > 40,
         weight: 10,
         badge: "Framed",
     },
@@ -149,7 +149,7 @@ export const ENDINGS: EndingDef[] = [
         headline: "You Became a Legend",
         subline: "Crew ironically loves you now.",
         narrative: "Your failures are so consistent, they're beloved. The colony becomes a running joke. Your face is on unofficial patches. Somehow, this is winning.",
-        trigger: (s) => survived(s) && s.cred < 40 && s.siphoned > 100_000_000,
+        trigger: (s) => survived(s) && s.cred < 40 && s.legacy > 100_000_000,
         weight: 8,
         badge: "Living Legend",
         scoreMultiplier: 1.2,
@@ -176,7 +176,7 @@ export const ENDINGS: EndingDef[] = [
         headline: "Critical Systems Locked",
         subline: "Authorization frozen. Operations halted.",
         narrative: "One officer went silent. Then another. The reserves are technically still there. Nobody can access them. 'Lost authorization, lost mission.'",
-        trigger: (s) => s.officialTreasury > 300_000_000 && s.tokenPrice < 0.4 && !survived(s),
+        trigger: (s) => s.colonyReserves > 300_000_000 && s.tokenPrice < 0.4 && !survived(s),
         weight: 6,
         badge: "Access Denied",
     },
@@ -209,7 +209,7 @@ export const ENDINGS: EndingDef[] = [
         headline: "Critical Misaccounting",
         subline: "Auditors found... discrepancies.",
         narrative: "Turns out you were off by a factor of 1000. Somewhere. The report is 847 pages. 'In hindsight, decimal places matter.'",
-        trigger: (s) => s.siphoned > 200_000_000 && s.officialTreasury < 100_000_000,
+        trigger: (s) => s.legacy > 200_000_000 && s.colonyReserves < 100_000_000,
         weight: 8,
         badge: "Decimal Disaster",
     },
@@ -235,7 +235,7 @@ export const ENDINGS: EndingDef[] = [
         headline: "Forced Evacuation",
         subline: "Earth oversight got aggressive.",
         narrative: "First they recalled the finances. Then the equipment. Then you. 'Returning for consultation,' you broadcast from the escape pod.",
-        trigger: (s) => s.heat > 80 && survived(s),
+        trigger: (s) => s.oversightPressure > 80 && survived(s),
         weight: 10,
         badge: "Jurisdiction Hopper",
         scoreMultiplier: 0.9,
@@ -247,7 +247,7 @@ export const ENDINGS: EndingDef[] = [
         headline: "Mission Termination Order",
         subline: "Earth pulled the plug overnight.",
         narrative: "NASA. ESA. JAXA. All support gone by morning. 'Mission parameters no longer meet operational needs,' they said. Your comms are chaos.",
-        trigger: (s) => s.heat > 60 && s.tokenPrice < 0.6,
+        trigger: (s) => s.oversightPressure > 60 && s.tokenPrice < 0.6,
         weight: 15,
         badge: "Terminated",
     },
@@ -258,7 +258,7 @@ export const ENDINGS: EndingDef[] = [
         headline: "Finance Authority Questions",
         subline: "They inquired about 'operational expenses.'",
         narrative: "The message was brief. 'Please explain allocations 1 through 847.' You did not reply. Your location is now 'in transit.'",
-        trigger: (s) => s.siphoned > 150_000_000 && s.heat > 60,
+        trigger: (s) => s.legacy > 150_000_000 && s.oversightPressure > 60,
         weight: 8,
         badge: "Resource Optimiser",
     },
@@ -269,7 +269,7 @@ export const ENDINGS: EndingDef[] = [
         headline: "You Became a Whistleblower",
         subline: "You testified against your own mission.",
         narrative: "For immunity benefits, you revealed everything. First-commander-ever-to-snitch status earned. Crew will never forgive you. Worth it?",
-        trigger: (s) => s.heat > 90 && s.siphoned > 100_000_000 && !survived(s),
+        trigger: (s) => s.oversightPressure > 90 && s.legacy > 100_000_000 && !survived(s),
         weight: 5,
         badge: "Crown Witness",
     },
@@ -296,7 +296,7 @@ export const ENDINGS: EndingDef[] = [
         headline: "Side Project Overtook Main Mission",
         subline: "Crew abandoned primary objectives for your pet project.",
         narrative: "You launched a terraforming experiment as a hobby. It's now 10× more valuable than main ops. Everyone forgot what your mission actually was. 'Accidental success.'",
-        trigger: (s) => survived(s) && s.cred < 50 && s.siphoned > 50_000_000,
+        trigger: (s) => survived(s) && s.cred < 50 && s.legacy > 50_000_000,
         weight: 10,
         badge: "Side Quest Success",
         scoreMultiplier: 1.1,
@@ -331,7 +331,7 @@ export const ENDINGS: EndingDef[] = [
         headline: "Perfect Mission",
         subline: "Everything aligned beautifully.",
         narrative: "Momentum exploded. Earth looked away. Crew forgave your methods. Value pumped. You walk away clean. This never happens. You got lucky.",
-        trigger: (s) => survived(s) && s.rage < 30 && s.heat < 30 && s.cred > 60 && s.siphoned > 150_000_000,
+        trigger: (s) => survived(s) && s.rage < 30 && s.oversightPressure < 30 && s.cred > 60 && s.legacy > 150_000_000,
         weight: 5,
         badge: "MISSION COMPLETE",
         scoreMultiplier: 1.5,
@@ -347,7 +347,7 @@ export const ENDINGS: EndingDef[] = [
         headline: "Master Extractor",
         subline: "You extracted >70% of colony reserves.",
         narrative: "Seven hundred million in legacy value. Gone. Into permanent record. Nobody caught you. You retire to Earth luxury. Legend status unlocked.",
-        trigger: (s) => survived(s) && s.siphoned > 700_000_000,
+        trigger: (s) => survived(s) && s.legacy > 700_000_000,
         weight: 20,
         badge: "Legacy Maximalist",
         scoreMultiplier: 2.0,
@@ -401,7 +401,7 @@ export const ENDINGS: EndingDef[] = [
         headline: "Commander of the Year (Ironically)",
         subline: "You did everything wrong but survived anyway.",
         narrative: "Low trust. High oversight. Angry crew. Yet here you are. Earth awards you an ironically prestigious title. You can't tell if it's a diss.",
-        trigger: (s) => survived(s) && s.cred < 40 && s.heat > 50 && s.siphoned > 100_000_000,
+        trigger: (s) => survived(s) && s.cred < 40 && s.oversightPressure > 50 && s.legacy > 100_000_000,
         weight: 8,
         badge: "Irony Award Winner",
         scoreMultiplier: 1.1,
@@ -432,7 +432,7 @@ export function evaluateEnding(state: GameState): EndingDef | null {
 // Get a fallback ending based on basic game state (for when no special ending triggers)
 export function getFallbackEnding(state: GameState): EndingDef {
     const survived_game = state.turn >= state.maxTurns;
-    const bigBag = state.siphoned > 200_000_000;
+    const bigBag = state.legacy > 200_000_000;
 
     if (survived_game && bigBag) {
         return {

@@ -7,10 +7,10 @@ interface Props {
 
 export const Meters: React.FC<Props> = ({ state }) => {
   const items: Array<[string, number, string]> = [
-    ["Reserves", state.officialTreasury, "Colony reserves. If 0, mission fails."],
-    ["Legacy", state.siphoned, "Legacy score. What endures after your mission."],
+    ["Reserves", state.colonyReserves, "Colony reserves. If 0, mission fails."],
+    ["Legacy", state.legacy, "Legacy score. What endures after your mission."],
     ["Unrest", state.rage, "Crew unrest. 100 = mutiny."],
-    ["Oversight", state.heat, "Earth oversight pressure. 100 = mission recall."],
+    ["Oversight", state.oversightPressure, "Earth oversight pressure. 100 = mission recall."],
     ["Trust", state.cred, "Command trust. Low trust makes crises brutal."],
     ["Momentum", state.techHype, "Research momentum. Covers failures; decays each cycle."],
   ];
