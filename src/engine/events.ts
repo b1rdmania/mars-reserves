@@ -19,7 +19,16 @@ export type EventId =
   | "audit_notice"
   | "team_discord_leak"
   | "community_never_forgets"
-  | "diversification_pays_off";
+  | "diversification_pays_off"
+  // Mars environment events
+  | "dust_storm"
+  | "solar_flare"
+  | "supply_ship_delay"
+  | "hab_malfunction"
+  | "water_reclaimer_failure"
+  | "research_breakthrough"
+  | "earth_news_cycle"
+  | "crew_morale_boost";
 
 export interface EventDef {
   id: EventId;
@@ -378,6 +387,150 @@ const BASE_EVENTS: EventDef[] = [
         heat: Math.max(0, s.heat - 5),
         log: [log, ...s.log],
         recentEvents: ["diversification_pays_off", ...s.recentEvents].slice(0, 5),
+      };
+    },
+  },
+  // === MARS ENVIRONMENT EVENTS ===
+  {
+    id: "dust_storm",
+    name: "Dust Storm",
+    weight: () => 0.6,
+    apply: (s) => {
+      const log = `🌪️ Massive dust storm blankets the colony. Operations halted for emergency protocols.`;
+      return {
+        ...s,
+        officialTreasury: Math.max(0, s.officialTreasury * 0.95),
+        techHype: Math.max(0, s.techHype - 8),
+        hidden: {
+          ...s.hidden,
+          auditRisk: s.hidden.auditRisk + 0.05,
+        },
+        log: [log, ...s.log],
+        recentEvents: ["dust_storm", ...s.recentEvents].slice(0, 5),
+      };
+    },
+  },
+  {
+    id: "solar_flare",
+    name: "Solar Flare",
+    weight: () => 0.4,
+    apply: (s) => {
+      const log = `☀️ Solar flare disrupts communications. Earth oversight temporarily blinded.`;
+      return {
+        ...s,
+        heat: Math.max(0, s.heat - 15),
+        techHype: Math.max(0, s.techHype - 5),
+        log: [log, ...s.log],
+        recentEvents: ["solar_flare", ...s.recentEvents].slice(0, 5),
+      };
+    },
+  },
+  {
+    id: "supply_ship_delay",
+    name: "Supply Ship Delay",
+    weight: () => 0.5,
+    apply: (s) => {
+      const lostReserves = Math.floor(s.officialTreasury * 0.15);
+      const log = `🚀 Supply ship delayed by 6 months. Rationing protocols engaged. Reserves -15%.`;
+      return {
+        ...s,
+        officialTreasury: Math.max(0, s.officialTreasury - lostReserves),
+        rage: Math.min(100, s.rage + 10),
+        log: [log, ...s.log],
+        recentEvents: ["supply_ship_delay", ...s.recentEvents].slice(0, 5),
+      };
+    },
+  },
+  {
+    id: "hab_malfunction",
+    name: "Habitat Malfunction",
+    weight: (s) => s.hidden.auditRisk > 0.3 ? 0.8 : 0.3,
+    apply: (s) => {
+      const log = `🔧 Critical habitat malfunction. Emergency repairs drain resources and spike system strain.`;
+      return {
+        ...s,
+        officialTreasury: Math.max(0, s.officialTreasury * 0.9),
+        hidden: {
+          ...s.hidden,
+          auditRisk: s.hidden.auditRisk + 0.2,
+        },
+        rage: Math.min(100, s.rage + 8),
+        log: [log, ...s.log],
+        recentEvents: ["hab_malfunction", ...s.recentEvents].slice(0, 5),
+      };
+    },
+  },
+  {
+    id: "water_reclaimer_failure",
+    name: "Water Reclaimer Failure",
+    weight: (s) => s.hidden.auditRisk > 0.5 ? 1.0 : 0.2,
+    apply: (s) => {
+      const log = `💧 Water reclaimer failure! This could trigger a full crisis if not addressed.`;
+      return {
+        ...s,
+        officialTreasury: Math.max(0, s.officialTreasury * 0.85),
+        rage: Math.min(100, s.rage + 20),
+        cred: Math.max(0, s.cred - 10),
+        hidden: {
+          ...s.hidden,
+          auditRisk: s.hidden.auditRisk + 0.15,
+          communityMemory: s.hidden.communityMemory + 0.1,
+        },
+        log: [log, ...s.log],
+        recentEvents: ["water_reclaimer_failure", ...s.recentEvents].slice(0, 5),
+      };
+    },
+  },
+  {
+    id: "research_breakthrough",
+    name: "Research Breakthrough",
+    weight: (s) => s.techHype > 40 ? 0.7 : 0.3,
+    apply: (s) => {
+      const log = `🔬 Major research breakthrough! Your team publishes findings that boost mission credibility.`;
+      return {
+        ...s,
+        techHype: Math.min(100, s.techHype + 25),
+        cred: Math.min(100, s.cred + 10),
+        rage: Math.max(0, s.rage - 5),
+        log: [log, ...s.log],
+        recentEvents: ["research_breakthrough", ...s.recentEvents].slice(0, 5),
+      };
+    },
+  },
+  {
+    id: "earth_news_cycle",
+    name: "Earth News Cycle",
+    weight: () => 0.5,
+    apply: (s) => {
+      const positive = Math.random() > 0.5;
+      const log = positive
+        ? `📰 Earth media runs positive story on Mars colony. Public support surges.`
+        : `📰 Earth media runs hit piece on colony management. Oversight intensifies.`;
+      return {
+        ...s,
+        heat: positive ? Math.max(0, s.heat - 10) : Math.min(100, s.heat + 10),
+        cred: positive ? Math.min(100, s.cred + 5) : Math.max(0, s.cred - 5),
+        log: [log, ...s.log],
+        recentEvents: ["earth_news_cycle", ...s.recentEvents].slice(0, 5),
+      };
+    },
+  },
+  {
+    id: "crew_morale_boost",
+    name: "Crew Morale Boost",
+    weight: (s) => s.rage > 40 ? 0.6 : 0.2,
+    apply: (s) => {
+      const log = `🎉 Crew celebrates mission milestone. Morale improves across all departments.`;
+      return {
+        ...s,
+        rage: Math.max(0, s.rage - 15),
+        cred: Math.min(100, s.cred + 5),
+        hidden: {
+          ...s.hidden,
+          founderStability: Math.min(1, s.hidden.founderStability + 0.1),
+        },
+        log: [log, ...s.log],
+        recentEvents: ["crew_morale_boost", ...s.recentEvents].slice(0, 5),
       };
     },
   },

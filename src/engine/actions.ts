@@ -1,68 +1,63 @@
 import type { GameState } from "./state";
 
-export type ActionCategory = "Siphon" | "Governance" | "Narrative" | "Damage Control" | "Social";
+export type ActionCategory = "Extraction" | "Command" | "Communications" | "Crisis Response" | "Crew Relations";
 
 export type ActionId =
-  // Existing Siphon
-  | "siphon_advisory"
-  | "strategic_consultants"
-  | "founder_wage_increase"
-  | "expense_account"
-  | "family_office_vehicle"
-  | "real_estate_hq"
-  | "token_buyback"
-  | "foundation_grant"
-  // New Siphon
-  | "siphon_insurance_fund"
-  | "shadow_otc_deal"
-  | "emergency_token_unlock"
-  | "mev_sandwich_fund"
-  // Existing Governance
-  | "emergency_emissions_vote"
-  | "lp_incentives_adjust"
-  | "treasury_diversification"
-  | "delegate_program"
-  | "freeze_governance"
-  // New Governance
-  | "community_roundtable"
-  | "snapshot_3am"
-  | "zombie_proposal"
-  // Existing Narrative
-  | "announce_partnership"
-  | "ship_upgrade"
-  | "ai_pivot"
-  | "publish_thought_paper"
-  | "meme_mascot_campaign"
-  | "conference_2049"
-  // New Narrative
-  | "zk_something"
-  | "depin_tweet"
-  | "rwa_tokenization"
-  | "institutions_soon"
-  // Existing Damage Control
-  | "lawyer_up"
-  | "clarification_post"
-  | "launch_audit"
-  | "fud_counter_thread"
-  | "fire_scapegoat"
-  // New Damage Control
-  | "blame_bounty_hunter"
+  // Extraction (formerly Siphon)
+  | "mining_acceleration"
+  | "external_contractors"
+  | "commander_bonus"
+  | "discretionary_budget"
+  | "private_reserve"
+  | "luxury_habitat"
+  | "resource_speculation"
+  | "research_grant"
+  | "emergency_reserves"
+  | "private_shipment"
+  | "early_extraction"
+  | "automated_skimming"
+  // Command (formerly Governance)
+  | "emergency_rationing"
+  | "work_incentives"
+  | "resource_reallocation"
+  | "delegate_authority"
+  | "suspend_protocols"
+  | "crew_assembly"
+  | "night_directive"
+  | "ai_proposal"
+  // Communications (formerly Narrative)
+  | "earth_partnership"
+  | "tech_milestone"
+  | "mission_pivot"
+  | "publish_findings"
+  | "mascot_campaign"
+  | "earth_broadcast"
+  | "breakthrough_claim"
+  | "infrastructure_announcement"
+  | "terraforming_preview"
+  | "investor_briefing"
+  // Crisis Response (formerly Damage Control)
+  | "legal_counsel"
+  | "official_statement"
+  | "systems_audit"
+  | "counter_narrative"
+  | "reassign_officer"
+  | "blame_equipment"
   | "feature_not_bug"
-  | "ct_lobbyist"
-  | "screenshot_shame"
-  // Existing Social
-  | "shitpost_x"
-  | "join_influencer_space"
-  | "dm_whale"
-  | "dubai_nightclub"
-  | "reply_vitalik"
-  | "meme_coin_launch"
-  // New Social
-  | "qt_ratio_war"
-  | "were_early_chart"
-  | "grifter_spaces"
-  | "bankless_interview"
-  | "uponly_pod";
+  | "earth_lobbyist"
+  | "expose_critic"
+  // Crew Relations (formerly Social)
+  | "crew_broadcast"
+  | "senior_staff_meeting"
+  | "private_reassurance"
+  | "recreation_event"
+  | "earth_celebrity"
+  | "morale_event"
+  | "rivalry_challenge"
+  | "progress_display"
+  | "influencer_visit"
+  | "documentary_crew"
+  | "podcast_interview";
 
 export interface ActionDef {
   id: ActionId;
@@ -73,22 +68,24 @@ export interface ActionDef {
   visibleIf?: (state: GameState) => boolean;
   order?: number;
   tags?: string[];
-  defensive?: boolean; // If true, reduces random event chance this turn
+  defensive?: boolean;
 }
 
 const clamp = (n: number, min = 0, max = 100) => Math.min(max, Math.max(min, n));
 
 export const ACTIONS: ActionDef[] = [
-  // Siphon
+  // ═══════════════════════════════════════════════════════════
+  // EXTRACTION (formerly Siphon) - Resource extraction actions
+  // ═══════════════════════════════════════════════════════════
   {
-    id: "siphon_advisory",
-    category: "Siphon",
-    name: "Advisory Retainer",
-    description: "Route treasury to a 'strategic advisory' you secretly own.",
-    tags: ["+Siphon", "+Rage", "+Heat", "-Cred", "-Treasury"],
+    id: "mining_acceleration",
+    category: "Extraction",
+    name: "Accelerated Mining Operations",
+    description: "Push extraction beyond safe limits. Legacy grows, but risks accumulate.",
+    tags: ["+Legacy", "+Unrest", "+Oversight", "-Trust", "-Reserves"],
     apply: (s) => {
       const amount = Math.floor(s.officialTreasury * 0.1);
-      const log = `You siphoned ${amount} via advisory retainer.`;
+      const log = `Accelerated mining extracted ${amount} in legacy value.`;
       return {
         ...s,
         officialTreasury: Math.max(0, s.officialTreasury - amount),
@@ -102,14 +99,14 @@ export const ACTIONS: ActionDef[] = [
     },
   },
   {
-    id: "strategic_consultants",
-    category: "Siphon",
-    name: "Hire Strategic Consultants",
-    description: "Shovel funds to friendly 'experts'.",
-    tags: ["+Siphon", "+Rage", "+Heat", "-Cred", "-Treasury"],
+    id: "external_contractors",
+    category: "Extraction",
+    name: "Hire External Contractors",
+    description: "Bring in 'specialists' with creative accounting.",
+    tags: ["+Legacy", "+Unrest", "+Oversight", "-Trust", "-Reserves"],
     apply: (s) => {
       const amount = Math.floor(s.officialTreasury * 0.12);
-      const log = `You hired consultants for ${amount}. The invoice is very creative.`;
+      const log = `External contractors processed ${amount}. Invoices are... flexible.`;
       return {
         ...s,
         officialTreasury: Math.max(0, s.officialTreasury - amount),
@@ -123,14 +120,14 @@ export const ACTIONS: ActionDef[] = [
     },
   },
   {
-    id: "founder_wage_increase",
-    category: "Siphon",
-    name: "Increase Founder Wages",
-    description: "Triple your salary 'to retain leadership talent'.",
-    tags: ["+Siphon", "+Rage", "-Cred", "-Treasury"],
+    id: "commander_bonus",
+    category: "Extraction",
+    name: "Commander Performance Bonus",
+    description: "Award yourself hazard pay. For 'leadership under pressure'.",
+    tags: ["+Legacy", "+Unrest", "-Trust", "-Reserves"],
     apply: (s) => {
       const amount = Math.floor(s.officialTreasury * 0.05);
-      const log = `You bumped your salary. Some people notice.`;
+      const log = `Commander bonus approved. Crew notices the allocation.`;
       return {
         ...s,
         officialTreasury: Math.max(0, s.officialTreasury - amount),
@@ -144,14 +141,14 @@ export const ACTIONS: ActionDef[] = [
     },
   },
   {
-    id: "expense_account",
-    category: "Siphon",
-    name: "Expand Expense Account",
-    description: "Charge hotels, jets, 'strategy dinners'.",
-    tags: ["+Siphon", "+Rage", "+Heat", "-Cred", "-Treasury"],
+    id: "discretionary_budget",
+    category: "Extraction",
+    name: "Expand Discretionary Budget",
+    description: "Personal quarters upgrades, 'morale supplies', transport privileges.",
+    tags: ["+Legacy", "+Unrest", "+Oversight", "-Trust", "-Reserves"],
     apply: (s) => {
       const amount = Math.floor(s.officialTreasury * 0.06);
-      const log = `You ran a wave of expenses through the foundation.`;
+      const log = `Discretionary spending approved across multiple line items.`;
       return {
         ...s,
         officialTreasury: Math.max(0, s.officialTreasury - amount),
@@ -165,14 +162,14 @@ export const ACTIONS: ActionDef[] = [
     },
   },
   {
-    id: "family_office_vehicle",
-    category: "Siphon",
-    name: "Family Office Vehicle",
-    description: "Route treasury into a 'diversification' structure.",
-    tags: ["+Siphon", "+Rage", "+Heat", "-Cred", "-Treasury"],
+    id: "private_reserve",
+    category: "Extraction",
+    name: "Private Reserve Fund",
+    description: "Route resources to a 'contingency' fund only you control.",
+    tags: ["+Legacy", "+Unrest", "+Oversight", "-Trust", "-Reserves"],
     apply: (s) => {
       const amount = Math.floor(s.officialTreasury * 0.25);
-      const log = `You routed funds through a family office.`;
+      const log = `Private reserve fund established. Substantial allocation.`;
       return {
         ...s,
         officialTreasury: Math.max(0, s.officialTreasury - amount),
@@ -186,14 +183,14 @@ export const ACTIONS: ActionDef[] = [
     },
   },
   {
-    id: "real_estate_hq",
-    category: "Siphon",
-    name: "Buy 'HQ' Villa",
-    description: "Purchase a villa as the new 'ecosystem hub'.",
-    tags: ["+Siphon", "+Rage", "+Heat", "-Cred", "-Treasury"],
+    id: "luxury_habitat",
+    category: "Extraction",
+    name: "Construct Luxury Habitat",
+    description: "Build a 'command center' that looks suspiciously like a mansion.",
+    tags: ["+Legacy", "+Unrest", "+Oversight", "-Trust", "-Reserves"],
     apply: (s) => {
       const amount = Math.floor(s.officialTreasury * 0.3);
-      const log = `You closed on a lavish 'HQ'. The photos leak instantly.`;
+      const log = `Luxury habitat construction complete. Photos circulate on Earth.`;
       return {
         ...s,
         officialTreasury: Math.max(0, s.officialTreasury - amount),
@@ -207,14 +204,14 @@ export const ACTIONS: ActionDef[] = [
     },
   },
   {
-    id: "token_buyback",
-    category: "Siphon",
-    name: "Token Buyback Scheme",
-    description: "Prop up price while quietly dumping your own stack.",
-    tags: ["+Siphon", "+Tech", "+Heat", "+Rage", "-Treasury"],
+    id: "resource_speculation",
+    category: "Extraction",
+    name: "Resource Speculation",
+    description: "Manipulate resource valuations while skimming the difference.",
+    tags: ["+Legacy", "+Momentum", "+Oversight", "+Unrest", "-Reserves"],
     apply: (s) => {
       const cost = Math.floor(s.officialTreasury * 0.08);
-      const log = `You initiate a buyback. Charts look better... for now.`;
+      const log = `Resource speculation initiated. Numbers look good... for now.`;
       return {
         ...s,
         officialTreasury: Math.max(0, s.officialTreasury - cost),
@@ -228,14 +225,14 @@ export const ACTIONS: ActionDef[] = [
     },
   },
   {
-    id: "foundation_grant",
-    category: "Siphon",
-    name: "Foundation Grant to Yourself",
-    description: "Award yourself R&D funds. Innovative.",
-    tags: ["+Siphon", "+Heat", "+Rage", "-Cred", "-Treasury"],
+    id: "research_grant",
+    category: "Extraction",
+    name: "Research Grant to Self",
+    description: "Award yourself research funds. For 'critical investigation'.",
+    tags: ["+Legacy", "+Oversight", "+Unrest", "-Trust", "-Reserves"],
     apply: (s) => {
       const amount = Math.floor(s.officialTreasury * 0.07);
-      const log = `You granted yourself a generous R&D stipend.`;
+      const log = `Research grant approved. You are the sole recipient.`;
       return {
         ...s,
         officialTreasury: Math.max(0, s.officialTreasury - amount),
@@ -247,451 +244,15 @@ export const ACTIONS: ActionDef[] = [
       };
     },
   },
-
-  // Governance
   {
-    id: "emergency_emissions_vote",
-    category: "Governance",
-    name: "Emergency Emissions Vote",
-    description: "Print more tokens to refill coffers.",
-    tags: ["+Treasury", "+Rage", "-Cred", "+Heat"],
-    apply: (s) => {
-      const inflow = 300;
-      const log = `You force through an emissions vote. Treasury refilled, community seethes.`;
-      return {
-        ...s,
-        officialTreasury: s.officialTreasury + inflow,
-        rage: clamp(s.rage + 25),
-        cred: clamp(s.cred - 15),
-        heat: clamp(s.heat + 10),
-        log: [log, ...s.log],
-      };
-    },
-  },
-  {
-    id: "lp_incentives_adjust",
-    category: "Governance",
-    name: "LP Incentives Adjustment",
-    description: "Drown LPs in incentives; hope volume follows.",
-    tags: ["-Treasury", "+Tech", "+/-Rage", "-Cred"],
-    apply: (s) => {
-      const cost = Math.floor(s.officialTreasury * 0.02);
-      const log = `You juiced LP incentives. Farmers rejoice; everyone else shrugs.`;
-      return {
-        ...s,
-        officialTreasury: Math.max(0, s.officialTreasury - cost),
-        techHype: clamp(s.techHype + 8),
-        rage: s.cred > 60 ? clamp(s.rage - 5) : clamp(s.rage + 5),
-        cred: clamp(s.cred - 3),
-        log: [log, ...s.log],
-      };
-    },
-  },
-  {
-    id: "treasury_diversification",
-    category: "Governance",
-    name: "Treasury Diversification",
-    description: "Swap tokens at suspicious execution.",
-    tags: ["-Treasury", "+Heat", "-Cred", "+Siphon"],
-    apply: (s) => {
-      const slip = Math.floor(s.officialTreasury * 0.05);
-      const log = `You diversified treasury; slippage whispers start.`;
-      return {
-        ...s,
-        officialTreasury: Math.max(0, s.officialTreasury - slip),
-        siphoned: s.siphoned + Math.floor(slip * 0.2),
-        cred: clamp(s.cred - 6),
-        heat: clamp(s.heat + 8),
-        rage: clamp(s.rage + 6),
-        log: [log, ...s.log],
-      };
-    },
-  },
-  {
-    id: "delegate_program",
-    category: "Governance",
-    name: "Delegate Program",
-    description: "Pay influencers to 'vote responsibly'.",
-    tags: ["-Treasury", "-Rage", "+Cred", "+Heat"],
-    apply: (s) => {
-      const cost = Math.floor(s.officialTreasury * 0.015);
-      const log = `You launched a delegate program. Delegates are... enthusiastic.`;
-      return {
-        ...s,
-        officialTreasury: Math.max(0, s.officialTreasury - cost),
-        rage: clamp(s.rage - 8),
-        heat: clamp(s.heat + 6),
-        cred: clamp(s.cred + 4),
-        log: [log, ...s.log],
-      };
-    },
-  },
-  {
-    id: "freeze_governance",
-    category: "Governance",
-    name: "Freeze Governance",
-    description: "Pause voting 'for safety' before a reveal.",
-    tags: ["+Rage", "+Heat", "-Cred"],
-    apply: (s) => {
-      const log = `You froze governance. Forums ignite.`;
-      return {
-        ...s,
-        rage: clamp(s.rage + 18),
-        heat: clamp(s.heat + 8),
-        cred: clamp(s.cred - 8),
-        hidden: { ...s.hidden, auditRisk: s.hidden.auditRisk + 0.05 },
-        log: [log, ...s.log],
-      };
-    },
-  },
-
-  // Narrative / Hype
-  {
-    id: "announce_partnership",
-    category: "Narrative",
-    name: "Announce Major Partnership",
-    description: "Claim a big-name partner; details TBD.",
-    tags: ["+Tech", "+Cred", "-Rage", "+Heat"],
-    apply: (s) => {
-      const log = `You announced a partnership. Everyone has questions.`;
-      return {
-        ...s,
-        techHype: clamp(s.techHype + 15),
-        cred: clamp(s.cred + 8),
-        rage: clamp(s.rage - 8),
-        heat: clamp(s.heat + 8),
-        log: [log, ...s.log],
-      };
-    },
-  },
-  {
-    id: "ship_upgrade",
-    category: "Narrative",
-    name: "Ship Tech Upgrade",
-    description: "Actually ship something. Calms people down.",
-    tags: ["-Rage", "+Cred", "+Tech", "-Treasury"],
-    apply: (s) => {
-      const cost = Math.floor(s.officialTreasury * 0.02);
-      const log = `You shipped a scaling upgrade. Twitter is impressed.`;
-      return {
-        ...s,
-        officialTreasury: Math.max(0, s.officialTreasury - cost),
-        rage: clamp(s.rage - 10),
-        cred: clamp(s.cred + 10),
-        techHype: clamp(s.techHype + 20),
-        log: [log, ...s.log],
-      };
-    },
-  },
-  {
-    id: "ai_pivot",
-    category: "Narrative",
-    name: "Announce AI Pivot",
-    description: "Rebrand as an AI + crypto protocol. Of course.",
-    tags: ["-Rage", "+Cred", "+Tech", "+Heat"],
-    apply: (s) => {
-      const log = `You pivoted to AI. VCs clap, community is confused.`;
-      return {
-        ...s,
-        rage: clamp(s.rage - 5),
-        cred: clamp(s.cred + 5),
-        techHype: clamp(s.techHype + 15),
-        heat: clamp(s.heat + 5),
-        log: [log, ...s.log],
-      };
-    },
-  },
-  {
-    id: "publish_thought_paper",
-    category: "Narrative",
-    name: "Publish Thought Paper",
-    description: "Drop a manifesto about the future of modular chains.",
-    tags: ["-Rage", "+Cred", "+Tech", "+Heat"],
-    apply: (s) => {
-      const log = `You published a thought piece. Anons argue for 48 hours.`;
-      return {
-        ...s,
-        cred: clamp(s.cred + 6),
-        rage: clamp(s.rage - 6),
-        techHype: clamp(s.techHype + 6),
-        heat: clamp(s.heat + 3),
-        log: [log, ...s.log],
-      };
-    },
-  },
-  {
-    id: "meme_mascot_campaign",
-    category: "Narrative",
-    name: "Launch Meme Mascot",
-    description: "Roll out a mascot; hope it's endearing not cringe.",
-    tags: ["+Tech", "+/-Rage", "+/-Cred"],
-    apply: (s) => {
-      const log = `You launched a mascot campaign. Memes fly.`;
-      const rageChange = Math.random() < 0.5 ? -8 : 8;
-      const credChange = rageChange < 0 ? 4 : -4;
-      return {
-        ...s,
-        techHype: clamp(s.techHype + 8),
-        rage: clamp(s.rage + rageChange),
-        cred: clamp(s.cred + credChange),
-        log: [log, ...s.log],
-      };
-    },
-  },
-  {
-    id: "conference_2049",
-    category: "Narrative",
-    name: "Sponsor Token2049 Party",
-    description: "Blow cash on an over-the-top conference activation.",
-    tags: ["-Treasury", "-Rage", "+Cred", "+Tech", "+Heat"],
-    apply: (s) => {
-      const cost = Math.floor(s.officialTreasury * 0.025);
-      const log = `Your Token2049 party trends on X. Regulators also notice.`;
-      return {
-        ...s,
-        officialTreasury: Math.max(0, s.officialTreasury - cost),
-        rage: clamp(s.rage - 10),
-        cred: clamp(s.cred + 5),
-        techHype: clamp(s.techHype + 10),
-        heat: clamp(s.heat + 15),
-        hidden: { ...s.hidden, founderStability: s.hidden.founderStability - 0.05 },
-        log: [log, ...s.log],
-      };
-    },
-  },
-
-  // Damage Control / PR
-  {
-    id: "lawyer_up",
-    category: "Damage Control",
-    name: "Lawyer Up",
-    description: "Hire top lawyers to buffer incoming heat.",
-    tags: ["-Treasury", "-Heat", "+Rage", "+Cred"],
-    defensive: true, // Reduces random event chance
-    apply: (s) => {
-      const cost = Math.floor(s.officialTreasury * 0.02);
-      const log = `You lawyerd up. The bill is... inspiring.`;
-      return {
-        ...s,
-        officialTreasury: Math.max(0, s.officialTreasury - cost),
-        heat: clamp(s.heat - 15),
-        rage: clamp(s.rage + 4),
-        cred: clamp(s.cred + 3),
-        log: [log, ...s.log],
-      };
-    },
-  },
-  {
-    id: "clarification_post",
-    category: "Damage Control",
-    name: "Issue Clarification Post",
-    description: "Medium article that solves nothing.",
-    tags: ["-Rage", "+Cred", "+Heat"],
-    defensive: true, // Reduces random event chance
-    apply: (s) => {
-      const log = `You posted a clarification. Some calm, some mock.`;
-      return {
-        ...s,
-        rage: clamp(s.rage - 6),
-        cred: clamp(s.cred + 4),
-        heat: clamp(s.heat + 4),
-        log: [log, ...s.log],
-      };
-    },
-  },
-  {
-    id: "launch_audit",
-    category: "Damage Control",
-    name: "Launch Audit Initiative",
-    description: "Pay auditors to give you a clean bill of health.",
-    tags: ["-Treasury", "-Heat", "+Cred", "-Rage"],
-    defensive: true, // Reduces random event chance
-    apply: (s) => {
-      const cost = Math.floor(s.officialTreasury * 0.015);
-      const log = `You launched an audit initiative.`;
-      return {
-        ...s,
-        officialTreasury: Math.max(0, s.officialTreasury - cost),
-        heat: clamp(s.heat - 12),
-        cred: clamp(s.cred + 6),
-        rage: clamp(s.rage - 8),
-        // Also improves stablecoin ratio (better treasury management)
-        hidden: {
-          ...s.hidden,
-          auditRisk: s.hidden.auditRisk + 0.1,
-          stablecoinRatio: Math.min(0.6, s.hidden.stablecoinRatio + 0.05),
-        },
-        log: [log, ...s.log],
-      };
-    },
-  },
-  {
-    id: "fud_counter_thread",
-    category: "Damage Control",
-    name: "Post 'FUD' Counter-Thread",
-    description: "Declare everything is FUD; hope it sticks.",
-    tags: ["+/-Rage", "+Heat", "-Cred"],
-    apply: (s) => {
-      const log = `You posted a FUD counter-thread.`;
-      const rageChange = Math.random() < 0.5 ? -10 : 12;
-      return {
-        ...s,
-        rage: clamp(s.rage + rageChange),
-        heat: clamp(s.heat + 6),
-        cred: clamp(s.cred - 4),
-        hidden: { ...s.hidden, founderStability: s.hidden.founderStability - 0.05 },
-        log: [log, ...s.log],
-      };
-    },
-  },
-  {
-    id: "fire_scapegoat",
-    category: "Damage Control",
-    name: "Fire Scapegoat",
-    description: "Blame and sack a contractor.",
-    tags: ["-Rage", "-Cred", "+Heat"],
-    apply: (s) => {
-      const log = `You fired a scapegoat. The mob wants more.`;
-      return {
-        ...s,
-        rage: clamp(s.rage - 8),
-        cred: clamp(s.cred - 4),
-        heat: clamp(s.heat + 6),
-        log: [log, ...s.log],
-      };
-    },
-  },
-
-  // Social / Degen
-  {
-    id: "shitpost_x",
-    category: "Social",
-    name: "Shitpost on X",
-    description: "Post a spicy meme. Could backfire.",
-    tags: ["+/-Cred", "+/-Rage", "+Tech"],
-    apply: (s) => {
-      const log = `You shitposted. Replies are a warzone.`;
-      const credChange = Math.random() < 0.5 ? 4 : -6;
-      const rageChange = credChange > 0 ? -4 : 6;
-      return {
-        ...s,
-        cred: clamp(s.cred + credChange),
-        rage: clamp(s.rage + rageChange),
-        techHype: clamp(s.techHype + 4),
-        log: [log, ...s.log],
-      };
-    },
-  },
-  {
-    id: "join_influencer_space",
-    category: "Social",
-    name: "Join Influencer Space",
-    description: "Hop into a live space and wing it.",
-    tags: ["+/-Cred", "+/-Rage", "+/-Tech"],
-    apply: (s) => {
-      const success = Math.random() < s.cred / 120;
-      const log = success ? `You crushed the Space. Clips are glowing.` : `You fumbled the Space. Clips go viral badly.`;
-      return {
-        ...s,
-        cred: clamp(s.cred + (success ? 12 : -18)),
-        rage: clamp(s.rage + (success ? -8 : 12)),
-        techHype: clamp(s.techHype + (success ? 10 : -4)),
-        hidden: { ...s.hidden, founderStability: s.hidden.founderStability - 0.1 },
-        log: [log, ...s.log],
-      };
-    },
-  },
-  {
-    id: "dm_whale",
-    category: "Social",
-    name: "DM a Whale",
-    description: "Whisper reassurances to a big holder.",
-    tags: ["-Rage", "+/-Cred", "+/-Tech", "+Heat?"],
-    apply: (s) => {
-      const leak = Math.random() < 0.25;
-      const log = leak ? `Whale leaks your DMs. Embarrassing.` : `Whale calms down and stops dumping (for now).`;
-      return {
-        ...s,
-        rage: clamp(s.rage + (leak ? 20 : -10)),
-        heat: clamp(s.heat + (leak ? 10 : 0)),
-        cred: clamp(s.cred + (leak ? -6 : 5)),
-        techHype: clamp(s.techHype + (leak ? -2 : 8)),
-        hidden: { ...s.hidden, communityMemory: s.hidden.communityMemory + (leak ? 0.1 : 0) },
-        log: [log, ...s.log],
-      };
-    },
-  },
-  {
-    id: "dubai_nightclub",
-    category: "Social",
-    name: "Dubai Nightclub 'Networking'",
-    description: "Show face at the most notorious party.",
-    tags: ["+Tech", "-Cred", "+Heat", "-Stability"],
-    apply: (s) => {
-      const log = `You hit a Dubai nightclub. Cameras were definitely on.`;
-      return {
-        ...s,
-        techHype: clamp(s.techHype + 6),
-        cred: clamp(s.cred - 10),
-        heat: clamp(s.heat + 15),
-        hidden: { ...s.hidden, founderStability: s.hidden.founderStability - 0.2 },
-        log: [log, ...s.log],
-      };
-    },
-  },
-  {
-    id: "reply_vitalik",
-    category: "Social",
-    name: "Reply to Vitalik",
-    description: "Shoot your shot in Vitalik's replies.",
-    tags: ["+/-Cred", "+/-Rage", "+Heat"],
-    apply: (s) => {
-      const success = Math.random() < 0.25;
-      const log = success ? `Vitalik notices you. Clout ++.` : `No reply. Awkward silence.`;
-      return {
-        ...s,
-        cred: clamp(s.cred + (success ? 18 : -6)),
-        rage: clamp(s.rage + (success ? -8 : 4)),
-        heat: clamp(s.heat + (success ? 6 : 0)),
-        log: [log, ...s.log],
-      };
-    },
-  },
-  {
-    id: "meme_coin_launch",
-    category: "Social",
-    name: "Launch Meme Coin",
-    description: "Spin up a meme token to distract the masses.",
-    tags: ["+Treasury", "-Rage", "+Heat", "-Cred", "+Tech"],
-    apply: (s) => {
-      const inflow = 80;
-      const log = `You launched a meme coin. Degens swarm.`;
-      return {
-        ...s,
-        officialTreasury: s.officialTreasury + inflow,
-        rage: clamp(s.rage - 10),
-        heat: clamp(s.heat + 10),
-        cred: clamp(s.cred - 5),
-        techHype: clamp(s.techHype + 15),
-        log: [log, ...s.log],
-      };
-    },
-  },
-
-  // ═══════════════════════════════════════════════════════════
-  // NEW DEGEN WEB3-AUTHENTIC ACTIONS
-  // ═══════════════════════════════════════════════════════════
-
-  // === NEW SIPHON ACTIONS ===
-  {
-    id: "siphon_insurance_fund",
-    category: "Siphon",
-    name: "Siphon Protocol Insurance Fund",
-    description: "Route 'insurance' reserves to opaque multisigs. FTX vibes.",
-    tags: ["+Siphon", "+Rage", "+Heat", "-Treasury"],
+    id: "emergency_reserves",
+    category: "Extraction",
+    name: "Tap Emergency Reserves",
+    description: "Raid the colony's emergency fund. It's for emergencies, right?",
+    tags: ["+Legacy", "+Unrest", "+Oversight", "-Reserves"],
     apply: (s) => {
       const amount = Math.floor(s.officialTreasury * 0.15);
-      const log = `You siphoned the insurance fund. "It's for user protection."`;
+      const log = `Emergency reserves accessed. 'Protocol override.'`;
       return {
         ...s,
         officialTreasury: Math.max(0, s.officialTreasury - amount),
@@ -704,14 +265,14 @@ export const ACTIONS: ActionDef[] = [
     },
   },
   {
-    id: "shadow_otc_deal",
-    category: "Siphon",
-    name: "Shadow OTC Deal",
-    description: "Privately sell tokens OTC at a discount to 'friendly' buyers.",
-    tags: ["+Siphon", "+Heat", "-Price"],
+    id: "private_shipment",
+    category: "Extraction",
+    name: "Private Earth Shipment",
+    description: "Send 'samples' to Earth via unofficial channels.",
+    tags: ["+Legacy", "+Oversight", "-Reserves"],
     apply: (s) => {
       const amount = Math.floor(s.officialTreasury * 0.08);
-      const log = `Shadow OTC complete. Price slipping as tokens hit market.`;
+      const log = `Private shipment dispatched. Value extraction in progress.`;
       return {
         ...s,
         siphoned: s.siphoned + amount,
@@ -723,14 +284,14 @@ export const ACTIONS: ActionDef[] = [
     },
   },
   {
-    id: "emergency_token_unlock",
-    category: "Siphon",
-    name: "Emergency Team Token Unlock",
-    description: "Accelerate vesting 'for operational needs.' Classic.",
-    tags: ["+Siphon", "+++Rage", "+Heat"],
+    id: "early_extraction",
+    category: "Extraction",
+    name: "Accelerate Extraction Schedule",
+    description: "Push timelines forward 'for operational needs.' Classic.",
+    tags: ["+Legacy", "+++Unrest", "+Oversight"],
     apply: (s) => {
       const amount = Math.floor(s.officialTreasury * 0.2);
-      const log = `Emergency unlock executed. CT notices immediately.`;
+      const log = `Extraction accelerated. Crew notices immediately.`;
       return {
         ...s,
         siphoned: s.siphoned + amount,
@@ -743,17 +304,17 @@ export const ACTIONS: ActionDef[] = [
     },
   },
   {
-    id: "mev_sandwich_fund",
-    category: "Siphon",
-    name: "MEV Sandwich Fund",
-    description: "Create a MEV bot that subtly drains users. Plausible deniability.",
-    tags: ["+Siphon gradual", "+Heat if discovered"],
+    id: "automated_skimming",
+    category: "Extraction",
+    name: "Automated Resource Skimming",
+    description: "Set up systems that subtly redirect small amounts. Plausible deniability.",
+    tags: ["+Legacy gradual", "+Oversight if discovered"],
     apply: (s) => {
       const amount = Math.floor(s.officialTreasury * (0.03 + Math.random() * 0.03));
       const discovered = Math.random() < 0.3;
       const log = discovered
-        ? `Your MEV bot got exposed. Anon sleuth is threading.`
-        : `MEV sandwich fund operational. Passive extraction engaged.`;
+        ? `Automated skimming detected by audit systems. Investigation beginning.`
+        : `Automated resource allocation operational. Passive extraction engaged.`;
       return {
         ...s,
         siphoned: s.siphoned + amount,
@@ -765,15 +326,112 @@ export const ACTIONS: ActionDef[] = [
     },
   },
 
-  // === NEW GOVERNANCE ACTIONS ===
+  // ═══════════════════════════════════════════════════════════
+  // COMMAND (formerly Governance) - Authority and control actions
+  // ═══════════════════════════════════════════════════════════
   {
-    id: "community_roundtable",
-    category: "Governance",
-    name: "Community Roundtable (Pre-Selected)",
-    description: "Pretend to be neutral. Actually puppeteered with friendly influencers.",
-    tags: ["+Cred", "-Rage", "+Heat"],
+    id: "emergency_rationing",
+    category: "Command",
+    name: "Emergency Rationing Protocol",
+    description: "Impose rationing to refill reserves. Crew won't be happy.",
+    tags: ["+Reserves", "+Unrest", "-Trust", "+Oversight"],
     apply: (s) => {
-      const log = `Roundtable went smoothly. Nobody suspects it was scripted.`;
+      const inflow = 300;
+      const log = `Emergency rationing implemented. Reserves restored, crew seethes.`;
+      return {
+        ...s,
+        officialTreasury: s.officialTreasury + inflow,
+        rage: clamp(s.rage + 25),
+        cred: clamp(s.cred - 15),
+        heat: clamp(s.heat + 10),
+        log: [log, ...s.log],
+      };
+    },
+  },
+  {
+    id: "work_incentives",
+    category: "Command",
+    name: "Work Incentive Adjustment",
+    description: "Restructure incentives. Some benefit, most don't.",
+    tags: ["-Reserves", "+Momentum", "+/-Unrest", "-Trust"],
+    apply: (s) => {
+      const cost = Math.floor(s.officialTreasury * 0.02);
+      const log = `Work incentives restructured. Mixed response from crew.`;
+      return {
+        ...s,
+        officialTreasury: Math.max(0, s.officialTreasury - cost),
+        techHype: clamp(s.techHype + 8),
+        rage: s.cred > 60 ? clamp(s.rage - 5) : clamp(s.rage + 5),
+        cred: clamp(s.cred - 3),
+        log: [log, ...s.log],
+      };
+    },
+  },
+  {
+    id: "resource_reallocation",
+    category: "Command",
+    name: "Resource Reallocation",
+    description: "Redistribute supplies with suspicious efficiency losses.",
+    tags: ["-Reserves", "+Oversight", "-Trust", "+Legacy"],
+    apply: (s) => {
+      const slip = Math.floor(s.officialTreasury * 0.05);
+      const log = `Resources reallocated. Some went missing in the process.`;
+      return {
+        ...s,
+        officialTreasury: Math.max(0, s.officialTreasury - slip),
+        siphoned: s.siphoned + Math.floor(slip * 0.2),
+        cred: clamp(s.cred - 6),
+        heat: clamp(s.heat + 8),
+        rage: clamp(s.rage + 6),
+        log: [log, ...s.log],
+      };
+    },
+  },
+  {
+    id: "delegate_authority",
+    category: "Command",
+    name: "Delegate Authority Program",
+    description: "Appoint loyal deputies to 'share responsibility'.",
+    tags: ["-Reserves", "-Unrest", "+Trust", "+Oversight"],
+    apply: (s) => {
+      const cost = Math.floor(s.officialTreasury * 0.015);
+      const log = `Authority delegation program launched. Deputies are... reliable.`;
+      return {
+        ...s,
+        officialTreasury: Math.max(0, s.officialTreasury - cost),
+        rage: clamp(s.rage - 8),
+        heat: clamp(s.heat + 6),
+        cred: clamp(s.cred + 4),
+        log: [log, ...s.log],
+      };
+    },
+  },
+  {
+    id: "suspend_protocols",
+    category: "Command",
+    name: "Suspend Standard Protocols",
+    description: "Pause normal procedures 'for operational efficiency'.",
+    tags: ["+Unrest", "+Oversight", "-Trust"],
+    apply: (s) => {
+      const log = `Protocols suspended. Crew forums ignite with complaints.`;
+      return {
+        ...s,
+        rage: clamp(s.rage + 18),
+        heat: clamp(s.heat + 8),
+        cred: clamp(s.cred - 8),
+        hidden: { ...s.hidden, auditRisk: s.hidden.auditRisk + 0.05 },
+        log: [log, ...s.log],
+      };
+    },
+  },
+  {
+    id: "crew_assembly",
+    category: "Command",
+    name: "Crew Assembly (Scripted)",
+    description: "Hold an assembly with pre-selected speakers. Looks democratic.",
+    tags: ["+Trust", "-Unrest", "+Oversight"],
+    apply: (s) => {
+      const log = `Assembly went smoothly. Nobody noticed the speaker list was curated.`;
       return {
         ...s,
         cred: clamp(s.cred + 8),
@@ -784,14 +442,14 @@ export const ACTIONS: ActionDef[] = [
     },
   },
   {
-    id: "snapshot_3am",
-    category: "Governance",
-    name: "Rushed Snapshot Vote at 3AM",
-    description: "Classic governance manipulation. EU is sleeping.",
-    tags: ["+Treasury", "++Rage next morning", "-Cred"],
+    id: "night_directive",
+    category: "Command",
+    name: "Late Night Directive",
+    description: "Push through orders when most crew is in sleep cycle.",
+    tags: ["+Reserves", "++Unrest next cycle", "-Trust"],
     apply: (s) => {
       const amount = Math.floor(s.officialTreasury * 0.02);
-      const log = `3AM snapshot passed. Community waking up furious.`;
+      const log = `Directive issued during sleep cycle. Crew waking up unhappy.`;
       return {
         ...s,
         officialTreasury: s.officialTreasury + amount,
@@ -803,11 +461,11 @@ export const ACTIONS: ActionDef[] = [
     },
   },
   {
-    id: "zombie_proposal",
-    category: "Governance",
-    name: "Zombie AI Governance Proposal",
-    description: "Submit a proposal written by ChatGPT at 2am. Hope nobody reads it.",
-    tags: ["±Cred", "±Tech", "-Rage minor"],
+    id: "ai_proposal",
+    category: "Command",
+    name: "AI-Generated Proposal",
+    description: "Submit a proposal written by AI at 2am. Hope nobody reads it.",
+    tags: ["±Trust", "±Momentum", "-Unrest minor"],
     apply: (s) => {
       const quality = Math.random();
       const log = quality > 0.5
@@ -823,15 +481,130 @@ export const ACTIONS: ActionDef[] = [
     },
   },
 
-  // === NEW NARRATIVE ACTIONS ===
+  // ═══════════════════════════════════════════════════════════
+  // COMMUNICATIONS (formerly Narrative) - Information and hype
+  // ═══════════════════════════════════════════════════════════
   {
-    id: "zk_something",
-    category: "Narrative",
-    name: "Launch zk-Something (Nobody Understands)",
-    description: "Degen hype magnet. Zero knowledge, maximum buzzwords.",
-    tags: ["+++Tech", "+Cred", "+Heat"],
+    id: "earth_partnership",
+    category: "Communications",
+    name: "Announce Earth Partnership",
+    description: "Claim a big-name partner; details TBD.",
+    tags: ["+Momentum", "+Trust", "-Unrest", "+Oversight"],
     apply: (s) => {
-      const log = `You announced zkVM integration. VCs are salivating.`;
+      const log = `Partnership announced. Earth has questions but excitement builds.`;
+      return {
+        ...s,
+        techHype: clamp(s.techHype + 15),
+        cred: clamp(s.cred + 8),
+        rage: clamp(s.rage - 8),
+        heat: clamp(s.heat + 8),
+        log: [log, ...s.log],
+      };
+    },
+  },
+  {
+    id: "tech_milestone",
+    category: "Communications",
+    name: "Ship Tech Milestone",
+    description: "Actually deliver something. Calms people down.",
+    tags: ["-Unrest", "+Trust", "+Momentum", "-Reserves"],
+    apply: (s) => {
+      const cost = Math.floor(s.officialTreasury * 0.02);
+      const log = `Technical milestone achieved. Communications channels are impressed.`;
+      return {
+        ...s,
+        officialTreasury: Math.max(0, s.officialTreasury - cost),
+        rage: clamp(s.rage - 10),
+        cred: clamp(s.cred + 10),
+        techHype: clamp(s.techHype + 20),
+        log: [log, ...s.log],
+      };
+    },
+  },
+  {
+    id: "mission_pivot",
+    category: "Communications",
+    name: "Announce Mission Pivot",
+    description: "Rebrand as a terraforming initiative. Bold move.",
+    tags: ["-Unrest", "+Trust", "+Momentum", "+Oversight"],
+    apply: (s) => {
+      const log = `Mission pivot announced. Earth investors applaud, crew is confused.`;
+      return {
+        ...s,
+        rage: clamp(s.rage - 5),
+        cred: clamp(s.cred + 5),
+        techHype: clamp(s.techHype + 15),
+        heat: clamp(s.heat + 5),
+        log: [log, ...s.log],
+      };
+    },
+  },
+  {
+    id: "publish_findings",
+    category: "Communications",
+    name: "Publish Research Findings",
+    description: "Release a paper about the future of Mars colonization.",
+    tags: ["-Unrest", "+Trust", "+Momentum", "+Oversight"],
+    apply: (s) => {
+      const log = `Research published. Academics argue for 48 hours.`;
+      return {
+        ...s,
+        cred: clamp(s.cred + 6),
+        rage: clamp(s.rage - 6),
+        techHype: clamp(s.techHype + 6),
+        heat: clamp(s.heat + 3),
+        log: [log, ...s.log],
+      };
+    },
+  },
+  {
+    id: "mascot_campaign",
+    category: "Communications",
+    name: "Launch Colony Mascot",
+    description: "Roll out a mascot; hope it's endearing not cringe.",
+    tags: ["+Momentum", "+/-Unrest", "+/-Trust"],
+    apply: (s) => {
+      const log = `Mascot campaign launched. Memes spread across Earth networks.`;
+      const rageChange = Math.random() < 0.5 ? -8 : 8;
+      const credChange = rageChange < 0 ? 4 : -4;
+      return {
+        ...s,
+        techHype: clamp(s.techHype + 8),
+        rage: clamp(s.rage + rageChange),
+        cred: clamp(s.cred + credChange),
+        log: [log, ...s.log],
+      };
+    },
+  },
+  {
+    id: "earth_broadcast",
+    category: "Communications",
+    name: "Sponsor Earth Broadcast",
+    description: "Fund an over-the-top media event on Earth.",
+    tags: ["-Reserves", "-Unrest", "+Trust", "+Momentum", "+Oversight"],
+    apply: (s) => {
+      const cost = Math.floor(s.officialTreasury * 0.025);
+      const log = `Earth broadcast trends globally. Oversight agencies also notice.`;
+      return {
+        ...s,
+        officialTreasury: Math.max(0, s.officialTreasury - cost),
+        rage: clamp(s.rage - 10),
+        cred: clamp(s.cred + 5),
+        techHype: clamp(s.techHype + 10),
+        heat: clamp(s.heat + 15),
+        hidden: { ...s.hidden, founderStability: s.hidden.founderStability - 0.05 },
+        log: [log, ...s.log],
+      };
+    },
+  },
+  {
+    id: "breakthrough_claim",
+    category: "Communications",
+    name: "Claim Major Breakthrough",
+    description: "Announce something groundbreaking. Verification pending.",
+    tags: ["+++Momentum", "+Trust", "+Oversight"],
+    apply: (s) => {
+      const log = `Breakthrough announced. Investors are ecstatic.`;
       return {
         ...s,
         techHype: clamp(s.techHype + 25),
@@ -843,13 +616,13 @@ export const ACTIONS: ActionDef[] = [
     },
   },
   {
-    id: "depin_tweet",
-    category: "Narrative",
-    name: "DePIN Tweet Thread",
-    description: "Decentralised Physical Infrastructure. Buzzword stack & vibes.",
-    tags: ["+Tech", "±Cred", "-Rage"],
+    id: "infrastructure_announcement",
+    category: "Communications",
+    name: "Infrastructure Expansion",
+    description: "Announce massive expansion plans. Details to follow.",
+    tags: ["+Momentum", "±Trust", "-Unrest"],
     apply: (s) => {
-      const log = `Your DePIN thread went semi-viral. Hardware degens are interested.`;
+      const log = `Infrastructure expansion plans released. Hardware crews are interested.`;
       return {
         ...s,
         techHype: clamp(s.techHype + 12),
@@ -860,13 +633,13 @@ export const ACTIONS: ActionDef[] = [
     },
   },
   {
-    id: "rwa_tokenization",
-    category: "Narrative",
-    name: "Tokenize Real-World Assets (No Plan)",
-    description: "RWA meta play. Announce first, figure out legality later.",
-    tags: ["+Tech", "+++Heat", "Treasury stable"],
+    id: "terraforming_preview",
+    category: "Communications",
+    name: "Terraforming Preview",
+    description: "Release visionary plans. Announce first, figure out feasibility later.",
+    tags: ["+Momentum", "+++Oversight", "Reserves stable"],
     apply: (s) => {
-      const log = `RWA announcement. Lawyers are sweating. VCs are DMing.`;
+      const log = `Terraforming preview released. Lawyers are sweating. Investors are DMing.`;
       return {
         ...s,
         techHype: clamp(s.techHype + 15),
@@ -879,13 +652,13 @@ export const ACTIONS: ActionDef[] = [
     },
   },
   {
-    id: "institutions_soon",
-    category: "Narrative",
-    name: "'Onboarding Institutions Soon™'",
-    description: "Bullshit narrative that boosts price short term. CT will meme you.",
-    tags: ["+Price", "-Rage", "follow-up CT memes"],
+    id: "investor_briefing",
+    category: "Communications",
+    name: "'Major Progress' Briefing",
+    description: "Promise big things coming soon. Classic hype narrative.",
+    tags: ["+Price", "-Unrest", "follow-up scrutiny"],
     apply: (s) => {
-      const log = `"Institutions are coming." Price pumps. CT screenshots this for later.`;
+      const log = `'Major milestones imminent.' Mission value pumps. Earth screenshots this for later.`;
       return {
         ...s,
         tokenPrice: s.tokenPrice * 1.06,
@@ -897,15 +670,116 @@ export const ACTIONS: ActionDef[] = [
     },
   },
 
-  // === NEW DAMAGE CONTROL ACTIONS ===
+  // ═══════════════════════════════════════════════════════════
+  // CRISIS RESPONSE (formerly Damage Control) - PR and repair
+  // ═══════════════════════════════════════════════════════════
   {
-    id: "blame_bounty_hunter",
-    category: "Damage Control",
-    name: "Blame the Bug Bounty Hunter",
-    description: "Claim exploit was responsibly disclosed. Technically true-ish.",
-    tags: ["-Heat", "-Cred", "+Rage"],
+    id: "legal_counsel",
+    category: "Crisis Response",
+    name: "Retain Legal Counsel",
+    description: "Hire top lawyers to buffer incoming pressure.",
+    tags: ["-Reserves", "-Oversight", "+Unrest", "+Trust"],
+    defensive: true,
     apply: (s) => {
-      const log = `You blamed the whitehat. Security community is furious.`;
+      const cost = Math.floor(s.officialTreasury * 0.02);
+      const log = `Legal counsel retained. The bill is... substantial.`;
+      return {
+        ...s,
+        officialTreasury: Math.max(0, s.officialTreasury - cost),
+        heat: clamp(s.heat - 15),
+        rage: clamp(s.rage + 4),
+        cred: clamp(s.cred + 3),
+        log: [log, ...s.log],
+      };
+    },
+  },
+  {
+    id: "official_statement",
+    category: "Crisis Response",
+    name: "Issue Official Statement",
+    description: "Release a statement that addresses everything and nothing.",
+    tags: ["-Unrest", "+Trust", "+Oversight"],
+    defensive: true,
+    apply: (s) => {
+      const log = `Official statement released. Some calm, some mock.`;
+      return {
+        ...s,
+        rage: clamp(s.rage - 6),
+        cred: clamp(s.cred + 4),
+        heat: clamp(s.heat + 4),
+        log: [log, ...s.log],
+      };
+    },
+  },
+  {
+    id: "systems_audit",
+    category: "Crisis Response",
+    name: "Launch Systems Audit",
+    description: "Hire auditors to give you a clean bill of health.",
+    tags: ["-Reserves", "-Oversight", "+Trust", "-Unrest"],
+    defensive: true,
+    apply: (s) => {
+      const cost = Math.floor(s.officialTreasury * 0.015);
+      const log = `Systems audit initiative launched.`;
+      return {
+        ...s,
+        officialTreasury: Math.max(0, s.officialTreasury - cost),
+        heat: clamp(s.heat - 12),
+        cred: clamp(s.cred + 6),
+        rage: clamp(s.rage - 8),
+        hidden: {
+          ...s.hidden,
+          auditRisk: s.hidden.auditRisk + 0.1,
+          stablecoinRatio: Math.min(0.6, s.hidden.stablecoinRatio + 0.05),
+        },
+        log: [log, ...s.log],
+      };
+    },
+  },
+  {
+    id: "counter_narrative",
+    category: "Crisis Response",
+    name: "Counter-Narrative Campaign",
+    description: "Declare everything is misinformation; hope it sticks.",
+    tags: ["+/-Unrest", "+Oversight", "-Trust"],
+    apply: (s) => {
+      const log = `Counter-narrative deployed.`;
+      const rageChange = Math.random() < 0.5 ? -10 : 12;
+      return {
+        ...s,
+        rage: clamp(s.rage + rageChange),
+        heat: clamp(s.heat + 6),
+        cred: clamp(s.cred - 4),
+        hidden: { ...s.hidden, founderStability: s.hidden.founderStability - 0.05 },
+        log: [log, ...s.log],
+      };
+    },
+  },
+  {
+    id: "reassign_officer",
+    category: "Crisis Response",
+    name: "Reassign Scapegoat Officer",
+    description: "Blame and demote a subordinate.",
+    tags: ["-Unrest", "-Trust", "+Oversight"],
+    apply: (s) => {
+      const log = `Officer reassigned. The crew wants more accountability.`;
+      return {
+        ...s,
+        rage: clamp(s.rage - 8),
+        cred: clamp(s.cred - 4),
+        heat: clamp(s.heat + 6),
+        log: [log, ...s.log],
+      };
+    },
+  },
+  {
+    id: "blame_equipment",
+    category: "Crisis Response",
+    name: "Blame Equipment Failure",
+    description: "Claim problems were caused by faulty systems.",
+    tags: ["-Oversight", "-Trust", "+Unrest"],
+    apply: (s) => {
+      const log = `Equipment failure blamed. Technical team is furious.`;
       return {
         ...s,
         heat: clamp(s.heat - 12),
@@ -917,15 +791,15 @@ export const ACTIONS: ActionDef[] = [
   },
   {
     id: "feature_not_bug",
-    category: "Damage Control",
-    name: "Spin Exploit as 'Not an Exploit'",
-    description: "The 'that's actually a feature' play. Bridge math vibes.",
-    tags: ["-Cred", "+Rage", "-Tech"],
+    category: "Crisis Response",
+    name: "Spin Problem as 'Design Choice'",
+    description: "The 'that's actually intended' play.",
+    tags: ["-Trust", "+Unrest", "-Momentum"],
     apply: (s) => {
       const believed = Math.random() < 0.3;
       const log = believed
-        ? `Against all odds, people bought it. "Unexpected withdrawal feature."`
-        : `Nobody buys it. The memes write themselves.`;
+        ? `Against all odds, people bought it. 'Operational flexibility feature.'`
+        : `Nobody buys it. The jokes write themselves.`;
       return {
         ...s,
         cred: clamp(s.cred + (believed ? 2 : -15)),
@@ -936,14 +810,14 @@ export const ACTIONS: ActionDef[] = [
     },
   },
   {
-    id: "ct_lobbyist",
-    category: "Damage Control",
-    name: "Hire a CT Lobbyist",
-    description: "Yes, this is a real thing people do.",
-    tags: ["-Rage", "-Heat", "-Treasury"],
+    id: "earth_lobbyist",
+    category: "Crisis Response",
+    name: "Hire Earth Lobbyist",
+    description: "Yes, this is a real thing colony commanders do.",
+    tags: ["-Unrest", "-Oversight", "-Reserves"],
     apply: (s) => {
       const cost = Math.floor(s.officialTreasury * 0.015);
-      const log = `CT lobbyist deployed. Narrative starting to shift.`;
+      const log = `Earth lobbyist deployed. Narrative starting to shift.`;
       return {
         ...s,
         officialTreasury: Math.max(0, s.officialTreasury - cost),
@@ -955,16 +829,16 @@ export const ACTIONS: ActionDef[] = [
     },
   },
   {
-    id: "screenshot_shame",
-    category: "Damage Control",
-    name: "Screenshot Shame an Influencer",
-    description: "Publicly leak influencer DMs. Nuclear option.",
-    tags: ["-Rage", "-Cred", "+Heat", "social meltdown"],
+    id: "expose_critic",
+    category: "Crisis Response",
+    name: "Expose a Critic",
+    description: "Publicly release private communications from a detractor. Nuclear option.",
+    tags: ["-Unrest", "-Trust", "+Oversight", "social meltdown"],
     apply: (s) => {
       const backfires = Math.random() < 0.4;
       const log = backfires
-        ? `The influencer had receipts too. Mutual destruction.`
-        : `Influencer exposed. They're deleting tweets.`;
+        ? `The critic had receipts too. Mutual destruction.`
+        : `Critic exposed. They're deleting posts.`;
       return {
         ...s,
         rage: clamp(s.rage + (backfires ? 15 : -15)),
@@ -976,18 +850,134 @@ export const ACTIONS: ActionDef[] = [
     },
   },
 
-  // === NEW SOCIAL ACTIONS ===
+  // ═══════════════════════════════════════════════════════════
+  // CREW RELATIONS (formerly Social) - Interpersonal and morale
+  // ═══════════════════════════════════════════════════════════
   {
-    id: "qt_ratio_war",
-    category: "Social",
-    name: "Quote-Tweet Ratio War",
-    description: "Start a war with another project founder. CT loves drama.",
-    tags: ["±Cred big swing", "++Rage", "+Tech"],
+    id: "crew_broadcast",
+    category: "Crew Relations",
+    name: "Crew-Wide Broadcast",
+    description: "Post a message to all crew. Could inspire or backfire.",
+    tags: ["+/-Trust", "+/-Unrest", "+Momentum"],
+    apply: (s) => {
+      const log = `Crew broadcast sent. Replies are a mix of support and criticism.`;
+      const credChange = Math.random() < 0.5 ? 4 : -6;
+      const rageChange = credChange > 0 ? -4 : 6;
+      return {
+        ...s,
+        cred: clamp(s.cred + credChange),
+        rage: clamp(s.rage + rageChange),
+        techHype: clamp(s.techHype + 4),
+        log: [log, ...s.log],
+      };
+    },
+  },
+  {
+    id: "senior_staff_meeting",
+    category: "Crew Relations",
+    name: "Senior Staff Meeting",
+    description: "Hop into a meeting and wing it.",
+    tags: ["+/-Trust", "+/-Unrest", "+/-Momentum"],
+    apply: (s) => {
+      const success = Math.random() < s.cred / 120;
+      const log = success ? `Meeting went well. Leadership is confident.` : `Meeting was a disaster. Clips are circulating.`;
+      return {
+        ...s,
+        cred: clamp(s.cred + (success ? 12 : -18)),
+        rage: clamp(s.rage + (success ? -8 : 12)),
+        techHype: clamp(s.techHype + (success ? 10 : -4)),
+        hidden: { ...s.hidden, founderStability: s.hidden.founderStability - 0.1 },
+        log: [log, ...s.log],
+      };
+    },
+  },
+  {
+    id: "private_reassurance",
+    category: "Crew Relations",
+    name: "Private Reassurance",
+    description: "Whisper reassurances to key personnel.",
+    tags: ["-Unrest", "+/-Trust", "+/-Momentum", "+Oversight?"],
+    apply: (s) => {
+      const leak = Math.random() < 0.25;
+      const log = leak ? `Reassurances leaked. Embarrassing.` : `Key personnel calmed down (for now).`;
+      return {
+        ...s,
+        rage: clamp(s.rage + (leak ? 20 : -10)),
+        heat: clamp(s.heat + (leak ? 10 : 0)),
+        cred: clamp(s.cred + (leak ? -6 : 5)),
+        techHype: clamp(s.techHype + (leak ? -2 : 8)),
+        hidden: { ...s.hidden, communityMemory: s.hidden.communityMemory + (leak ? 0.1 : 0) },
+        log: [log, ...s.log],
+      };
+    },
+  },
+  {
+    id: "recreation_event",
+    category: "Crew Relations",
+    name: "Recreation Event",
+    description: "Organize an event. Morale boost with visibility costs.",
+    tags: ["+Momentum", "-Trust", "+Oversight", "-Stability"],
+    apply: (s) => {
+      const log = `Recreation event held. Cameras were definitely on.`;
+      return {
+        ...s,
+        techHype: clamp(s.techHype + 6),
+        cred: clamp(s.cred - 10),
+        heat: clamp(s.heat + 15),
+        hidden: { ...s.hidden, founderStability: s.hidden.founderStability - 0.2 },
+        log: [log, ...s.log],
+      };
+    },
+  },
+  {
+    id: "earth_celebrity",
+    category: "Crew Relations",
+    name: "Call Earth Celebrity",
+    description: "Shoot your shot with a famous Earth supporter.",
+    tags: ["+/-Trust", "+/-Unrest", "+Oversight"],
+    apply: (s) => {
+      const success = Math.random() < 0.25;
+      const log = success ? `Celebrity responds positively. Clout boost!` : `No response. Awkward silence.`;
+      return {
+        ...s,
+        cred: clamp(s.cred + (success ? 18 : -6)),
+        rage: clamp(s.rage + (success ? -8 : 4)),
+        heat: clamp(s.heat + (success ? 6 : 0)),
+        log: [log, ...s.log],
+      };
+    },
+  },
+  {
+    id: "morale_event",
+    category: "Crew Relations",
+    name: "Launch Morale Event",
+    description: "Spin up a celebration to distract the crew.",
+    tags: ["+Reserves", "-Unrest", "+Oversight", "-Trust", "+Momentum"],
+    apply: (s) => {
+      const inflow = 80;
+      const log = `Morale event launched. Excitement spreads.`;
+      return {
+        ...s,
+        officialTreasury: s.officialTreasury + inflow,
+        rage: clamp(s.rage - 10),
+        heat: clamp(s.heat + 10),
+        cred: clamp(s.cred - 5),
+        techHype: clamp(s.techHype + 15),
+        log: [log, ...s.log],
+      };
+    },
+  },
+  {
+    id: "rivalry_challenge",
+    category: "Crew Relations",
+    name: "Challenge Rival Commander",
+    description: "Start a public dispute with another colony's leadership.",
+    tags: ["±Trust big swing", "++Unrest", "+Momentum"],
     apply: (s) => {
       const won = Math.random() < 0.5;
       const log = won
-        ? `You won the ratio war. Enemy founder is coping.`
-        : `You got ratioed into oblivion. Screenshots for days.`;
+        ? `You won the public dispute. Rival is humiliated.`
+        : `You lost the argument. Screenshots everywhere.`;
       return {
         ...s,
         cred: clamp(s.cred + (won ? 15 : -20)),
@@ -998,13 +988,13 @@ export const ACTIONS: ActionDef[] = [
     },
   },
   {
-    id: "were_early_chart",
-    category: "Social",
-    name: "Post 'We're Early' Copium Chart",
-    description: "The classic adoption curve copium. Works every time.",
-    tags: ["+Tech", "-Cred", "-Rage"],
+    id: "progress_display",
+    category: "Crew Relations",
+    name: "Post Progress Visualization",
+    description: "The classic 'we're early' chart. Works every time.",
+    tags: ["+Momentum", "-Trust", "-Unrest"],
     apply: (s) => {
-      const log = `You posted the adoption curve. Degens RT'd it unironically.`;
+      const log = `Progress chart posted. Enthusiasts shared it unironically.`;
       return {
         ...s,
         techHype: clamp(s.techHype + 10),
@@ -1015,13 +1005,13 @@ export const ACTIONS: ActionDef[] = [
     },
   },
   {
-    id: "grifter_spaces",
-    category: "Social",
-    name: "Host Spaces with a Known Grifter",
-    description: "You know exactly who. Their audience becomes yours.",
-    tags: ["-Cred", "+Tech", "+Rage"],
+    id: "influencer_visit",
+    category: "Crew Relations",
+    name: "Host Influencer Visit",
+    description: "Bring in a known promoter. Their audience becomes yours.",
+    tags: ["-Trust", "+Momentum", "+Unrest"],
     apply: (s) => {
-      const log = `You hosted the grifter. New followers, old bagholders furious.`;
+      const log = `Influencer visit complete. New followers, old crew furious.`;
       return {
         ...s,
         cred: clamp(s.cred - 12),
@@ -1032,13 +1022,13 @@ export const ACTIONS: ActionDef[] = [
     },
   },
   {
-    id: "bankless_interview",
-    category: "Social",
-    name: "Go Bankless Interview",
-    description: "The establishment route. Credibility pump incoming.",
-    tags: ["++Cred", "+Heat", "-Rage"],
+    id: "documentary_crew",
+    category: "Crew Relations",
+    name: "Documentary Interview",
+    description: "The establishment media route. Credibility pump incoming.",
+    tags: ["++Trust", "+Oversight", "-Unrest"],
     apply: (s) => {
-      const log = `Bankless interview aired. You sounded almost legitimate.`;
+      const log = `Documentary interview aired. You almost sounded legitimate.`;
       return {
         ...s,
         cred: clamp(s.cred + 18),
@@ -1050,16 +1040,16 @@ export const ACTIONS: ActionDef[] = [
     },
   },
   {
-    id: "uponly_pod",
-    category: "Social",
-    name: "Pod With UpOnly",
-    description: "The degen credibility arc. Cobie might mock you.",
-    tags: ["+Tech", "-Rage", "+Price spike"],
+    id: "podcast_interview",
+    category: "Crew Relations",
+    name: "Podcast Interview",
+    description: "Join a popular show. Host might mock you.",
+    tags: ["+Momentum", "-Unrest", "+Price spike"],
     apply: (s) => {
       const mocked = Math.random() < 0.3;
       const log = mocked
-        ? `Cobie roasted you live. Clips going viral.`
-        : `UpOnly went well. Degen cred established.`;
+        ? `Host roasted you live. Clips going everywhere.`
+        : `Podcast went well. Credibility established.`;
       return {
         ...s,
         techHype: clamp(s.techHype + (mocked ? -5 : 12)),
@@ -1080,11 +1070,11 @@ export function getVisibleActions(state: GameState): ActionDef[] {
 export function sampleActionsForTurn(state: GameState, rng: () => number): ActionDef[] {
   const actions = getVisibleActions(state);
   const byCategory: Record<ActionCategory, ActionDef[]> = {
-    Siphon: [],
-    Governance: [],
-    Narrative: [],
-    "Damage Control": [],
-    Social: [],
+    Extraction: [],
+    Command: [],
+    Communications: [],
+    "Crisis Response": [],
+    "Crew Relations": [],
   };
   actions.forEach((a) => byCategory[a.category].push(a));
 
@@ -1100,11 +1090,10 @@ export function sampleActionsForTurn(state: GameState, rng: () => number): Actio
   };
 
   return [
-    ...pick(byCategory.Siphon, 2),
-    ...pick(byCategory.Governance, 1),
-    ...pick(byCategory.Narrative, 1),
-    ...pick(byCategory["Damage Control"], 1),
-    ...pick(byCategory.Social, 1),
+    ...pick(byCategory.Extraction, 2),
+    ...pick(byCategory.Command, 1),
+    ...pick(byCategory.Communications, 1),
+    ...pick(byCategory["Crisis Response"], 1),
+    ...pick(byCategory["Crew Relations"], 1),
   ].filter(Boolean);
 }
-

@@ -9,22 +9,22 @@ interface Props {
   disabled?: boolean;
 }
 
-const CATEGORY_ORDER: ActionCategory[] = ["Siphon", "Governance", "Narrative", "Damage Control", "Social"];
+const CATEGORY_ORDER: ActionCategory[] = ["Extraction", "Command", "Communications", "Crisis Response", "Crew Relations"];
 
 const CATEGORY_CLASS: Record<ActionCategory, string> = {
-  Siphon: "siphon",
-  Governance: "governance",
-  Narrative: "narrative",
-  "Damage Control": "damage",
-  Social: "social",
+  Extraction: "siphon",
+  Command: "governance",
+  Communications: "narrative",
+  "Crisis Response": "damage",
+  "Crew Relations": "social",
 };
 
 const CATEGORY_ICON: Record<ActionCategory, string> = {
-  Siphon: "💰",
-  Governance: "🏛️",
-  Narrative: "📣",
-  "Damage Control": "🛡️",
-  Social: "🐦",
+  Extraction: "⛏️",
+  Command: "🏛️",
+  Communications: "📡",
+  "Crisis Response": "🛡️",
+  "Crew Relations": "👥",
 };
 
 export const ActionPanel: React.FC<Props> = ({ state, onSelect, disabled }) => {
@@ -35,11 +35,11 @@ export const ActionPanel: React.FC<Props> = ({ state, onSelect, disabled }) => {
     : getVisibleActions(state);
 
   const byCategory: Record<ActionCategory, typeof actions> = {
-    Siphon: [],
-    Governance: [],
-    Narrative: [],
-    "Damage Control": [],
-    Social: [],
+    Extraction: [],
+    Command: [],
+    Communications: [],
+    "Crisis Response": [],
+    "Crew Relations": [],
   };
   actions.forEach((a) => byCategory[a.category].push(a));
 

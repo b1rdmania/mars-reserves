@@ -2,6 +2,7 @@ import React from "react";
 import type { GameState } from "../engine/state";
 import { formatMoney, formatTokenPrice } from "./format";
 import { getSeason } from "../engine/seasons";
+import { THEME } from "../theme";
 
 interface Props {
   state: GameState;
@@ -57,12 +58,12 @@ export const TopPanel: React.FC<Props> = ({ state, maxTurns, showDescription = t
 
   // Build season effect descriptions
   const seasonEffects: string[] = [];
-  if (season.rageDecayDelta && season.rageDecayDelta > 0) seasonEffects.push("Rage cools faster");
-  if (season.rageDecayDelta && season.rageDecayDelta < 0) seasonEffects.push("Rage builds easier");
-  if (season.heatDriftDelta && season.heatDriftDelta > 0) seasonEffects.push("Heat rises passively");
-  if (season.credDecayDelta && season.credDecayDelta > 0) seasonEffects.push("Cred decays faster");
-  if (season.techHypeDecayDelta && season.techHypeDecayDelta < 0) seasonEffects.push("Hype lasts longer");
-  if (season.techHypeDecayDelta && season.techHypeDecayDelta > 0) seasonEffects.push("Hype sticks around");
+  if (season.rageDecayDelta && season.rageDecayDelta > 0) seasonEffects.push("Unrest cools faster");
+  if (season.rageDecayDelta && season.rageDecayDelta < 0) seasonEffects.push("Unrest builds easier");
+  if (season.heatDriftDelta && season.heatDriftDelta > 0) seasonEffects.push("Oversight rises passively");
+  if (season.credDecayDelta && season.credDecayDelta > 0) seasonEffects.push("Trust decays faster");
+  if (season.techHypeDecayDelta && season.techHypeDecayDelta < 0) seasonEffects.push("Momentum lasts longer");
+  if (season.techHypeDecayDelta && season.techHypeDecayDelta > 0) seasonEffects.push("Momentum sticks around");
   if (season.crisisFactor && season.crisisFactor > 1) seasonEffects.push("Crises more likely");
   if (season.crisisFactor && season.crisisFactor < 1) seasonEffects.push("Crises less likely");
 
@@ -72,12 +73,12 @@ export const TopPanel: React.FC<Props> = ({ state, maxTurns, showDescription = t
       <div className="flex items-start justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-xl sm:text-2xl font-bold leading-tight">Treasury Wars</h1>
+            <h1 className="text-xl sm:text-2xl font-bold leading-tight">{THEME.gameName}</h1>
             <span className="text-[10px] uppercase tracking-wide bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded-full">V1 Beta</span>
           </div>
           {showDescription && (
             <p className="text-xs text-slate-400 leading-snug mt-1 max-w-md">
-              Drain the foundation treasury in {maxTurns} turns without triggering a community coup or regulatory shutdown.
+              Build humanity's legacy on Mars in {maxTurns} cycles without triggering mutiny or mission shutdown.
             </p>
           )}
         </div>
@@ -85,35 +86,35 @@ export const TopPanel: React.FC<Props> = ({ state, maxTurns, showDescription = t
           <div className="text-2xl font-bold tabular-nums">
             {state.turn}<span className="text-slate-500">/{maxTurns}</span>
           </div>
-          <div className="text-[10px] uppercase text-slate-500">Turn</div>
+          <div className="text-[10px] uppercase text-slate-500">{THEME.ui.turn}</div>
         </div>
       </div>
 
-      {/* Bag Secured - Hero Stat */}
+      {/* Legacy Score - Hero Stat */}
       <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-4 flex items-center gap-4">
-        <span className="text-3xl">💰</span>
+        <span className="text-3xl">🏛️</span>
         <div>
-          <div className="text-emerald-400 font-semibold text-xs uppercase tracking-wide">Bag Secured</div>
+          <div className="text-emerald-400 font-semibold text-xs uppercase tracking-wide">{THEME.ui.score}</div>
           <div className="text-emerald-300 text-2xl font-bold tabular-nums">{formatMoney(siphoned)}</div>
         </div>
       </div>
 
-      {/* Financial Stats */}
+      {/* Colony Stats */}
       <div className="game-card">
         <div className="grid grid-cols-3 gap-4">
-          <StatBox label="Foundation Treasury" value={formatMoney(officialTreasury)} />
-          <StatBox label="Token Price" value={formatTokenPrice(tokenPrice)} />
-          <StatBox label="TVL" value={formatMoney(tvl)} />
+          <StatBox label="Colony Reserves" value={formatMoney(officialTreasury)} />
+          <StatBox label="Mission Value" value={formatTokenPrice(tokenPrice)} />
+          <StatBox label="Infrastructure" value={formatMoney(tvl)} />
         </div>
       </div>
 
       {/* Meter Bars */}
       <div className="game-card">
         <div className="flex flex-wrap gap-4">
-          <MeterBar label="Community Rage" value={rage} type="rage" />
-          <MeterBar label="Regulatory Heat" value={heat} type="heat" />
-          <MeterBar label="Credibility" value={cred} type="cred" />
-          <MeterBar label="Tech Hype" value={techHype} type="tech" />
+          <MeterBar label="Crew Unrest" value={rage} type="rage" />
+          <MeterBar label="Earth Oversight" value={heat} type="heat" />
+          <MeterBar label="Command Trust" value={cred} type="cred" />
+          <MeterBar label="Research Momentum" value={techHype} type="tech" />
         </div>
       </div>
     </div>

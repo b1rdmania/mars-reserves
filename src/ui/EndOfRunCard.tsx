@@ -66,7 +66,7 @@ export const EndOfRunCard: React.FC<Props> = ({ state, onRestart, onChangeNames 
               onClick={onChangeNames}
               className="py-2.5 px-4 bg-slate-700 hover:bg-slate-600 text-slate-200 font-medium rounded-xl transition-colors text-xs"
             >
-              New Chain
+              New Mission
             </button>
           )}
         </div>

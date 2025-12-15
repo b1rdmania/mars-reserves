@@ -7,17 +7,17 @@ interface Props {
 
 export const Meters: React.FC<Props> = ({ state }) => {
   const items: Array<[string, number, string]> = [
-    ["Treasury", state.officialTreasury, "Official protocol treasury. If 0, collapse."],
-    ["Siphoned", state.siphoned, "Off-chain funds you've taken. Score metric."],
-    ["Rage", state.rage, "Community anger. 100 = DAO coup."],
-    ["Heat", state.heat, "Regulatory pressure. 100 = shutdown."],
-    ["Cred", state.cred, "Soft power buffer. Low cred makes crises brutal."],
-    ["Tech", state.techHype, "Narrative hype. Covers scandals; decays each turn."],
+    ["Reserves", state.officialTreasury, "Colony reserves. If 0, mission fails."],
+    ["Legacy", state.siphoned, "Legacy score. What endures after your mission."],
+    ["Unrest", state.rage, "Crew unrest. 100 = mutiny."],
+    ["Oversight", state.heat, "Earth oversight pressure. 100 = mission recall."],
+    ["Trust", state.cred, "Command trust. Low trust makes crises brutal."],
+    ["Momentum", state.techHype, "Research momentum. Covers failures; decays each cycle."],
   ];
 
   const normalize = (label: string, value: number) => {
-    if (label === "Treasury") return Math.min(100, (value / 1_000_000) * 100);
-    if (label === "Siphoned") return Math.min(100, (value / 1_000_000) * 100);
+    if (label === "Reserves") return Math.min(100, (value / 1_000_000) * 100);
+    if (label === "Legacy") return Math.min(100, (value / 1_000_000) * 100);
     return Math.min(100, value);
   };
 

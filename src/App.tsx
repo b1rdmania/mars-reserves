@@ -180,6 +180,7 @@ const App: React.FC = () => {
       if (!s) return s;
       const before = { ...s };
       const result = resolveCrisisOption(s, optionId, rng);
+      if (!result) return s;
       const after = result.state;
       const deltas = [
         { label: "Official Treasury", delta: after.officialTreasury - before.officialTreasury },
@@ -209,42 +210,42 @@ const App: React.FC = () => {
         <div className="max-w-md w-full game-card-elevated space-y-5 animate-scaleIn">
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <h1 className="text-2xl font-bold">Treasury Wars</h1>
-              <span className="text-[10px] uppercase tracking-wide bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded-full">V1 Beta</span>
+              <h1 className="text-2xl font-bold">Move: Mars Reserves</h1>
+              <span className="text-[10px] uppercase tracking-wide bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded-full">Beta</span>
             </div>
             <p className="text-sm text-slate-400 leading-relaxed">
-              Over {maxTurnsDisplay} turns, drain the foundation&apos;s treasury
-              into your personal funds — without triggering a community coup, regulatory enforcement, or worse.
+              Over {maxTurnsDisplay} cycles, build your legacy on humanity&apos;s first Mars colony
+              — without triggering mutiny, Earth recall, or mission failure.
             </p>
           </div>
 
           <div className="space-y-3">
             <label className="block">
-              <span className="text-xs uppercase tracking-wide text-slate-500">Chain Name</span>
+              <span className="text-xs uppercase tracking-wide text-slate-500">Colony Name</span>
               <input
                 className="w-full mt-1 rounded-lg bg-slate-800 border border-slate-700 px-4 py-3 text-sm focus:outline-none focus:border-sky-500 transition-colors"
                 value={chainName}
                 onChange={(e) => setChainName(e.target.value)}
-                placeholder="FrogFi"
+                placeholder="Olympus Base"
               />
             </label>
             <label className="block">
-              <span className="text-xs uppercase tracking-wide text-slate-500">Token Ticker</span>
+              <span className="text-xs uppercase tracking-wide text-slate-500">Mission Code</span>
               <input
                 className="w-full mt-1 rounded-lg bg-slate-800 border border-slate-700 px-4 py-3 text-sm uppercase focus:outline-none focus:border-sky-500 transition-colors"
                 value={ticker}
                 onChange={(e) => setTicker(e.target.value.toUpperCase())}
-                placeholder="ZOO"
+                placeholder="OLY"
                 maxLength={4}
               />
             </label>
             <label className="block">
-              <span className="text-xs uppercase tracking-wide text-slate-500">Founder Name</span>
+              <span className="text-xs uppercase tracking-wide text-slate-500">Commander Name</span>
               <input
                 className="w-full mt-1 rounded-lg bg-slate-800 border border-slate-700 px-4 py-3 text-sm focus:outline-none focus:border-sky-500 transition-colors"
                 value={founderName}
                 onChange={(e) => setFounderName(e.target.value)}
-                placeholder="0xAndy"
+                placeholder="Cmdr. Chen"
               />
             </label>
           </div>
@@ -254,13 +255,13 @@ const App: React.FC = () => {
               onClick={() => setShowHowToPlay(true)}
               className="flex-1 py-4 px-4 bg-slate-700 hover:bg-slate-600 text-white font-semibold rounded-xl transition-colors text-base"
             >
-              ❓ wtf
+              ❓ Briefing
             </button>
             <button
               onClick={handleStart}
               className="flex-[2] py-4 px-4 bg-sky-500 hover:bg-sky-400 text-white font-semibold rounded-xl transition-colors text-base"
             >
-              Start Run →
+              Begin Mission →
             </button>
           </div>
 

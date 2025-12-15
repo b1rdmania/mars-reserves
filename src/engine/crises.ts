@@ -3,18 +3,18 @@ import type { RNG } from "./rng";
 import type { SeasonDef } from "./seasons";
 
 export type CrisisId =
-  | "influencer_rug_call"
-  | "bridge_exploit_rumour"
-  | "multisig_discovered"
-  | "paid_promo_leak"
-  | "vc_dump_threat"
-  | "security_thread"
-  | "fake_partnership"
-  | "dev_mutiny"
-  | "exchange_delist"
-  | "fork_attack"
-  | "backer_investigation"
-  | "tvl_exploit";
+  | "crew_accusation"
+  | "system_failure_rumor"
+  | "oversight_discovery"
+  | "promotion_leak"
+  | "earth_investor_threat"
+  | "compliance_thread"
+  | "fake_breakthrough"
+  | "engineering_mutiny"
+  | "earth_recall_threat"
+  | "rival_colony"
+  | "investigation_notice"
+  | "infrastructure_sabotage";
 
 export interface CrisisOptionOutcome {
   narrative: string;
@@ -38,9 +38,9 @@ export interface CrisisDef {
 
 export const CRISES: CrisisDef[] = [
   {
-    id: "influencer_rug_call",
-    name: "Influencer Accuses You of Rugging Live",
-    description: "A loud account is dragging your treasury flows in front of 5k listeners.",
+    id: "crew_accusation",
+    name: "Crew Member Accuses You of Mismanagement Live",
+    description: "A senior officer is broadcasting claims about resource allocation in front of the whole colony.",
     severity: "high",
     weight: (s) => (s.rage + s.heat) / 120,
     options: [
@@ -52,7 +52,7 @@ export const CRISES: CrisisDef[] = [
           const roll = rng();
           if (roll < 0.6) {
             return {
-              narrative: "Statement lands OK. Community chills a bit.",
+              narrative: "Statement lands OK. Crew calms down a bit.",
               apply: (st) => ({
                 ...st,
                 rage: Math.max(0, st.rage - 15),
@@ -62,7 +62,7 @@ export const CRISES: CrisisDef[] = [
           }
           if (roll < 0.85) {
             return {
-              narrative: "Regulator notices your statement footnote.",
+              narrative: "Earth oversight notices your statement footnote.",
               apply: (st) => ({
                 ...st,
                 heat: Math.min(100, st.heat + 15),
@@ -71,7 +71,7 @@ export const CRISES: CrisisDef[] = [
             };
           }
           return {
-            narrative: "Statement backfires. Meme thread doubles the rage.",
+            narrative: "Statement backfires. Crew shares it as evidence of deflection.",
             apply: (st) => ({
               ...st,
               rage: Math.min(100, st.rage + 20),
@@ -84,7 +84,7 @@ export const CRISES: CrisisDef[] = [
         id: "ignore",
         label: "Ignore",
         resolve: () => ({
-          narrative: "You ignore. The mob simmers.",
+          narrative: "You ignore. The crew simmers.",
           apply: (st) => ({
             ...st,
             rage: Math.min(100, st.rage + 10),
@@ -93,13 +93,13 @@ export const CRISES: CrisisDef[] = [
         }),
       },
       {
-        id: "join_space",
-        label: "Join their Space",
+        id: "join_meeting",
+        label: "Join their assembly",
         resolve: (s, rng) => {
-          const success = rng() < s.cred / 120; // scales with cred
+          const success = rng() < s.cred / 120;
           if (success) {
             return {
-              narrative: "You handle it calmly; chat respects the transparency.",
+              narrative: "You handle it calmly; crew respects the transparency.",
               apply: (st) => ({
                 ...st,
                 cred: Math.min(100, st.cred + 15),
@@ -108,7 +108,7 @@ export const CRISES: CrisisDef[] = [
             };
           }
           return {
-            narrative: "You get flustered, clips go viral.",
+            narrative: "You get flustered, recordings spread across the colony.",
             apply: (st) => ({
               ...st,
               cred: Math.max(0, st.cred - 20),
@@ -119,14 +119,14 @@ export const CRISES: CrisisDef[] = [
         },
       },
       {
-        id: "blame_contractor",
-        label: "Blame a contractor",
+        id: "blame_subordinate",
+        label: "Blame a subordinate",
         resolve: (s, rng) => {
           void s;
           const roll = rng();
           if (roll < 0.5) {
             return {
-              narrative: "Community buys it (for now).",
+              narrative: "Crew buys it (for now).",
               apply: (st) => ({
                 ...st,
                 rage: Math.max(0, st.rage - 5),
@@ -137,7 +137,7 @@ export const CRISES: CrisisDef[] = [
           }
           if (roll < 0.75) {
             return {
-              narrative: "Contractor leaks DMs. Heat spikes.",
+              narrative: "Subordinate leaks your private messages. Oversight spikes.",
               apply: (st) => ({
                 ...st,
                 heat: Math.min(100, st.heat + 20),
@@ -157,14 +157,14 @@ export const CRISES: CrisisDef[] = [
         },
       },
       {
-        id: "pivot_ai",
-        label: "Pivot to AI mid-Space",
+        id: "pivot_research",
+        label: "Pivot to research announcement",
         resolve: (s, rng) => {
           void s;
           const roll = rng();
           if (roll < 0.4) {
             return {
-              narrative: "AI hype distracts everyone briefly.",
+              narrative: "Research news distracts everyone briefly.",
               apply: (st) => ({
                 ...st,
                 techHype: Math.min(100, st.techHype + 20),
@@ -174,7 +174,7 @@ export const CRISES: CrisisDef[] = [
             };
           }
           return {
-            narrative: "People laugh at the pivot. Rage builds.",
+            narrative: "Crew laughs at the obvious deflection. Unrest builds.",
             apply: (st) => ({
               ...st,
               rage: Math.min(100, st.rage + 15),
@@ -186,17 +186,17 @@ export const CRISES: CrisisDef[] = [
     ],
   },
   {
-    id: "bridge_exploit_rumour",
-    name: "Bridge Exploit Rumour",
-    description: "Rumours of a bridge exploit spread. Funds look shaky.",
+    id: "system_failure_rumor",
+    name: "Life Support Failure Rumors",
+    description: "Rumors of a critical system vulnerability spread. Colony morale shakes.",
     severity: "medium",
     weight: (s) => (s.hidden.auditRisk > 0.3 ? 1.2 : 0.3),
     options: [
       {
-        id: "pause_bridge",
-        label: "Pause the bridge",
+        id: "shutdown",
+        label: "Initiate system shutdown for inspection",
         resolve: () => ({
-          narrative: "Bridge paused. Users angry but funds safe (maybe).",
+          narrative: "Systems paused. Crew angry but feeling safer (maybe).",
           apply: (st) => ({
             ...st,
             heat: Math.min(100, st.heat + 10),
@@ -208,13 +208,13 @@ export const CRISES: CrisisDef[] = [
       },
       {
         id: "deny",
-        label: "Deny and cope",
+        label: "Deny and maintain normal operations",
         resolve: (s, rng) => {
           void s;
           const roll = rng();
           if (roll < 0.4) {
             return {
-              narrative: "Rumour dies down. Crisis averted.",
+              narrative: "Rumor dies down. Crisis averted.",
               apply: (st) => ({
                 ...st,
                 cred: Math.min(100, st.cred + 5),
@@ -222,7 +222,7 @@ export const CRISES: CrisisDef[] = [
             };
           }
           return {
-            narrative: "Exploit confirmed. Rage erupts.",
+            narrative: "System failure confirmed. Crew erupts.",
             apply: (st) => ({
               ...st,
               rage: Math.min(100, st.rage + 25),
@@ -234,9 +234,9 @@ export const CRISES: CrisisDef[] = [
       },
       {
         id: "bounty",
-        label: "Post a bounty",
+        label: "Offer reward for finding the issue",
         resolve: () => ({
-          narrative: "Whitehats engage. Costs treasury but buys time.",
+          narrative: "Engineers engage. Costs reserves but buys time.",
           apply: (st) => ({
             ...st,
             officialTreasury: Math.max(0, st.officialTreasury - Math.floor(st.officialTreasury * 0.01)),
@@ -248,30 +248,26 @@ export const CRISES: CrisisDef[] = [
     ],
   },
 
-  // ═══════════════════════════════════════════════════════════
-  // NEW DEGEN WEB3-AUTHENTIC CRISES
-  // ═══════════════════════════════════════════════════════════
-
   {
-    id: "multisig_discovered",
-    name: "CT Discovers Your Multisig Signers",
-    description: "Someone notices your multisig is you + your girlfriend + your dog's ENS.",
+    id: "oversight_discovery",
+    name: "Earth Discovers Your Command Structure",
+    description: "Oversight notices all key decisions go through you and your handpicked lieutenants.",
     severity: "high",
     weight: (s) => (s.hidden.auditRisk > 0.2 ? 1.0 : 0.4),
     options: [
       {
         id: "deny",
-        label: "\"That's not my dog\"",
+        label: "\"That's standard procedure\"",
         resolve: (s, rng) => {
           void s;
           if (rng() < 0.3) {
             return {
-              narrative: "Against all odds, people get distracted by another scandal.",
+              narrative: "Against all odds, Earth gets distracted by another colony's scandal.",
               apply: (st) => ({ ...st, rage: Math.min(100, st.rage + 5) }),
             };
           }
           return {
-            narrative: "The dog's ENS resolves to your seedphrase backup. Legendary ratio.",
+            narrative: "Your org chart becomes a meme on Earth. Legendary ratio.",
             apply: (st) => ({
               ...st,
               rage: Math.min(100, st.rage + 30),
@@ -282,10 +278,10 @@ export const CRISES: CrisisDef[] = [
         },
       },
       {
-        id: "add_signers",
-        label: "Add real signers immediately",
+        id: "add_oversight",
+        label: "Add independent oversight immediately",
         resolve: () => ({
-          narrative: "You scramble to add VCs as signers. They're not happy about the optics.",
+          narrative: "You scramble to add Earth-approved observers. They're not happy about the optics.",
           apply: (st) => ({
             ...st,
             rage: Math.max(0, st.rage - 10),
@@ -296,12 +292,12 @@ export const CRISES: CrisisDef[] = [
       },
       {
         id: "decentralization_theater",
-        label: "\"Household decentralisation is the future\"",
+        label: "\"Distributed command is the future of space exploration\"",
         resolve: (s, rng) => {
           void s;
           if (rng() < 0.2) {
             return {
-              narrative: "Somehow this becomes a meme in your favor. Degen king energy.",
+              narrative: "Somehow this becomes a meme in your favor. Pioneer king energy.",
               apply: (st) => ({
                 ...st,
                 cred: Math.min(100, st.cred + 10),
@@ -310,7 +306,7 @@ export const CRISES: CrisisDef[] = [
             };
           }
           return {
-            narrative: "You're now a governance laughingstock. Thread archives this forever.",
+            narrative: "You're now a governance laughingstock. Earth archives this forever.",
             apply: (st) => ({
               ...st,
               cred: Math.max(0, st.cred - 20),
@@ -320,13 +316,13 @@ export const CRISES: CrisisDef[] = [
         },
       },
       {
-        id: "attack_sleuth",
-        label: "Attack the sleuth's credibility",
+        id: "attack_analyst",
+        label: "Attack the analyst's credibility",
         resolve: (s, rng) => {
           void s;
           if (rng() < 0.4) {
             return {
-              narrative: "Sleuth's old tweets surface. Narrative flips briefly.",
+              narrative: "Analyst's old reports surface with errors. Narrative flips briefly.",
               apply: (st) => ({
                 ...st,
                 rage: Math.max(0, st.rage - 5),
@@ -335,7 +331,7 @@ export const CRISES: CrisisDef[] = [
             };
           }
           return {
-            narrative: "Sleuth is a based anon with receipts. You look desperate.",
+            narrative: "Analyst is respected with receipts. You look desperate.",
             apply: (st) => ({
               ...st,
               rage: Math.min(100, st.rage + 20),
@@ -348,15 +344,15 @@ export const CRISES: CrisisDef[] = [
   },
 
   {
-    id: "paid_promo_leak",
-    name: "Influencer Reveals Paid Promo Screenshots",
-    description: "Your $50k/month KOL deal just got exposed with receipts.",
+    id: "promotion_leak",
+    name: "Favorable Coverage Deal Exposed",
+    description: "Your arrangement with Earth media just got exposed with receipts.",
     severity: "high",
     weight: (s) => (s.cred > 50 ? 0.6 : 0.2),
     options: [
       {
         id: "fake",
-        label: "\"Those screenshots are photoshopped\"",
+        label: "\"Those documents are fabricated\"",
         resolve: (s, rng) => {
           void s;
           if (rng() < 0.25) {
@@ -366,7 +362,7 @@ export const CRISES: CrisisDef[] = [
             };
           }
           return {
-            narrative: "Payment on-chain. Etherscan don't lie. You're cooked.",
+            narrative: "Payment records surface. Transaction logs don't lie. You're cooked.",
             apply: (st) => ({
               ...st,
               rage: Math.min(100, st.rage + 25),
@@ -378,9 +374,9 @@ export const CRISES: CrisisDef[] = [
       },
       {
         id: "admit",
-        label: "\"Yes, and marketing is normal\"",
+        label: "\"Yes, and public relations is normal\"",
         resolve: () => ({
-          narrative: "Surprisingly, the honesty plays. OGs respect the transparency.",
+          narrative: "Surprisingly, the honesty plays. Veterans respect the transparency.",
           apply: (st) => ({
             ...st,
             cred: Math.max(0, st.cred - 10),
@@ -390,12 +386,12 @@ export const CRISES: CrisisDef[] = [
       },
       {
         id: "blame_agency",
-        label: "Blame the marketing agency",
+        label: "Blame the PR contractor",
         resolve: (s, rng) => {
           void s;
           if (rng() < 0.5) {
             return {
-              narrative: "Agency takes the fall. Plausible deniability achieved.",
+              narrative: "Contractor takes the fall. Plausible deniability achieved.",
               apply: (st) => ({
                 ...st,
                 cred: Math.max(0, st.cred - 5),
@@ -404,7 +400,7 @@ export const CRISES: CrisisDef[] = [
             };
           }
           return {
-            narrative: "Agency CEO goes on a podcast about your 'culture'. Nightmare fuel.",
+            narrative: "Contractor gives interview about your 'management style'. Nightmare fuel.",
             apply: (st) => ({
               ...st,
               rage: Math.min(100, st.rage + 20),
@@ -417,7 +413,7 @@ export const CRISES: CrisisDef[] = [
         id: "sue",
         label: "Threaten legal action against leaker",
         resolve: () => ({
-          narrative: "Lawyers send letters. CT calls you 'the litigious chain'. Heat rises.",
+          narrative: "Lawyers send letters. Earth calls you 'the litigious commander'. Heat rises.",
           apply: (st) => ({
             ...st,
             heat: Math.min(100, st.heat + 20),
@@ -430,17 +426,17 @@ export const CRISES: CrisisDef[] = [
   },
 
   {
-    id: "vc_dump_threat",
-    name: "VC Threatens to Dump Entire Allocation",
-    description: "Lead investor is 'exploring liquidity options' after seeing your Discord.",
+    id: "earth_investor_threat",
+    name: "Earth Investor Threatens to Withdraw",
+    description: "Major backer is 'reassessing commitment' after reviewing your operations logs.",
     severity: "legendary",
     weight: (s) => (s.rage > 60 || s.cred < 40 ? 0.8 : 0.15),
     options: [
       {
         id: "incentive",
-        label: "Offer extended vesting incentive",
+        label: "Offer extended commitment terms",
         resolve: () => ({
-          narrative: "VC accepts new terms. Treasury takes a hit. Crisis deferred.",
+          narrative: "Investor accepts new terms. Reserves take a hit. Crisis deferred.",
           apply: (st) => ({
             ...st,
             officialTreasury: Math.max(0, st.officialTreasury - Math.floor(st.officialTreasury * 0.03)),
@@ -449,13 +445,13 @@ export const CRISES: CrisisDef[] = [
         }),
       },
       {
-        id: "tokenomics",
-        label: "Emergency tokenomics adjustment",
+        id: "restructure",
+        label: "Emergency mission restructure",
         resolve: (s, rng) => {
           void s;
           if (rng() < 0.5) {
             return {
-              narrative: "New emission schedule buys time. Degens confused but hodling.",
+              narrative: "New structure buys time. Crew confused but operating.",
               apply: (st) => ({
                 ...st,
                 techHype: Math.min(100, st.techHype + 5),
@@ -464,7 +460,7 @@ export const CRISES: CrisisDef[] = [
             };
           }
           return {
-            narrative: "Tokenomics change seen as desperation. Price dumps anyway.",
+            narrative: "Restructure seen as desperation. Mission value drops anyway.",
             apply: (st) => ({
               ...st,
               tokenPrice: st.tokenPrice * 0.75,
@@ -476,12 +472,12 @@ export const CRISES: CrisisDef[] = [
       },
       {
         id: "emergency_call",
-        label: "Host emergency investor call",
+        label: "Host emergency investor briefing",
         resolve: (s, rng) => {
           void s;
           if (rng() < 0.6) {
             return {
-              narrative: "Call goes well. VCs placated. For now.",
+              narrative: "Briefing goes well. Investors placated. For now.",
               apply: (st) => ({
                 ...st,
                 cred: Math.min(100, st.cred + 5),
@@ -490,7 +486,7 @@ export const CRISES: CrisisDef[] = [
             };
           }
           return {
-            narrative: "Call recording leaks. 'We're definitely not a security' clip goes viral.",
+            narrative: "Briefing recording leaks. 'This is totally sustainable' clip goes viral.",
             apply: (st) => ({
               ...st,
               heat: Math.min(100, st.heat + 30),
@@ -500,10 +496,10 @@ export const CRISES: CrisisDef[] = [
         },
       },
       {
-        id: "attack_vc",
-        label: "Subtweet the VC",
+        id: "attack_investor",
+        label: "Publicly criticize the investor",
         resolve: () => ({
-          narrative: "VC dumps everything. Price craters. But your timeline is popping.",
+          narrative: "Investor withdraws everything. Value craters. But your reputation for boldness grows.",
           apply: (st) => ({
             ...st,
             tokenPrice: st.tokenPrice * 0.6,
@@ -517,9 +513,9 @@ export const CRISES: CrisisDef[] = [
   },
 
   {
-    id: "security_thread",
-    name: "\"Is This a Security?\" Thread Goes Viral",
-    description: "Law school grad with 47 followers just ended your whole career (maybe).",
+    id: "compliance_thread",
+    name: "\"Is This Legal?\" Analysis Goes Viral",
+    description: "Law analyst with a small following just questioned everything about your operation.",
     severity: "high",
     weight: (s) => (s.heat > 40 ? 0.7 : 0.25),
     options: [
@@ -537,12 +533,12 @@ export const CRISES: CrisisDef[] = [
       },
       {
         id: "narrative",
-        label: "Change token narrative to 'utility'",
+        label: "Change narrative to 'pure exploration'",
         resolve: (s, rng) => {
           void s;
           if (rng() < 0.4) {
             return {
-              narrative: "New utility narrative sticks. 'It's for governance!'",
+              narrative: "New narrative sticks. 'It's for science!'",
               apply: (st) => ({
                 ...st,
                 heat: Math.max(0, st.heat - 10),
@@ -551,7 +547,7 @@ export const CRISES: CrisisDef[] = [
             };
           }
           return {
-            narrative: "SEC intern screenshots your governance page. Zero utility found.",
+            narrative: "Oversight intern screenshots your extraction figures. Zero science found.",
             apply: (st) => ({
               ...st,
               heat: Math.min(100, st.heat + 25),
@@ -561,13 +557,13 @@ export const CRISES: CrisisDef[] = [
         },
       },
       {
-        id: "ignore_sec",
+        id: "ignore",
         label: "Pretend you didn't see it",
         resolve: (s, rng) => {
           void s;
           if (rng() < 0.5) {
             return {
-              narrative: "Thread dies. Algo buries it. Crisis averted.",
+              narrative: "Analysis dies. Algorithm buries it. Crisis averted.",
               apply: (st) => ({
                 ...st,
                 hidden: { ...st.hidden, auditRisk: st.hidden.auditRisk + 0.15 },
@@ -575,7 +571,7 @@ export const CRISES: CrisisDef[] = [
             };
           }
           return {
-            narrative: "Thread gets picked up by Bloomberg. Your mentions are on fire.",
+            narrative: "Analysis gets picked up by major outlets. Your comms are on fire.",
             apply: (st) => ({
               ...st,
               heat: Math.min(100, st.heat + 35),
@@ -591,7 +587,7 @@ export const CRISES: CrisisDef[] = [
           void s;
           if (rng() < 0.35) {
             return {
-              narrative: "'We're a meme, not a security' becomes legendary. Degen hall of fame.",
+              narrative: "'We're pioneers, not accountants' becomes legendary. Hall of fame.",
               apply: (st) => ({
                 ...st,
                 techHype: Math.min(100, st.techHype + 20),
@@ -600,7 +596,7 @@ export const CRISES: CrisisDef[] = [
             };
           }
           return {
-            narrative: "SEC does not find this funny. Subpoena incoming.",
+            narrative: "Earth oversight does not find this funny. Investigation incoming.",
             apply: (st) => ({
               ...st,
               heat: Math.min(100, st.heat + 40),
@@ -613,20 +609,20 @@ export const CRISES: CrisisDef[] = [
   },
 
   {
-    id: "fake_partnership",
-    name: "Partnership Turns Out Fake (AI Logo)",
-    description: "Your 'Fortune 500 partnership' logo was generated by Midjourney. CT noticed.",
+    id: "fake_breakthrough",
+    name: "Breakthrough Claim Proven False",
+    description: "Your 'major discovery' announcement was based on flawed data. Analysts noticed.",
     severity: "medium",
     weight: (s) => (s.cred > 40 ? 0.5 : 0.2),
     options: [
       {
         id: "intern",
-        label: "\"Intern made a mistake\"",
+        label: "\"Junior researcher made a mistake\"",
         resolve: (s, rng) => {
           void s;
           if (rng() < 0.6) {
             return {
-              narrative: "Intern takes the fall. Fire them publicly for extra points.",
+              narrative: "Researcher takes the fall. Reassign them publicly for extra points.",
               apply: (st) => ({
                 ...st,
                 cred: Math.max(0, st.cred - 10),
@@ -635,7 +631,7 @@ export const CRISES: CrisisDef[] = [
             };
           }
           return {
-            narrative: "People find the intern's locked account. They don't exist. Oops.",
+            narrative: "People find the researcher doesn't exist in any records. Oops.",
             apply: (st) => ({
               ...st,
               cred: Math.max(0, st.cred - 25),
@@ -646,9 +642,9 @@ export const CRISES: CrisisDef[] = [
       },
       {
         id: "misunderstanding",
-        label: "\"It was a miscommunication\"",
+        label: "\"It was a data interpretation issue\"",
         resolve: () => ({
-          narrative: "Corporate speak softens the blow. People move on eventually.",
+          narrative: "Technical jargon softens the blow. People move on eventually.",
           apply: (st) => ({
             ...st,
             cred: Math.max(0, st.cred - 15),
@@ -656,13 +652,13 @@ export const CRISES: CrisisDef[] = [
         }),
       },
       {
-        id: "real_partnership",
-        label: "Announce a REAL partnership next turn",
+        id: "real_discovery",
+        label: "Rush to make a REAL discovery",
         resolve: (s, rng) => {
           void s;
           if (rng() < 0.4) {
             return {
-              narrative: "You actually land a real partner. Redemption arc begins.",
+              narrative: "You actually find something significant. Redemption arc begins.",
               apply: (st) => ({
                 ...st,
                 cred: Math.min(100, st.cred + 15),
@@ -672,7 +668,7 @@ export const CRISES: CrisisDef[] = [
             };
           }
           return {
-            narrative: "No real partner materializes. You're triple-cooked.",
+            narrative: "No real discovery materializes. You're triple-cooked.",
             apply: (st) => ({
               ...st,
               cred: Math.max(0, st.cred - 30),
@@ -682,8 +678,8 @@ export const CRISES: CrisisDef[] = [
         },
       },
       {
-        id: "attack_fud",
-        label: "\"This is coordinated FUD\"",
+        id: "attack_critics",
+        label: "\"This is coordinated sabotage\"",
         resolve: () => ({
           narrative: "Conspiracy theories fly. Some believe you. Most don't.",
           apply: (st) => ({
@@ -698,17 +694,17 @@ export const CRISES: CrisisDef[] = [
   },
 
   {
-    id: "dev_mutiny",
-    name: "Dev Team Mutiny",
-    description: "Lead dev just posted a 🧵 about 'toxic founder culture'. Three others liked it.",
+    id: "engineering_mutiny",
+    name: "Engineering Team Mutiny",
+    description: "Lead engineer just posted a message about 'toxic command culture'. Three others endorsed it.",
     severity: "high",
     weight: (s) => (s.hidden.founderStability < 0.6 ? 1.0 : 0.25),
     options: [
       {
-        id: "raise_salaries",
-        label: "Emergency salary raises",
+        id: "raise_compensation",
+        label: "Emergency compensation increase",
         resolve: () => ({
-          narrative: "Money talks. Devs delete the thread. For now.",
+          narrative: "Resources talk. Engineers delete the post. For now.",
           apply: (st) => ({
             ...st,
             officialTreasury: Math.max(0, st.officialTreasury - Math.floor(st.officialTreasury * 0.025)),
@@ -724,7 +720,7 @@ export const CRISES: CrisisDef[] = [
           void s;
           if (rng() < 0.3) {
             return {
-              narrative: "New team ships faster. Old team copes on X.",
+              narrative: "New team works faster. Old team complains on Earth channels.",
               apply: (st) => ({
                 ...st,
                 techHype: Math.min(100, st.techHype + 10),
@@ -733,7 +729,7 @@ export const CRISES: CrisisDef[] = [
             };
           }
           return {
-            narrative: "New team can't find the repo password. Roadmap delayed 6 months.",
+            narrative: "New team can't access the critical systems. Timeline delayed 6 months.",
             apply: (st) => ({
               ...st,
               techHype: Math.max(0, st.techHype - 30),
@@ -745,9 +741,9 @@ export const CRISES: CrisisDef[] = [
       },
       {
         id: "legal_threat",
-        label: "Remind them about NDAs",
+        label: "Remind them about contracts",
         resolve: () => ({
-          narrative: "Devs go quiet. But the code commits stop too. Suspicious.",
+          narrative: "Engineers go quiet. But system maintenance stops too. Suspicious.",
           apply: (st) => ({
             ...st,
             techHype: Math.max(0, st.techHype - 15),
@@ -757,12 +753,12 @@ export const CRISES: CrisisDef[] = [
       },
       {
         id: "roadmap",
-        label: "Publish ambitious roadmap",
+        label: "Publish ambitious mission roadmap",
         resolve: (s, rng) => {
           void s;
           if (rng() < 0.5) {
             return {
-              narrative: "Roadmap distracts everyone. 'Q3 zkEVM' trends.",
+              narrative: "Roadmap distracts everyone. 'Phase 3 Terraforming' excites.",
               apply: (st) => ({
                 ...st,
                 techHype: Math.min(100, st.techHype + 15),
@@ -771,7 +767,7 @@ export const CRISES: CrisisDef[] = [
             };
           }
           return {
-            narrative: "Lead dev QTs roadmap: 'lol we can't build any of this'. Brutal.",
+            narrative: "Lead engineer replies: 'lol we can't build any of this'. Brutal.",
             apply: (st) => ({
               ...st,
               cred: Math.max(0, st.cred - 25),
@@ -784,380 +780,303 @@ export const CRISES: CrisisDef[] = [
   },
 
   {
-    id: "exchange_delist",
-    name: "Exchange Threatens Delisting",
-    description: "Tier 1 CEX just emailed about 'compliance concerns'. 72 hours to respond.",
+    id: "earth_recall_threat",
+    name: "Earth Threatens Mission Recall",
+    description: "Earth HQ just messaged about 'operational concerns'. 72 hours to respond.",
     severity: "legendary",
     weight: (s) => (s.heat > 50 ? 0.6 : 0.1),
     options: [
       {
         id: "pivot",
-        label: "Immediate governance pivot",
+        label: "Immediate operational pivot",
         resolve: () => ({
-          narrative: "Emergency decentralization theater. Exchange buys it. For now.",
+          narrative: "Emergency restructuring theater. Earth buys it. For now.",
           apply: (st) => ({
             ...st,
             heat: Math.max(0, st.heat - 20),
             cred: Math.max(0, st.cred - 10),
-            techHype: Math.max(0, st.techHype - 5),
+            rage: Math.min(100, st.rage + 10),
           }),
         }),
       },
       {
-        id: "upgrade",
-        label: "Announce chain upgrade",
-        resolve: (s, rng) => {
-          void s;
-          if (rng() < 0.5) {
-            return {
-              narrative: "Exchange delays decision pending 'technical review'. Time bought.",
-              apply: (st) => ({
-                ...st,
-                techHype: Math.min(100, st.techHype + 10),
-              }),
-            };
-          }
-          return {
-            narrative: "Exchange isn't fooled. Delisting proceeds. Price craters.",
-            apply: (st) => ({
-              ...st,
-              tokenPrice: st.tokenPrice * 0.5,
-              tvl: st.tvl * 0.6,
-              rage: Math.min(100, st.rage + 35),
-            }),
-          };
-        },
-      },
-      {
-        id: "airdrop",
-        label: "Leak airdrop rumors",
+        id: "pay",
+        label: "Offer accelerated returns",
         resolve: () => ({
-          narrative: "Airdrop farming begins. Volume spikes. Exchange reconsiders.",
+          narrative: "Reserves bleed, but recall avoided. Classic.",
           apply: (st) => ({
             ...st,
-            tvl: st.tvl * 1.2,
-            tokenPrice: st.tokenPrice * 1.1,
-            rage: Math.max(0, st.rage - 15),
+            officialTreasury: Math.max(0, st.officialTreasury - Math.floor(st.officialTreasury * 0.05)),
+            heat: Math.max(0, st.heat - 25),
           }),
         }),
       },
       {
-        id: "attack_cex",
-        label: "\"CEXs are the enemy\"",
-        resolve: () => ({
-          narrative: "Maximal degen energy. DEX volume pumps. CEX delists anyway.",
-          apply: (st) => ({
-            ...st,
-            tokenPrice: st.tokenPrice * 0.7,
-            techHype: Math.min(100, st.techHype + 20),
-            cred: Math.min(100, st.cred + 5),
-          }),
-        }),
-      },
-    ],
-  },
-
-  {
-    id: "fork_attack",
-    name: "Community Fork Appears",
-    description: "Some anons forked your code and are calling themselves '[YourChain] Classic'.",
-    severity: "medium",
-    weight: (s) => (s.rage > 50 ? 0.8 : 0.2),
-    options: [
-      {
-        id: "negotiate",
-        label: "Negotiate merger",
+        id: "media",
+        label: "Rally public Earth support",
         resolve: (s, rng) => {
           void s;
           if (rng() < 0.4) {
             return {
-              narrative: "Fork absorbed. Their community joins. Narrative: 'decentralization'.",
+              narrative: "Public campaign works. Recall pressure eases.",
               apply: (st) => ({
                 ...st,
-                cred: Math.min(100, st.cred + 10),
-                rage: Math.max(0, st.rage - 15),
-                tvl: st.tvl * 1.1,
-              }),
-            };
-          }
-          return {
-            narrative: "Negotiations fail. Now two chains competing. Confusion reigns.",
-            apply: (st) => ({
-              ...st,
-              tvl: st.tvl * 0.8,
-              rage: Math.min(100, st.rage + 10),
-            }),
-          };
-        },
-      },
-      {
-        id: "trash_fork",
-        label: "Trash their code quality",
-        resolve: (s, rng) => {
-          void s;
-          if (rng() < 0.5) {
-            return {
-              narrative: "Devs find bugs in fork. Your chain vindicated.",
-              apply: (st) => ({
-                ...st,
-                techHype: Math.min(100, st.techHype + 15),
+                heat: Math.max(0, st.heat - 15),
                 cred: Math.min(100, st.cred + 10),
               }),
             };
           }
           return {
-            narrative: "Fork's code is actually cleaner. Embarrassing.",
+            narrative: "Campaign backfires. 'Rogue commander' narrative sticks.",
             apply: (st) => ({
               ...st,
-              techHype: Math.max(0, st.techHype - 15),
-              cred: Math.max(0, st.cred - 10),
-            }),
-          };
-        },
-      },
-      {
-        id: "incentives",
-        label: "Launch loyalty incentives",
-        resolve: () => ({
-          narrative: "Mercenary liquidity stays. True believers leave for fork.",
-          apply: (st) => ({
-            ...st,
-            officialTreasury: Math.max(0, st.officialTreasury - Math.floor(st.officialTreasury * 0.02)),
-            tvl: st.tvl * 0.9,
-            rage: Math.max(0, st.rage - 10),
-          }),
-        }),
-      },
-      {
-        id: "legal_fork",
-        label: "Send cease and desist",
-        resolve: () => ({
-          narrative: "'Open source btw' memes flood your timeline. Not a great look.",
-          apply: (st) => ({
-            ...st,
-            cred: Math.max(0, st.cred - 20),
-            rage: Math.min(100, st.rage + 15),
-            techHype: Math.max(0, st.techHype - 10),
-          }),
-        }),
-      },
-    ],
-  },
-
-  {
-    id: "backer_investigation",
-    name: "Lead Backer Under Criminal Investigation",
-    description: "Your VC's face is on CNBC with the word 'FRAUD' underneath.",
-    severity: "legendary",
-    weight: () => 0.15,
-    options: [
-      {
-        id: "distance",
-        label: "Public distancing statement",
-        resolve: () => ({
-          narrative: "'We barely knew them' plays OK. Old photos still circulating though.",
-          apply: (st) => ({
-            ...st,
-            heat: Math.min(100, st.heat + 15),
-            cred: Math.max(0, st.cred - 10),
-          }),
-        }),
-      },
-      {
-        id: "delete_photos",
-        label: "Delete all photos with them",
-        resolve: (s, rng) => {
-          void s;
-          if (rng() < 0.3) {
-            return {
-              narrative: "Photos vanish. Nobody archived. Lucky.",
-              apply: (st) => ({ ...st, heat: Math.min(100, st.heat + 10) }),
-            };
-          }
-          return {
-            narrative: "Wayback Machine exists. Thread compiling deleted photos. Streisand effect.",
-            apply: (st) => ({
-              ...st,
-              heat: Math.min(100, st.heat + 25),
-              rage: Math.min(100, st.rage + 15),
+              heat: Math.min(100, st.heat + 20),
               cred: Math.max(0, st.cred - 15),
             }),
           };
         },
       },
       {
-        id: "pr_firm",
-        label: "Hire crisis PR firm",
+        id: "ignore",
+        label: "Go dark",
         resolve: () => ({
-          narrative: "Professionals handle it. Narrative slowly shifts. Expensive though.",
+          narrative: "Radio silence. Earth escalates. This is now an incident.",
           apply: (st) => ({
             ...st,
-            officialTreasury: Math.max(0, st.officialTreasury - Math.floor(st.officialTreasury * 0.02)),
-            heat: Math.max(0, st.heat - 15),
-            cred: Math.max(0, st.cred - 5),
+            heat: Math.min(100, st.heat + 40),
+            hidden: { ...st.hidden, communityMemory: st.hidden.communityMemory + 0.3 },
           }),
         }),
-      },
-      {
-        id: "deny_association",
-        label: "\"They were just a small LP\"",
-        resolve: (s, rng) => {
-          void s;
-          if (rng() < 0.4) {
-            return {
-              narrative: "Cap table was never public. Narrative holds.",
-              apply: (st) => ({ ...st, heat: Math.min(100, st.heat + 5) }),
-            };
-          }
-          return {
-            narrative: "Leaked term sheet shows they led. You're cooked.",
-            apply: (st) => ({
-              ...st,
-              heat: Math.min(100, st.heat + 30),
-              cred: Math.max(0, st.cred - 25),
-            }),
-          };
-        },
       },
     ],
   },
 
   {
-    id: "tvl_exploit",
-    name: "🚨 Active Exploit Draining TVL",
-    description: "Funds are leaving. Fast. Your Discord is on fire. What do you do?",
-    severity: "legendary",
-    weight: (s) => (s.hidden.auditRisk > 0.4 ? 1.2 : 0.2),
+    id: "rival_colony",
+    name: "Rival Colony Attacks Your Reputation",
+    description: "Competing Mars settlement is circulating a critical report about your operations.",
+    severity: "medium",
+    weight: (s) => (s.cred > 30 ? 0.5 : 0.2),
     options: [
       {
-        id: "freeze",
-        label: "Freeze all contracts immediately",
+        id: "counter",
+        label: "Release counter-report",
+        resolve: (s, rng) => {
+          void s;
+          if (rng() < 0.5) {
+            return {
+              narrative: "Your report lands harder. Rival looks petty.",
+              apply: (st) => ({
+                ...st,
+                cred: Math.min(100, st.cred + 10),
+                rage: Math.max(0, st.rage - 5),
+              }),
+            };
+          }
+          return {
+            narrative: "Report war escalates. Earth is concerned about 'Mars drama'.",
+            apply: (st) => ({
+              ...st,
+              heat: Math.min(100, st.heat + 15),
+              rage: Math.min(100, st.rage + 10),
+            }),
+          };
+        },
+      },
+      {
+        id: "ignore",
+        label: "Take the high road",
         resolve: () => ({
-          narrative: "Contracts frozen. $47M saved. $23M gone. Could be worse.",
+          narrative: "Silence reads as dignity. Some respect it.",
           apply: (st) => ({
             ...st,
-            tvl: st.tvl * 0.7,
-            tokenPrice: st.tokenPrice * 0.6,
-            rage: Math.min(100, st.rage + 30),
-            heat: Math.min(100, st.heat + 20),
-            cred: Math.max(0, st.cred - 20),
+            cred: Math.min(100, st.cred + 5),
+            rage: Math.min(100, st.rage + 5),
           }),
         }),
       },
       {
-        id: "negotiate_hacker",
-        label: "Negotiate with the hacker",
+        id: "ally",
+        label: "Reach out to ally",
+        resolve: () => ({
+          narrative: "Allied colony defends you. Costs some goodwill but works.",
+          apply: (st) => ({
+            ...st,
+            officialTreasury: Math.max(0, st.officialTreasury - Math.floor(st.officialTreasury * 0.01)),
+            rage: Math.max(0, st.rage - 10),
+          }),
+        }),
+      },
+    ],
+  },
+
+  {
+    id: "investigation_notice",
+    name: "Earth Investigation Notice",
+    description: "Formal notice of investigation into colony operations received.",
+    severity: "legendary",
+    weight: (s) => (s.hidden.auditRisk > 0.5 ? 0.8 : 0.1),
+    options: [
+      {
+        id: "cooperate",
+        label: "Full cooperation",
+        resolve: () => ({
+          narrative: "Cooperation noted. Investigation proceeds but you're not obstructing.",
+          apply: (st) => ({
+            ...st,
+            heat: Math.min(100, st.heat + 10),
+            cred: Math.min(100, st.cred + 5),
+            hidden: { ...st.hidden, auditRisk: st.hidden.auditRisk - 0.1 },
+          }),
+        }),
+      },
+      {
+        id: "delay",
+        label: "Procedural delays",
         resolve: (s, rng) => {
           void s;
           if (rng() < 0.4) {
             return {
-              narrative: "Hacker returns 90% for 'bounty'. Legendary outcome actually.",
+              narrative: "Delays work. Investigation loses momentum.",
               apply: (st) => ({
                 ...st,
-                tvl: st.tvl * 0.9,
-                tokenPrice: st.tokenPrice * 0.85,
-                cred: Math.min(100, st.cred + 5),
+                heat: Math.max(0, st.heat - 5),
               }),
             };
           }
           return {
-            narrative: "Hacker ghosts you after moving to Tornado. Everything gone.",
+            narrative: "Delays seen as obstruction. Heat intensifies.",
             apply: (st) => ({
               ...st,
-              tvl: st.tvl * 0.3,
-              tokenPrice: st.tokenPrice * 0.4,
-              rage: Math.min(100, st.rage + 50),
-              cred: Math.max(0, st.cred - 40),
+              heat: Math.min(100, st.heat + 25),
+              cred: Math.max(0, st.cred - 10),
             }),
           };
         },
       },
       {
-        id: "blame_audit",
-        label: "Blame the auditor",
+        id: "scapegoat",
+        label: "Offer a scapegoat",
         resolve: () => ({
-          narrative: "Auditor's reputation tanks. Yours does too. But less.",
+          narrative: "Subordinate takes fall. Investigation refocuses.",
           apply: (st) => ({
             ...st,
-            tvl: st.tvl * 0.6,
-            tokenPrice: st.tokenPrice * 0.7,
-            cred: Math.max(0, st.cred - 15),
-            rage: Math.min(100, st.rage + 25),
+            heat: Math.max(0, st.heat - 15),
+            cred: Math.max(0, st.cred - 10),
+            hidden: { ...st.hidden, founderStability: st.hidden.founderStability - 0.1 },
+          }),
+        }),
+      },
+    ],
+  },
+
+  {
+    id: "infrastructure_sabotage",
+    name: "Infrastructure Sabotage Suspected",
+    description: "Critical systems showing signs of deliberate tampering.",
+    severity: "high",
+    weight: (s) => (s.hidden.auditRisk > 0.3 ? 0.7 : 0.2),
+    options: [
+      {
+        id: "investigate",
+        label: "Launch internal investigation",
+        resolve: (s, rng) => {
+          void s;
+          if (rng() < 0.5) {
+            return {
+              narrative: "Saboteur found and dealt with quietly.",
+              apply: (st) => ({
+                ...st,
+                hidden: { ...st.hidden, auditRisk: st.hidden.auditRisk - 0.15 },
+                rage: Math.max(0, st.rage - 5),
+              }),
+            };
+          }
+          return {
+            narrative: "Investigation finds nothing. Paranoia spreads.",
+            apply: (st) => ({
+              ...st,
+              rage: Math.min(100, st.rage + 15),
+              hidden: { ...st.hidden, founderStability: st.hidden.founderStability - 0.1 },
+            }),
+          };
+        },
+      },
+      {
+        id: "lockdown",
+        label: "Colony lockdown",
+        resolve: () => ({
+          narrative: "Lockdown contains the issue but crew is furious.",
+          apply: (st) => ({
+            ...st,
+            rage: Math.min(100, st.rage + 20),
+            cred: Math.max(0, st.cred - 5),
+            hidden: { ...st.hidden, auditRisk: st.hidden.auditRisk - 0.1 },
           }),
         }),
       },
       {
-        id: "tweet_calmly",
-        label: "\"Funds are SAFU\" tweet",
-        resolve: (s, rng) => {
-          void s;
-          if (rng() < 0.2) {
-            return {
-              narrative: "Somehow true. Attacker's TX reverted. Miracle.",
-              apply: (st) => ({
-                ...st,
-                cred: Math.min(100, st.cred + 20),
-                techHype: Math.min(100, st.techHype + 10),
-              }),
-            };
-          }
-          return {
-            narrative: "Funds were not SAFU. Screenshot immortalized forever.",
-            apply: (st) => ({
-              ...st,
-              tvl: st.tvl * 0.4,
-              tokenPrice: st.tokenPrice * 0.5,
-              rage: Math.min(100, st.rage + 40),
-              cred: Math.max(0, st.cred - 35),
-            }),
-          };
-        },
+        id: "outside_help",
+        label: "Request Earth assistance",
+        resolve: () => ({
+          narrative: "Earth sends investigators. Oversight increases significantly.",
+          apply: (st) => ({
+            ...st,
+            heat: Math.min(100, st.heat + 20),
+            hidden: { ...st.hidden, auditRisk: st.hidden.auditRisk - 0.2 },
+          }),
+        }),
       },
     ],
   },
 ];
 
-export function maybePickCrisis(state: GameState, rng: RNG, season: SeasonDef): CrisisDef | null {
-  const base =
-    0.05 +
-    state.rage * 0.001 +
-    state.heat * 0.001 +
-    (100 - state.cred) * 0.0005 +
-    state.hidden.auditRisk * 0.2;
-  const seasonFactor = season.crisisFactor ?? 1;
-  const adjusted = base * seasonFactor;
-  if (rng() > adjusted) return null;
-
-  const candidates = CRISES.filter((c) => c.weight(state) > 0);
-  if (!candidates.length) return null;
-  const weights = candidates.map((c) => c.weight(state));
+export function pickCrisis(state: GameState, rng: RNG, _season: SeasonDef): CrisisDef | null {
+  const weights = CRISES.map((c) => c.weight(state));
   const total = weights.reduce((a, b) => a + b, 0);
+  if (total <= 0) return null;
   let r = rng() * total;
-  for (let i = 0; i < candidates.length; i++) {
+  for (let i = 0; i < CRISES.length; i++) {
     r -= weights[i];
-    if (r <= 0) return candidates[i];
+    if (r <= 0) return CRISES[i];
   }
-  return candidates[candidates.length - 1];
+  return CRISES[CRISES.length - 1];
 }
 
-export interface CrisisResolution {
-  state: GameState;
-  narrative: string;
+// Wrapper that applies chance-based gating
+export function maybePickCrisis(state: GameState, rng: RNG, season: SeasonDef): CrisisDef | null {
+  // Base 15% chance per turn, modified by hidden auditRisk and season
+  const base = 0.15;
+  const riskBonus = state.hidden.auditRisk * 0.3; // up to +30% if auditRisk is 1.0
+  const seasonFactor = season.crisisFactor ?? 1.0;
+  const chance = Math.min(0.6, (base + riskBonus) * seasonFactor); // cap at 60%
+
+  if (rng() > chance) return null;
+  return pickCrisis(state, rng, season);
 }
 
-export function resolveCrisisOption(state: GameState, optionId: string, rng: RNG): CrisisResolution {
-  if (!state.pendingCrisis) return { state, narrative: "" };
-  const option = state.pendingCrisis.options.find((o) => o.id === optionId);
-  if (!option) return { state, narrative: "" };
+// Resolve a chosen crisis option
+export function resolveCrisisOption(
+  state: GameState,
+  optionId: string,
+  rng: RNG
+): { narrative: string; state: GameState } | null {
+  const crisis = state.pendingCrisis;
+  if (!crisis) return null;
+
+  const option = crisis.options.find(o => o.id === optionId);
+  if (!option) return null;
+
   const outcome = option.resolve(state, rng);
-  const updated = outcome.apply(state);
+  const newState = outcome.apply(state);
+
   return {
-    state: {
-      ...updated,
-      pendingCrisis: undefined,
-      log: [`[CRISIS] ${outcome.narrative}`, ...updated.log],
-    },
     narrative: outcome.narrative,
+    state: {
+      ...newState,
+      pendingCrisis: undefined,
+      crisisCount: newState.crisisCount + 1,
+    },
   };
 }
 

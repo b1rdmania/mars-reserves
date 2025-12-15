@@ -104,22 +104,22 @@ function applyDrift(state: GameState, rng: RNG): GameState {
 function checkGameOver(state: GameState): GameState {
   if (state.gameOver) return state;
   if (state.rage >= 100) {
-    return { ...state, gameOver: true, gameOverReason: "Community coup: they voted you out." };
+    return { ...state, gameOver: true, gameOverReason: "Crew mutiny: they've taken control." };
   }
   if (state.heat >= 100) {
-    return { ...state, gameOver: true, gameOverReason: "Regulatory shutdown: treasury frozen." };
+    return { ...state, gameOver: true, gameOverReason: "Earth recall: mission terminated." };
   }
   if (state.cred <= 0) {
-    return { ...state, gameOver: true, gameOverReason: "Credibility collapse: nobody believes you." };
+    return { ...state, gameOver: true, gameOverReason: "Trust collapse: nobody follows orders." };
   }
   if (state.officialTreasury <= 0) {
-    return { ...state, gameOver: true, gameOverReason: "Official treasury empty: no more games to play." };
+    return { ...state, gameOver: true, gameOverReason: "Colony reserves depleted: mission unsustainable." };
   }
   if (state.turn >= state.maxTurns) {
     return {
       ...state,
       gameOver: true,
-      gameOverReason: `Regime change: your era is over after ${state.maxTurns} governance cycles.`,
+      gameOverReason: `Mission complete: your command ends after ${state.maxTurns} cycles.`,
     };
   }
   return state;
@@ -156,7 +156,7 @@ export function initialState(params?: {
       communityMemory: 0,
       stablecoinRatio: 0.3,
     },
-    log: ["Welcome to The Treasury Game."],
+    log: ["Welcome to Mars. Your mission begins now."],
     recentEvents: [],
     gameOver: false,
   };
