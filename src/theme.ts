@@ -3,12 +3,12 @@
 
 export const THEME = {
   gameName: "Move: Mars Reserves",
-  tagline: "A strategy game about scarce resources on Mars",
+  tagline: "Build your legacy on Mars",
 
   // Metric display names
   metrics: {
     colonyReserves: "Colony Reserves",
-    legacy: "Legacy Score",
+    legacy: "Legacy Capital",
     rage: "Crew Unrest",
     oversightPressure: "Earth Oversight",
     cred: "Command Trust",
@@ -17,19 +17,19 @@ export const THEME = {
 
   // Hidden metric display names (for debug/tooltips)
   hiddenMetrics: {
-    scrutiny: "System Strain",
-    founderStability: "Commander Stress",
-    communityMemory: "Colony Memory",
-    stablecoinRatio: "Resource Diversity",
+    scrutiny: "Oversight Scrutiny",
+    founderStability: "Command Composure",
+    communityMemory: "Institutional Memory",
+    stablecoinRatio: "Resource Stability",
   },
 
-  // Category names (remap from crypto to colony ops)
+  // Category names
   categories: {
-    Siphon: "Extraction",
-    Governance: "Command",
-    Narrative: "Communications",
-    "Damage Control": "Crisis Response",
-    Social: "Crew Relations",
+    Ambition: "Legacy Projects",
+    Command: "Command Authority",
+    Communications: "Strategic Communications",
+    "Crisis Response": "Crisis Management",
+    "Crew Relations": "Personnel Relations",
   } as Record<string, string>,
 
   // UI copy
@@ -37,18 +37,18 @@ export const THEME = {
     startButton: "Begin Mission",
     endTurn: "Next Cycle",
     gameOver: "Mission Complete",
-    recordMission: "Record Mission",
-    leaderboard: "Colony Index",
+    recordMission: "Record to Archive",
+    leaderboard: "Colony Archive",
     howToPlay: "Mission Briefing",
     turn: "Cycle",
-    score: "Legacy Score",
+    score: "Legacy Capital",
   },
 
   // Flavor text
   flavor: {
-    intro: "You are the Commander of humanity's first permanent Mars colony.",
-    mandate: "Extract as much legacy value as possible within 20 mission cycles, without triggering mutiny, mission shutdown, or catastrophic failure.",
-    ending: "Your mission is complete. History will remember what you built.",
+    intro: "You are the Colony Commander of humanity's first permanent Mars settlement.",
+    mandate: "Build your personal legacy—facilities bearing your name, discoveries credited to you, institutional power that outlasts your tenure—while keeping the colony alive.",
+    ending: "Your mission is complete. History will judge what you built.",
   },
 } as const;
 
