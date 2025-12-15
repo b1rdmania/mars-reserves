@@ -169,6 +169,8 @@ interface SubmitRunRequest {
     score: number;
     endingId: string;
     wallet: string;
+    privyUserId?: string;
+    commanderName?: string;
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -252,11 +254,76 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
         // Save to Supabase (always use verifiedScore, not claimed)
         let supabaseError: string | null = null;
+        let profileCreated = false;
+        let commanderName = body.commanderName || 'Unknown Commander';
         const supabaseUrl = process.env.SUPABASE_URL;
         const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
         if (supabaseUrl && supabaseKey) {
             try {
+                // If privyUserId provided, upsert profile
+                if (body.privyUserId) {
+                    // Check if profile exists
+                    const profileCheck = await fetch(
+                        `${supabaseUrl}/rest/v1/profiles?privy_user_id=eq.${encodeURIComponent(body.privyUserId)}`,
+                        {
+                            headers: {
+                                'apikey': supabaseKey,
+                                'Authorization': `Bearer ${supabaseKey}`,
+                            },
+                        }
+                    );
+
+                    const existingProfiles = await profileCheck.json();
+
+                    if (existingProfiles.length === 0) {
+                        // Create new profile
+                        await fetch(`${supabaseUrl}/rest/v1/profiles`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'apikey': supabaseKey,
+                                'Authorization': `Bearer ${supabaseKey}`,
+                                'Prefer': 'return=minimal',
+                            },
+                            body: JSON.stringify({
+                                privy_user_id: body.privyUserId,
+                                wallet: body.wallet,
+                                commander_name: commanderName,
+                                missions_count: 1,
+                                best_score: verifiedScore,
+                                last_ending_id: verifiedEndingId,
+                            }),
+                        });
+                        profileCreated = true;
+                    } else {
+                        // Update existing profile
+                        const existingProfile = existingProfiles[0];
+                        commanderName = existingProfile.commander_name;
+                        const newBestScore = Math.max(existingProfile.best_score || 0, verifiedScore);
+
+                        await fetch(
+                            `${supabaseUrl}/rest/v1/profiles?privy_user_id=eq.${encodeURIComponent(body.privyUserId)}`,
+                            {
+                                method: 'PATCH',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'apikey': supabaseKey,
+                                    'Authorization': `Bearer ${supabaseKey}`,
+                                    'Prefer': 'return=minimal',
+                                },
+                                body: JSON.stringify({
+                                    missions_count: (existingProfile.missions_count || 0) + 1,
+                                    best_score: newBestScore,
+                                    last_ending_id: verifiedEndingId,
+                                    updated_at: new Date().toISOString(),
+                                }),
+                            }
+                        );
+                    }
+                }
+
+                // Insert run
                 const response = await fetch(`${supabaseUrl}/rest/v1/runs`, {
                     method: 'POST',
                     headers: {
@@ -267,12 +334,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                     },
                     body: JSON.stringify({
                         wallet: body.wallet,
-                        score: verifiedScore, // CANONICAL: always use server's verified score
+                        privy_user_id: body.privyUserId || null,
+                        score: verifiedScore,
                         seed: body.seed,
                         ending_id: verifiedEndingId,
                         action_count: body.actionIds.length,
                         run_hash: runHash,
-                        on_chain_tx: null, // Updated after on-chain submission
+                        on_chain_tx: null,
                     }),
                 });
 
@@ -316,11 +384,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return res.status(200).json({
             success: true,
             runHash,
-            verifiedScore,  // This is the CANONICAL score
+            verifiedScore,
             verifiedEndingId,
             wallet: body.wallet,
             actionCount: body.actionIds.length,
             savedToLeaderboard: !supabaseError,
+            profile: body.privyUserId ? {
+                privyUserId: body.privyUserId,
+                commanderName,
+                isNew: profileCreated,
+            } : null,
             onChain: {
                 enabled: onChainEnabled,
                 status: onChainStatus,

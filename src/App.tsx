@@ -16,6 +16,7 @@ import { ACTIONS, sampleActionsForTurn } from "./engine/actions";
 import { LogSection } from "./ui/LogSection";
 import { HowToPlayModal } from "./ui/HowToPlayModal";
 import { LeaderboardModal } from "./ui/LeaderboardModal";
+import { ArchivePanel } from "./ui/ArchivePanel";
 
 const App: React.FC = () => {
   const [seed, setSeed] = useState(() => Math.floor(Math.random() * 1e9));
@@ -220,6 +221,9 @@ const App: React.FC = () => {
               — without triggering mutiny, Earth recall, or mission failure.
             </p>
           </div>
+
+          {/* Colony Archive */}
+          <ArchivePanel />
 
           <div className="space-y-3">
             <label className="block">
