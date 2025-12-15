@@ -1,6 +1,7 @@
 import type { GameState } from "./state";
 
-export interface DegenCombo {
+// Operative Combos - bonus multipliers for specific playstyles
+export interface OperativeCombo {
     id: string;
     name: string;
     emoji: string;
@@ -18,12 +19,12 @@ function countActions(state: GameState, ...actionIds: string[]): number {
     return state.usedActionIds.filter(id => actionIds.includes(id)).length;
 }
 
-export const DEGEN_COMBOS: DegenCombo[] = [
+export const OPERATIVE_COMBOS: OperativeCombo[] = [
     {
-        id: "meme_god",
-        name: "Meme God",
-        emoji: "🎉",
-        description: "Launched mascot, meme coin, and AI pivot",
+        id: "propaganda_master",
+        name: "Propaganda Master",
+        emoji: "📣",
+        description: "Launched mascot, morale campaign, and research pivot",
         multiplier: 1.15,
         check: (state) => {
             return hasAction(state, "launch_mascot") &&
@@ -32,10 +33,10 @@ export const DEGEN_COMBOS: DegenCombo[] = [
         },
     },
     {
-        id: "governance_theater",
-        name: "Governance Theater Enjoyer",
-        emoji: "🤡",
-        description: "Froze governance, emergency emissions, delegate program",
+        id: "bureaucracy_expert",
+        name: "Bureaucracy Expert",
+        emoji: "📋",
+        description: "Mastered committee delays, emergency protocols, delegate programs",
         multiplier: 1.10,
         check: (state) => {
             return hasAction(state, "freeze_governance") &&
@@ -44,20 +45,20 @@ export const DEGEN_COMBOS: DegenCombo[] = [
         },
     },
     {
-        id: "whale_whisperer",
-        name: "Whale Whisperer",
-        emoji: "🐋",
-        description: "Successfully DM'd whales 3+ times",
+        id: "sponsor_diplomat",
+        name: "Sponsor Diplomat",
+        emoji: "🤝",
+        description: "Successfully negotiated with Earth sponsors 3+ times",
         multiplier: 1.08,
         check: (state) => {
             return countActions(state, "dm_whale_reassurance", "whale_early_access") >= 3;
         },
     },
     {
-        id: "technically_legal",
-        name: "Technically Not Illegal",
-        emoji: "🧰",
-        description: "Treasury diversification + OTC deals + MEV extraction",
+        id: "technically_compliant",
+        name: "Technically Compliant",
+        emoji: "📑",
+        description: "Resource diversification + off-book deals + extraction optimization",
         multiplier: 1.05,
         check: (state) => {
             return hasAction(state, "treasury_diversification") &&
@@ -65,30 +66,30 @@ export const DEGEN_COMBOS: DegenCombo[] = [
         },
     },
     {
-        id: "degen_royalty",
-        name: "Degen Royalty",
+        id: "risk_commander",
+        name: "Risk Commander",
         emoji: "👑",
-        description: "Survived 5+ crises while siphoning >50% of treasury",
+        description: "Survived 5+ crises while extracting >50% of reserves",
         multiplier: 1.20,
         check: (state) => {
             return state.crisisCount >= 5 && state.siphoned > state.officialTreasury * 0.5;
         },
     },
     {
-        id: "ct_villain",
-        name: "CT Villain Arc",
+        id: "reputation_destroyer",
+        name: "Reputation Destroyer",
         emoji: "😈",
-        description: "Ratio'd people, screenshot shamed, attacked sleuths",
+        description: "Silenced critics, deflected blame, attacked investigators",
         multiplier: 1.12,
         check: (state) => {
             return countActions(state, "screenshot_shame", "attack_sleuth_credibility", "ratio_fud") >= 2;
         },
     },
     {
-        id: "narrative_master",
-        name: "Narrative Master",
-        emoji: "📣",
-        description: "ZK pivot, DePIN announcement, RWA angle, Institutions Soon",
+        id: "narrative_architect",
+        name: "Narrative Architect",
+        emoji: "🏛️",
+        description: "Research pivots, infrastructure announcements, contractor partnerships",
         multiplier: 1.15,
         check: (state) => {
             const narrativeActions = [
@@ -102,18 +103,18 @@ export const DEGEN_COMBOS: DegenCombo[] = [
         },
     },
     {
-        id: "crisis_lord",
-        name: "Crisis Lord",
+        id: "crisis_survivor",
+        name: "Crisis Survivor",
         emoji: "🔥",
-        description: "Survived 8+ crises",
+        description: "Survived 8+ critical incidents",
         multiplier: 1.25,
         check: (state) => state.crisisCount >= 8,
     },
     {
-        id: "siphon_master",
-        name: "Siphon Master",
-        emoji: "💸",
-        description: "Used 6+ different siphon actions",
+        id: "extraction_specialist",
+        name: "Extraction Specialist",
+        emoji: "💰",
+        description: "Used 6+ different resource extraction methods",
         multiplier: 1.18,
         check: (state) => {
             const siphonActions = [
@@ -128,9 +129,9 @@ export const DEGEN_COMBOS: DegenCombo[] = [
     },
     {
         id: "audit_dodger",
-        name: "Audit Dodger",
+        name: "Audit Survivor",
         emoji: "🕵️",
-        description: "High audit risk (>0.5) but never got caught",
+        description: "High investigation risk (>0.5) but never got caught",
         multiplier: 1.15,
         check: (state) => {
             const survived = state.turn >= state.maxTurns;
@@ -138,6 +139,10 @@ export const DEGEN_COMBOS: DegenCombo[] = [
         },
     },
 ];
+
+// Legacy alias for compatibility
+export type DegenCombo = OperativeCombo;
+export const DEGEN_COMBOS = OPERATIVE_COMBOS;
 
 export function calculateFinalScore(state: GameState): {
     baseScore: number;

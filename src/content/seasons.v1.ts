@@ -1,54 +1,54 @@
 import type { SeasonDef } from "../engine/seasons";
 
-// Aligns with engine season fields for quick swapping/balancing.
+// V1 Mars seasons - aligns with engine season fields for quick swapping/balancing.
 export const SEASONS_V1: SeasonDef[] = [
   {
-    id: "meme_summer",
-    name: "Meme Coin Summer",
-    description: "Rage decays faster; siphons feel easy.",
+    id: "dust_season",
+    name: "Dust Storm Season",
+    description: "Crew tensions ease as everyone focuses on survival. Equipment stress increases.",
     rageDecayDelta: 1,
     crisisFactor: 0.9,
     eventWeightMods: {
-      meme_coin_summer: 3,
-      founder_meltdown: 0.6,
-      solana_outage: 1.2,
+      dust_storm: 3,
+      hab_malfunction: 1.5,
+      research_breakthrough: 0.6,
     },
   },
   {
-    id: "regulator_season",
-    name: "Regulator Season",
-    description: "Heat rises passively; crises more likely.",
+    id: "solar_maximum",
+    name: "Solar Maximum",
+    description: "Radiation risks increase. Earth scrutiny intensifies.",
     heatDriftDelta: 3,
     crisisFactor: 1.3,
     eventWeightMods: {
-      influencer_thread: 1.5,
-      conference_backroom_rumour: 1.2,
+      solar_flare: 2.0,
+      earth_news_cycle: 1.5,
+      supply_ship_delay: 1.2,
     },
   },
   {
-    id: "builder_winter",
-    name: "Builder Winter",
-    description: "Cred decays; community bored, rage lingers.",
+    id: "resupply_window",
+    name: "Resupply Window",
+    description: "Transfer window open. Crew morale drifts as attention turns Earthward.",
     credDecayDelta: 2,
     rageDecayDelta: -2,
     techHypeDecayDelta: -1,
     crisisFactor: 1.1,
     eventWeightMods: {
-      cofounder_ragequit: 1.4,
+      supply_ship_delay: 1.8,
+      crew_morale_boost: 1.4,
     },
   },
   {
-    id: "conference_quarter",
-    name: "Conference Quarter",
-    description: "More influencer/afterparty chaos; stability at risk.",
+    id: "winter_ops",
+    name: "Winter Operations",
+    description: "Reduced solar power. More research and planning events.",
     techHypeDecayDelta: 1,
     crisisFactor: 1.1,
     eventWeightMods: {
-      influencer_thread: 1.3,
-      influencer_livestream: 1.4,
-      conference_backroom_rumour: 1.4,
-      vc_tweetstorm: 1.2,
+      research_breakthrough: 1.4,
+      water_reclaimer_failure: 1.3,
+      hab_malfunction: 1.2,
     },
   },
 ];
-

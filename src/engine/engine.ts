@@ -131,7 +131,7 @@ export function initialState(params?: {
   ticker?: string;
   seasonId?: SeasonId;
 }): GameState {
-  const { chainName = "ZooChain", founderName = "You", ticker = "ZOO", seasonId = "meme_summer" } = params ?? {};
+  const { chainName = "Olympus Base", founderName = "Commander", ticker = "OLY", seasonId = "dust_season" } = params ?? {};
   return {
     turn: 0,
     maxTurns: 20,

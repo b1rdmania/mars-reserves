@@ -1,10 +1,10 @@
 import type { EventDef } from "../engine/events";
 
-// Placeholder content pack for Web3-flavoured random events.
-// Extend this list to add new events without touching engine code.
+// Mars colony incidents - hard sci-fi grounded with subtle dark humor
+// Tone: Briefing notes, log entries, dry internal memos
 export const WEB3_EVENTS: EventDef[] = [];
 
-// Scandal fragments for narrative generators (dark + sarcastic tone)
+// Mars incident fragments for narrative generators
 export interface ScandalFragment {
   key: string;
   narrative: string;
@@ -13,96 +13,93 @@ export interface ScandalFragment {
 
 export const SCANDAL_FRAGMENTS: ScandalFragment[] = [
   {
-    key: "tokenomics_powerpoint_leak",
+    key: "supply_manifest_discrepancy",
     severity: "medium",
     narrative:
-      "A leaked tokenomics PowerPoint revealed you had no idea how emissions worked. The community realised the coin was doomed long before you did.",
+      "An audit flagged discrepancies between logged supplies and physical inventory. Earth is asking pointed questions about 'evaporative losses' in sealed containers.",
   },
   {
-    key: "hr_investigation_opened",
+    key: "crew_anonymous_complaint",
     severity: "high",
     narrative:
-      "An HR investigation was opened into your 'leadership style,' which your team described as 'burnout but make it crypto.' The DAO saw the report before you did.",
+      "Anonymous crew complaints reached Mission Control before you could review them. The tone of your next briefing was noticeably colder.",
   },
   {
-    key: "founder_wallet_doxxed",
+    key: "equipment_failure_coverup",
     severity: "very high",
     narrative:
-      "Your founder wallet was doxxed, exposing several transfers you labelled as 'marketing experiments.' The chain called them what they were: siphons.",
+      "Maintenance logs show you classified a life support anomaly as 'routine' three weeks before the incident. The crew found out. So did Earth.",
   },
   {
-    key: "stablecoin_depeg_rumour",
+    key: "personal_quarters_expansion",
     severity: "medium",
     narrative:
-      "A rumour spread that your stablecoin partner was depegging again. You tried to calm everyone down, but your silence only made the panic louder.",
+      "Someone noticed your quarters are 40% larger than regulation spec. The 'efficiency optimization' justification isn't landing well in the mess hall.",
   },
   {
-    key: "treasury_multisig_conflict",
+    key: "contractor_favoritism",
     severity: "high",
     narrative:
-      "A treasury multisig signer went rogue on Twitter and implied you were cooking the books. You denied it, which only made everyone assume it was true.",
+      "Internal memos suggest you prioritized equipment from a contractor with personal connections. You called it 'supply chain optimization.' Others called it something else.",
   },
   {
-    key: "governance_voter_revolt",
-    severity: "high",
-    narrative:
-      "A faction of disgruntled voters launched a coordinated 'vote no on everything' movement. It gained momentum faster than any product you shipped.",
-  },
-  {
-    key: "legal_cease_and_desist",
-    severity: "extreme",
-    narrative:
-      "A cease-and-desist letter leaked, confirming that regulators had finally noticed you. The DAO concluded you were now a liability.",
-  },
-  {
-    key: "bridge_exploit_false_alarm",
+    key: "comms_delay_exploitation",
     severity: "medium",
     narrative:
-      "A false alarm about a bridge exploit tanked confidence. Even after clarifying it wasn’t real, the community said 'vibes were off' and never recovered.",
+      "You used the 22-minute comms delay to approve three questionable requisitions before Earth could respond. They noticed the timestamps.",
   },
   {
-    key: "team_mass_exit",
+    key: "crew_rotation_manipulation",
+    severity: "high",
+    narrative:
+      "The crew rotation schedule was adjusted to send your loudest critic back to Earth early. The official reason was 'medical precaution.' Nobody believed it.",
+  },
+  {
+    key: "resource_reallocation_leak",
+    severity: "very high",
+    narrative:
+      "Internal resource allocation models leaked to the crew. They now know exactly how much goes to 'contingency reserves' versus operations.",
+  },
+  {
+    key: "hab_expansion_priorities",
+    severity: "medium",
+    narrative:
+      "The habitat expansion prioritized command quarters over crew facilities. The blueprints circulated before you could explain the 'operational necessity.'",
+  },
+  {
+    key: "earth_liaison_conflict",
+    severity: "high",
+    narrative:
+      "Your Earth liaison filed a formal concern about 'communication gaps.' Translation: they think you're hiding something. They're not entirely wrong.",
+  },
+  {
+    key: "maintenance_deferral_chain",
     severity: "extreme",
     narrative:
-      "Half your team rage-quit in a group post titled 'We Weren’t Paid for Months.' It got more engagement than your entire product launch.",
+      "A maintenance deferral you signed off on led to a cascade failure. The incident report traces directly back to your authorization.",
   },
   {
-    key: "botched_ama",
+    key: "supply_priority_scandal",
+    severity: "high",
+    narrative:
+      "Luxury items appeared in your personal manifest while essential crew supplies were marked 'delayed.' Someone compared the shipping records.",
+  },
+  {
+    key: "morale_report_manipulation",
+    severity: "medium",
+    narrative:
+      "Crew morale surveys were 'adjusted for statistical accuracy' before transmission to Earth. The original responses somehow leaked anyway.",
+  },
+  {
+    key: "emergency_drill_timing",
     severity: "low",
     narrative:
-      "Your AMA derailed when someone asked a simple question you couldn’t answer. The clip went viral and became a reaction gif used against you daily.",
+      "You scheduled an emergency drill during the crew's only rest period. It was technically regulation. It was also technically a power move.",
   },
-  // Bonus ultra-dark
   {
-    key: "insider_dump_exposed",
+    key: "mission_log_redactions",
     severity: "extreme",
     narrative:
-      "Wallet sleuths caught you dumping tokens an hour before bad news. You called it coincidence. No one else did.",
-  },
-  {
-    key: "cult_leader_accusation",
-    severity: "high",
-    narrative:
-      "Someone accused you of running a cult. The sad part was how many people agreed instantly.",
-  },
-  {
-    key: "roadmap_2027_leaked",
-    severity: "medium",
-    narrative:
-      "A leaked roadmap showed you had no plans past Q1. The DAO concluded you were improvising the entire time.",
-  },
-  {
-    key: "founder_tinder_dates_revealed",
-    severity: "medium",
-    narrative:
-      "A Tinder match leaked screenshots of you pitching your token mid-date. The scandal wasn’t the behaviour — it was how poorly the pitch landed.",
-  },
-  {
-    key: "ai_generated_press_release",
-    severity: "low",
-    narrative:
-      "Your press release was exposed as AI-generated. The community said it had more personality than you.",
+      "Routine log audits revealed extensive redactions in the official mission record. Earth has requested the unedited versions. You're still 'locating' them.",
   },
 ];
-
-

@@ -111,12 +111,12 @@ export const TurnResultModal: React.FC<Props> = ({ open, onClose, actionName, se
           </div>
         )}
 
-        {/* Siphoned Callout - If you got the bag */}
+        {/* Siphoned Callout - Resources secured */}
         {hasSiphoned && (
           <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-lg p-3 mb-4 flex items-center gap-3">
             <span className="text-2xl">💰</span>
             <div>
-              <div className="text-emerald-400 font-semibold text-sm uppercase tracking-wide">Bag Secured</div>
+              <div className="text-emerald-400 font-semibold text-sm uppercase tracking-wide">Resources Secured</div>
               <div className="text-emerald-300 text-lg font-bold">
                 {formatDelta(deltas.find(d => d.label.toLowerCase().includes("siphoned"))?.delta ?? 0, undefined, "siphoned")}
               </div>

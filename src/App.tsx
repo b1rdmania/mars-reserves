@@ -21,10 +21,10 @@ const App: React.FC = () => {
   const [seed, setSeed] = useState(() => Math.floor(Math.random() * 1e9));
   const rng = useMemo(() => mulberry32(seed), [seed]);
 
-  const [chainName, setChainName] = useState("ZooChain");
-  const [ticker, setTicker] = useState("ZOO");
+  const [chainName, setChainName] = useState("Olympus Base");
+  const [ticker, setTicker] = useState("OLY");
   const [founderName, setFounderName] = useState("You");
-  const seasonId: SeasonId = "meme_summer"; // V1: fixed season
+  const seasonId: SeasonId = "dust_season"; // V1: fixed season
   const [state, setState] = useState<GameState | null>(null);
   const [showDebug, setShowDebug] = useState(false);
   const [turnModalOpen, setTurnModalOpen] = useState(false);

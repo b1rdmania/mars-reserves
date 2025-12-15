@@ -14,7 +14,7 @@ export type EventId =
   | "solana_outage"
   | "bridge_hack"
   | "smart_contract_bug"
-  | "whale_dump"
+  | "contractor_withdrawal"
   | "scandal_fragment"
   | "audit_notice"
   | "team_discord_leak"
@@ -281,22 +281,22 @@ const BASE_EVENTS: EventDef[] = [
     },
   },
   {
-    id: "whale_dump",
-    name: "Whale Dumps Tokens",
+    id: "contractor_withdrawal",
+    name: "Prime Contractor Withdraws",
     weight: (s, season) => {
       void season;
       return s.rage > 40 ? 0.6 : 0.2;
     },
     apply: (s) => {
-      const dumpSize = 5 + Math.floor(Math.random() * 10); // 5-15% of supply
-      const log = `🐋 WHALE DUMP: Early investor just market sold ${dumpSize}% of circulating supply. Price in freefall.`;
+      const withdrawalPct = 5 + Math.floor(Math.random() * 10); // 5-15% of funding
+      const log = `📉 CONTRACTOR WITHDRAWAL: Major Earth sponsor just pulled ${withdrawalPct}% of committed funding. Supply index in freefall.`;
       return {
         ...s,
         tokenPrice: s.tokenPrice * (0.65 + Math.random() * 0.15), // 20-35% crash
         rage: Math.min(100, s.rage + 20),
         cred: Math.max(0, s.cred - 10),
         log: [log, ...s.log],
-        recentEvents: ["whale_dump", ...s.recentEvents].slice(0, 5),
+        recentEvents: ["contractor_withdrawal", ...s.recentEvents].slice(0, 5),
       };
     },
   },
@@ -334,7 +334,7 @@ const BASE_EVENTS: EventDef[] = [
       return s.hidden.founderStability < 0.5 ? 1.2 : 0; // Only when team is unstable
     },
     apply: (s) => {
-      const log = `💬 Someone leaked internal Discord. Screenshots of you saying "community is ngmi" went viral.`;
+      const log = `💬 Someone leaked internal comms. Screenshots of you calling the mission 'unsalvageable' went viral on Earth.`;
       return {
         ...s,
         rage: Math.min(100, s.rage + 20),
@@ -357,7 +357,7 @@ const BASE_EVENTS: EventDef[] = [
       return s.hidden.communityMemory > 0.3 ? 1.0 : 0; // Triggers when community has long memory
     },
     apply: (s) => {
-      const log = `🧵 Anon posts compilation of all your broken promises. 'The Complete Rug Timeline.' Gaining traction.`;
+      const log = `🧵 Anonymous post compiles all your broken commitments. 'The Complete Command Failure Timeline.' Gaining traction on Earth.`;
       return {
         ...s,
         rage: Math.min(100, s.rage + 15),

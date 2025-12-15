@@ -1,4 +1,4 @@
-export type SeasonId = "meme_summer" | "regulator_season" | "builder_winter" | "conference_quarter";
+export type SeasonId = "dust_season" | "solar_maximum" | "resupply_window" | "winter_ops";
 
 export interface SeasonDef {
   id: SeasonId;
@@ -15,51 +15,52 @@ export interface SeasonDef {
 
 export const SEASONS: SeasonDef[] = [
   {
-    id: "meme_summer",
-    name: "Meme Coin Summer",
-    description: "Rage decays faster; siphons feel easy.",
-    rageDecayDelta: 1, // cools faster
+    id: "dust_season",
+    name: "Dust Storm Season",
+    description: "Crew tensions ease as everyone focuses on survival. Equipment stress increases.",
+    rageDecayDelta: 1, // cools faster - crew united against external threat
     crisisFactor: 0.9,
     eventWeightMods: {
-      meme_coin_summer: 3,
-      founder_meltdown: 0.6,
-      solana_outage: 1.2,
+      dust_storm: 3,
+      hab_malfunction: 1.5,
+      research_breakthrough: 0.6,
     },
   },
   {
-    id: "regulator_season",
-    name: "Regulator Season",
-    description: "Heat rises passively; crises more likely.",
-    heatDriftDelta: 3, // turns baseline -1 into +2 heat
+    id: "solar_maximum",
+    name: "Solar Maximum",
+    description: "Radiation risks increase. Earth scrutiny intensifies.",
+    heatDriftDelta: 3, // more attention from Earth
     crisisFactor: 1.3,
     eventWeightMods: {
-      influencer_thread: 1.5,
-      conference_backroom_rumour: 1.2,
+      solar_flare: 2.0,
+      earth_news_cycle: 1.5,
+      supply_ship_delay: 1.2,
     },
   },
   {
-    id: "builder_winter",
-    name: "Builder Winter",
-    description: "Credibility decays; community bored, Rage drifts up.",
+    id: "resupply_window",
+    name: "Resupply Window",
+    description: "Transfer window open. Crew morale drifts as attention turns Earthward.",
     credDecayDelta: 2,
-    rageDecayDelta: -2, // baseline -2 becomes +0 (no decay)
-    techHypeDecayDelta: -1, // decay slower
+    rageDecayDelta: -2, // no natural decay - crew restless
+    techHypeDecayDelta: -1,
     crisisFactor: 1.1,
     eventWeightMods: {
-      cofounder_ragequit: 1.4,
+      supply_ship_delay: 1.8,
+      crew_morale_boost: 1.4,
     },
   },
   {
-    id: "conference_quarter",
-    name: "Conference Quarter",
-    description: "More influencer/afterparty events; stability at risk.",
-    techHypeDecayDelta: 1, // hype sticks a bit
+    id: "winter_ops",
+    name: "Winter Operations",
+    description: "Reduced solar power. More research and planning events.",
+    techHypeDecayDelta: 1, // research momentum carries
     crisisFactor: 1.1,
     eventWeightMods: {
-      influencer_thread: 1.3,
-      influencer_livestream: 1.4,
-      conference_backroom_rumour: 1.4,
-      vc_tweetstorm: 1.2,
+      research_breakthrough: 1.4,
+      water_reclaimer_failure: 1.3,
+      hab_malfunction: 1.2,
     },
   },
 ];
