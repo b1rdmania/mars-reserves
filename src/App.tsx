@@ -15,6 +15,7 @@ import { playSound, setMuted, initAudio } from "./engine/audio";
 import { ACTIONS, sampleActionsForTurn } from "./engine/actions";
 import { LogSection } from "./ui/LogSection";
 import { HowToPlayModal } from "./ui/HowToPlayModal";
+import { LeaderboardModal } from "./ui/LeaderboardModal";
 
 const App: React.FC = () => {
   const [seed, setSeed] = useState(() => Math.floor(Math.random() * 1e9));
@@ -29,6 +30,7 @@ const App: React.FC = () => {
   const [turnModalOpen, setTurnModalOpen] = useState(false);
   const [muted, setMutedState] = useState(false);
   const [showHowToPlay, setShowHowToPlay] = useState(false);
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [turnModalData, setTurnModalData] = useState<{
     actionName: string;
     severity: SeverityResult | null;
@@ -277,8 +279,14 @@ const App: React.FC = () => {
       <div className="flex-1 max-w-2xl w-full mx-auto p-4 pb-8">
         <TopPanel state={state} maxTurns={state.maxTurns} showDescription={false} />
 
-        {/* Mute button */}
-        <div className="flex items-center justify-end mb-3">
+        {/* Mute and Leaderboard buttons */}
+        <div className="flex items-center justify-between mb-3">
+          <button
+            className="text-xs text-slate-500 hover:text-slate-400 transition-colors flex items-center gap-1"
+            onClick={() => setShowLeaderboard(true)}
+          >
+            🏆 Leaderboard
+          </button>
           <button
             className="text-xs text-slate-500 hover:text-slate-400 transition-colors flex items-center gap-1"
             onClick={toggleMute}
@@ -335,6 +343,9 @@ const App: React.FC = () => {
             <div>Recent events: {state.recentEvents.join(", ") || "None"}</div>
           </div>
         )}
+
+        {/* Leaderboard Modal */}
+        <LeaderboardModal open={showLeaderboard} onClose={() => setShowLeaderboard(false)} />
       </div>
     </div>
   );
