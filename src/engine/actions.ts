@@ -1,9 +1,9 @@
 import type { GameState } from "./state";
 
-export type ActionCategory = "Extraction" | "Command" | "Communications" | "Crisis Response" | "Crew Relations";
+export type ActionCategory = "Ambition" | "Command" | "Communications" | "Crisis Response" | "Crew Relations";
 
 export type ActionId =
-  // Extraction (formerly Siphon)
+  // Ambition (Legacy-building projects)
   | "mining_acceleration"
   | "external_contractors"
   | "commander_bonus"
@@ -75,17 +75,17 @@ const clamp = (n: number, min = 0, max = 100) => Math.min(max, Math.max(min, n))
 
 export const ACTIONS: ActionDef[] = [
   // ═══════════════════════════════════════════════════════════
-  // EXTRACTION (formerly Siphon) - Resource extraction actions
+  // AMBITION - Legacy-building projects that compete with colony needs
   // ═══════════════════════════════════════════════════════════
   {
     id: "mining_acceleration",
-    category: "Extraction",
-    name: "Accelerated Mining Operations",
-    description: "Push extraction beyond safe limits. Legacy grows, but risks accumulate.",
+    category: "Ambition",
+    name: "[Your Name] Extraction Initiative",
+    description: "Accelerate resource output under your personal oversight. The mining reports will bear your signature.",
     tags: ["+Legacy", "+Unrest", "+Oversight", "-Trust", "-Reserves"],
     apply: (s) => {
       const amount = Math.floor(s.colonyReserves * 0.1);
-      const log = `Accelerated mining extracted ${amount} in legacy value.`;
+      const log = `The ${s.founderName} Extraction Initiative exceeds quarterly targets. Crew notes the attribution.`;
       return {
         ...s,
         colonyReserves: Math.max(0, s.colonyReserves - amount),
@@ -100,13 +100,13 @@ export const ACTIONS: ActionDef[] = [
   },
   {
     id: "external_contractors",
-    category: "Extraction",
-    name: "Hire External Contractors",
-    description: "Bring in 'specialists' with creative accounting.",
+    category: "Ambition",
+    name: "Commission External Research Team",
+    description: "Fund a specialist research unit reporting directly to you. Findings credited accordingly.",
     tags: ["+Legacy", "+Unrest", "+Oversight", "-Trust", "-Reserves"],
     apply: (s) => {
       const amount = Math.floor(s.colonyReserves * 0.12);
-      const log = `External contractors processed ${amount}. Invoices are... flexible.`;
+      const log = `External research team established. Publications will cite command authority.`;
       return {
         ...s,
         colonyReserves: Math.max(0, s.colonyReserves - amount),
@@ -121,13 +121,13 @@ export const ACTIONS: ActionDef[] = [
   },
   {
     id: "commander_bonus",
-    category: "Extraction",
-    name: "Commander Performance Bonus",
-    description: "Award yourself hazard pay. For 'leadership under pressure'.",
+    category: "Ambition",
+    name: "Commander Recognition Fund",
+    description: "Establish a fund for command excellence. You define the criteria.",
     tags: ["+Legacy", "+Unrest", "-Trust", "-Reserves"],
     apply: (s) => {
       const amount = Math.floor(s.colonyReserves * 0.05);
-      const log = `Commander bonus approved. Crew notices the allocation.`;
+      const log = `Commander Recognition Fund established. First recipient: current command.`;
       return {
         ...s,
         colonyReserves: Math.max(0, s.colonyReserves - amount),
@@ -142,7 +142,7 @@ export const ACTIONS: ActionDef[] = [
   },
   {
     id: "discretionary_budget",
-    category: "Extraction",
+    category: "Ambition",
     name: "Expand Discretionary Budget",
     description: "Personal quarters upgrades, 'morale supplies', transport privileges.",
     tags: ["+Legacy", "+Unrest", "+Oversight", "-Trust", "-Reserves"],
@@ -163,13 +163,13 @@ export const ACTIONS: ActionDef[] = [
   },
   {
     id: "private_reserve",
-    category: "Extraction",
-    name: "Private Reserve Fund",
-    description: "Route resources to a 'contingency' fund only you control.",
+    category: "Ambition",
+    name: "Commander's Strategic Reserve",
+    description: "Establish a discretionary fund for 'rapid response initiatives.' Oversight: minimal.",
     tags: ["+Legacy", "+Unrest", "+Oversight", "-Trust", "-Reserves"],
     apply: (s) => {
       const amount = Math.floor(s.colonyReserves * 0.25);
-      const log = `Private reserve fund established. Substantial allocation.`;
+      const log = `Strategic Reserve Fund established under direct command authority.`;
       return {
         ...s,
         colonyReserves: Math.max(0, s.colonyReserves - amount),
@@ -184,13 +184,13 @@ export const ACTIONS: ActionDef[] = [
   },
   {
     id: "luxury_habitat",
-    category: "Extraction",
-    name: "Construct Luxury Habitat",
-    description: "Build a 'command center' that looks suspiciously like a mansion.",
+    category: "Ambition",
+    name: "The [Your Name] Command Annex",
+    description: "Commission a dedicated command facility. Architectural significance is paramount.",
     tags: ["+Legacy", "+Unrest", "+Oversight", "-Trust", "-Reserves"],
     apply: (s) => {
       const amount = Math.floor(s.colonyReserves * 0.3);
-      const log = `Luxury habitat construction complete. Photos circulate on Earth.`;
+      const log = `The ${s.founderName} Command Annex opens. Earth media covers the dedication ceremony.`;
       return {
         ...s,
         colonyReserves: Math.max(0, s.colonyReserves - amount),
@@ -205,13 +205,13 @@ export const ACTIONS: ActionDef[] = [
   },
   {
     id: "resource_speculation",
-    category: "Extraction",
-    name: "Resource Speculation",
-    description: "Manipulate resource valuations while skimming the difference.",
+    category: "Ambition",
+    name: "Resource Valuation Initiative",
+    description: "Redefine resource metrics under your methodology. The accounting footnotes will credit you.",
     tags: ["+Legacy", "+Momentum", "+Oversight", "+Unrest", "-Reserves"],
     apply: (s) => {
       const cost = Math.floor(s.colonyReserves * 0.08);
-      const log = `Resource speculation initiated. Numbers look good... for now.`;
+      const log = `Resource Valuation Initiative implemented. Your methodology becomes standard practice.`;
       return {
         ...s,
         colonyReserves: Math.max(0, s.colonyReserves - cost),
@@ -226,13 +226,13 @@ export const ACTIONS: ActionDef[] = [
   },
   {
     id: "research_grant",
-    category: "Extraction",
-    name: "Research Grant to Self",
-    description: "Award yourself research funds. For 'critical investigation'.",
+    category: "Ambition",
+    name: "[Your Name] Research Fellowship",
+    description: "Endow a research fellowship. Selection committee: you.",
     tags: ["+Legacy", "+Oversight", "+Unrest", "-Trust", "-Reserves"],
     apply: (s) => {
       const amount = Math.floor(s.colonyReserves * 0.07);
-      const log = `Research grant approved. You are the sole recipient.`;
+      const log = `The ${s.founderName} Fellowship announces its inaugural recipient. The selection was unanimous.`;
       return {
         ...s,
         colonyReserves: Math.max(0, s.colonyReserves - amount),
@@ -246,13 +246,13 @@ export const ACTIONS: ActionDef[] = [
   },
   {
     id: "emergency_reserves",
-    category: "Extraction",
-    name: "Tap Emergency Reserves",
-    description: "Raid the colony's emergency fund. It's for emergencies, right?",
+    category: "Ambition",
+    name: "Emergency Contingency Reallocation",
+    description: "Redirect emergency reserves toward 'strategic priorities.' Documentation pending.",
     tags: ["+Legacy", "+Unrest", "+Oversight", "-Reserves"],
     apply: (s) => {
       const amount = Math.floor(s.colonyReserves * 0.15);
-      const log = `Emergency reserves accessed. 'Protocol override.'`;
+      const log = `Emergency reserves reallocated under contingency protocol 7-Alpha. Paperwork delayed.`;
       return {
         ...s,
         colonyReserves: Math.max(0, s.colonyReserves - amount),
@@ -266,13 +266,13 @@ export const ACTIONS: ActionDef[] = [
   },
   {
     id: "private_shipment",
-    category: "Extraction",
-    name: "Private Earth Shipment",
-    description: "Send 'samples' to Earth via unofficial channels.",
+    category: "Ambition",
+    name: "Priority Earth Consignment",
+    description: "Arrange personal transport allocation for 'research samples.' Manifest classified.",
     tags: ["+Legacy", "+Oversight", "-Reserves"],
     apply: (s) => {
       const amount = Math.floor(s.colonyReserves * 0.08);
-      const log = `Private shipment dispatched. Value extraction in progress.`;
+      const log = `Priority consignment dispatched to Earth. Contents: research artifacts bearing command insignia.`;
       return {
         ...s,
         legacy: s.legacy + amount,
@@ -285,13 +285,13 @@ export const ACTIONS: ActionDef[] = [
   },
   {
     id: "early_extraction",
-    category: "Extraction",
-    name: "Accelerate Extraction Schedule",
-    description: "Push timelines forward 'for operational needs.' Classic.",
+    category: "Ambition",
+    name: "Accelerated Project Timeline",
+    description: "Push all project milestones forward. Your name on the completion certificates.",
     tags: ["+Legacy", "+++Unrest", "+Oversight"],
     apply: (s) => {
       const amount = Math.floor(s.colonyReserves * 0.2);
-      const log = `Extraction accelerated. Crew notices immediately.`;
+      const log = `Project acceleration authorized. Crew overtime mandated. Completion credits assigned.`;
       return {
         ...s,
         legacy: s.legacy + amount,
@@ -305,16 +305,16 @@ export const ACTIONS: ActionDef[] = [
   },
   {
     id: "automated_skimming",
-    category: "Extraction",
-    name: "Automated Resource Skimming",
-    description: "Set up systems that subtly redirect small amounts. Plausible deniability.",
+    category: "Ambition",
+    name: "Efficiency Optimization Protocol",
+    description: "Implement automated resource allocation favoring command-designated priorities.",
     tags: ["+Legacy gradual", "+Oversight if discovered"],
     apply: (s) => {
       const amount = Math.floor(s.colonyReserves * (0.03 + Math.random() * 0.03));
       const discovered = Math.random() < 0.3;
       const log = discovered
-        ? `Automated skimming detected by audit systems. Investigation beginning.`
-        : `Automated resource allocation operational. Passive extraction engaged.`;
+        ? `Optimization protocol flagged by audit systems. Review initiated.`
+        : `Efficiency protocol operational. Resource allocation proceeding under command oversight.`;
       return {
         ...s,
         legacy: s.legacy + amount,
@@ -1070,7 +1070,7 @@ export function getVisibleActions(state: GameState): ActionDef[] {
 export function sampleActionsForTurn(state: GameState, rng: () => number): ActionDef[] {
   const actions = getVisibleActions(state);
   const byCategory: Record<ActionCategory, ActionDef[]> = {
-    Extraction: [],
+    Ambition: [],
     Command: [],
     Communications: [],
     "Crisis Response": [],
@@ -1090,7 +1090,7 @@ export function sampleActionsForTurn(state: GameState, rng: () => number): Actio
   };
 
   return [
-    ...pick(byCategory.Extraction, 2),
+    ...pick(byCategory.Ambition, 2),
     ...pick(byCategory.Command, 1),
     ...pick(byCategory.Communications, 1),
     ...pick(byCategory["Crisis Response"], 1),

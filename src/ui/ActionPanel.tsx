@@ -9,10 +9,10 @@ interface Props {
   disabled?: boolean;
 }
 
-const CATEGORY_ORDER: ActionCategory[] = ["Extraction", "Command", "Communications", "Crisis Response", "Crew Relations"];
+const CATEGORY_ORDER: ActionCategory[] = ["Ambition", "Command", "Communications", "Crisis Response", "Crew Relations"];
 
 const CATEGORY_CLASS: Record<ActionCategory, string> = {
-  Extraction: "siphon",
+  Ambition: "ambition",
   Command: "governance",
   Communications: "narrative",
   "Crisis Response": "damage",
@@ -20,8 +20,8 @@ const CATEGORY_CLASS: Record<ActionCategory, string> = {
 };
 
 const CATEGORY_ICON: Record<ActionCategory, string> = {
-  Extraction: "⛏️",
-  Command: "🏛️",
+  Ambition: "🏛️",
+  Command: "📋",
   Communications: "📡",
   "Crisis Response": "🛡️",
   "Crew Relations": "👥",
@@ -35,7 +35,7 @@ export const ActionPanel: React.FC<Props> = ({ state, onSelect, disabled }) => {
     : getVisibleActions(state);
 
   const byCategory: Record<ActionCategory, typeof actions> = {
-    Extraction: [],
+    Ambition: [],
     Command: [],
     Communications: [],
     "Crisis Response": [],
