@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { usePrivy } from "@privy-io/react-auth";
 import type { GameState } from "../engine/state";
 import { formatMoney, formatTokenPrice } from "./format";
-import { getSeason } from "../engine/seasons";
 import { THEME } from "../theme";
 
 interface Props {
@@ -51,21 +51,45 @@ const StatBox: React.FC<{ label: string; value: string; highlight?: boolean }> =
 );
 
 export const TopPanel: React.FC<Props> = ({ state, maxTurns, showDescription = true }) => {
-  const { tokenPrice, tvl, officialTreasury, siphoned, rage, heat, cred, techHype, seasonId } =
-    state;
+  const { tokenPrice, tvl, officialTreasury, siphoned, rage, heat, cred, techHype } = state;
+  const { user, authenticated } = usePrivy();
+  const [commanderName, setCommanderName] = useState<string | null>(null);
 
-  const season = getSeason(seasonId);
+  // Fetch verified commander name from profile
+  useEffect(() => {
+    async function fetchProfile() {
+      if (!user?.id) return;
 
-  // Build season effect descriptions
-  const seasonEffects: string[] = [];
-  if (season.rageDecayDelta && season.rageDecayDelta > 0) seasonEffects.push("Unrest cools faster");
-  if (season.rageDecayDelta && season.rageDecayDelta < 0) seasonEffects.push("Unrest builds easier");
-  if (season.heatDriftDelta && season.heatDriftDelta > 0) seasonEffects.push("Oversight rises passively");
-  if (season.credDecayDelta && season.credDecayDelta > 0) seasonEffects.push("Trust decays faster");
-  if (season.techHypeDecayDelta && season.techHypeDecayDelta < 0) seasonEffects.push("Momentum lasts longer");
-  if (season.techHypeDecayDelta && season.techHypeDecayDelta > 0) seasonEffects.push("Momentum sticks around");
-  if (season.crisisFactor && season.crisisFactor > 1) seasonEffects.push("Crises more likely");
-  if (season.crisisFactor && season.crisisFactor < 1) seasonEffects.push("Crises less likely");
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+      if (!supabaseUrl || !supabaseKey) return;
+
+      try {
+        const res = await fetch(`${supabaseUrl}/rest/v1/profiles?privy_user_id=eq.${encodeURIComponent(user.id)}&select=commander_name`, {
+          headers: {
+            'apikey': supabaseKey,
+            'Authorization': `Bearer ${supabaseKey}`,
+          },
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.length > 0) {
+            setCommanderName(data[0].commander_name);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to fetch profile name:", err);
+      }
+    }
+
+    if (authenticated) {
+      fetchProfile();
+    } else {
+      setCommanderName(null);
+    }
+  }, [authenticated, user?.id]);
 
   return (
     <div className="space-y-4 mb-4 animate-fadeIn">
@@ -76,6 +100,14 @@ export const TopPanel: React.FC<Props> = ({ state, maxTurns, showDescription = t
             <h1 className="text-xl sm:text-2xl font-bold leading-tight">{THEME.gameName}</h1>
             <span className="text-[10px] uppercase tracking-wide bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded-full">V1 Beta</span>
           </div>
+          {authenticated && commanderName && (
+            <div className="flex items-center gap-2 mt-1">
+              <span className="text-xs text-sky-400 font-mono uppercase tracking-wider">
+                CDR. {commanderName}
+              </span>
+              <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" title="Online" />
+            </div>
+          )}
           {showDescription && (
             <p className="text-xs text-slate-400 leading-snug mt-1 max-w-md">
               Build humanity's legacy on Mars in {maxTurns} cycles without triggering mutiny or mission shutdown.
