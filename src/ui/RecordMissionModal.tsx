@@ -52,7 +52,6 @@ export const RecordMissionModal: React.FC<RecordMissionModalProps> = ({
         setError(null);
 
         try {
-            // TODO: Call verification endpoint
             const response = await fetch('/api/submit-run', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -62,7 +61,7 @@ export const RecordMissionModal: React.FC<RecordMissionModalProps> = ({
                     score: finalScore,
                     endingId: ending?.id ?? 'unknown',
                     wallet: user.wallet.address,
-                    // TODO: Add signature
+                    privyUserId: user.id,
                 }),
             });
 
@@ -72,7 +71,7 @@ export const RecordMissionModal: React.FC<RecordMissionModalProps> = ({
             }
 
             const result = await response.json();
-            setTxHash(result.txHash);
+            setTxHash(result.onChain?.txHash || result.runHash);
             setSubmitted(true);
         } catch (err) {
             console.error('Submit failed:', err);
@@ -125,10 +124,10 @@ export const RecordMissionModal: React.FC<RecordMissionModalProps> = ({
                         <div className="bg-emerald-500/20 border border-emerald-500/40 rounded-xl p-4 text-center">
                             <span className="text-2xl">✅</span>
                             <div className="text-emerald-300 font-semibold mt-2">
-                                Mission Recorded!
+                                Recorded to Archive!
                             </div>
                             <p className="text-xs text-slate-400 mt-1">
-                                Your run has been verified and saved.
+                                Your mission has been verified and saved to the Colony Archive.
                             </p>
                         </div>
                         {txHash && (
@@ -138,7 +137,7 @@ export const RecordMissionModal: React.FC<RecordMissionModalProps> = ({
                                 rel="noopener noreferrer"
                                 className="block w-full py-3 px-4 bg-slate-700 hover:bg-slate-600 text-center text-sm text-sky-400 font-medium rounded-xl transition-colors"
                             >
-                                View on Explorer →
+                                View on Movement Explorer →
                             </a>
                         )}
                         <button
