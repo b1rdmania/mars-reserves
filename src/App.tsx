@@ -314,6 +314,8 @@ const App: React.FC = () => {
             state={state}
             onRestart={handleRestart}
             onChangeNames={() => setState(null)}
+            seed={seed}
+            actionIds={state.usedActionIds}
           />
         )}
 
