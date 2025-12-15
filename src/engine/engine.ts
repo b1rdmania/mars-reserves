@@ -142,7 +142,7 @@ export function initialState(params?: {
     tvl: 500_000_000,
     colonyReserves: 1_000_000_000,
     legacy: 0,
-    rage: 20,
+    rage: 10,
     oversightPressure: 10,
     cred: 60,
     techHype: 40,
