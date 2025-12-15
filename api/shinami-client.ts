@@ -1,114 +1,120 @@
 /**
- * Shinami Gas Station Client
- * Handles sponsored transaction submission to Movement network
+ * Shinami Gas Station Client for Movement Network
+ * Uses @shinami/clients SDK for proper transaction sponsorship
  */
 
-interface SponsorRequest {
-    sender: string;
-    payload: {
-        function: string;
-        type_arguments: string[];
-        arguments: (string | number)[];
-    };
+import { GasStationClient } from '@shinami/clients/aptos';
+import {
+    Aptos,
+    AptosConfig,
+    Network,
+    AccountAddress,
+    Ed25519PrivateKey,
+    Ed25519Account,
+} from '@aptos-labs/ts-sdk';
+
+// Movement testnet configuration
+const MOVEMENT_TESTNET_CONFIG = {
+    fullnodeUrl: 'https://aptos.testnet.movementnetwork.xyz/v1',
+    indexerUrl: 'https://indexer.testnet.movementnetwork.xyz/v1/graphql',
+};
+
+interface RecordMissionParams {
+    userAddress: string;
+    runHash: string;
+    score: number;
+    endingId: string;
+    missionIndexAddress: string;
 }
 
-interface SponsorResponse {
+interface SponsorResult {
     success: boolean;
     txHash?: string;
+    explorerUrl?: string;
     error?: string;
 }
 
 /**
- * Submit a sponsored transaction via Shinami Gas Station
- * The transaction is paid for by our Gas Station account, not the user
+ * Record a mission on-chain using Shinami Gas Station for sponsorship
+ * 
+ * Flow:
+ * 1. Build the transaction
+ * 2. Send to Shinami for fee sponsorship
+ * 3. Sign with backend key (fee payer is Shinami)
+ * 4. Submit to Movement
  */
-export async function submitSponsoredTransaction(
-    request: SponsorRequest,
-): Promise<SponsorResponse> {
-    const shinamiApiKey = process.env.SHINAMI_API_KEY;
-    const movementRpcUrl = process.env.MOVEMENT_RPC_URL;
-    const missionIndexAddress = process.env.MISSION_INDEX_ADDRESS;
-
-    if (!shinamiApiKey) {
-        return { success: false, error: 'SHINAMI_API_KEY not configured' };
-    }
-
-    if (!movementRpcUrl || !missionIndexAddress) {
-        return { success: false, error: 'Movement configuration missing' };
-    }
-
+export async function recordMissionOnChain(
+    params: RecordMissionParams,
+    shinamiApiKey: string,
+    backendPrivateKey?: string,
+): Promise<SponsorResult> {
     try {
-        // For Movement/Aptos-based chains, we use a slightly different approach
-        // Since Shinami primarily supports Sui, for Movement we'll use their 
-        // Aptos-compatible Gas Station or a direct sponsorship model
+        // Initialize Shinami Gas Station client
+        const gasClient = new GasStationClient(shinamiApiKey);
 
-        // Step 1: Build the transaction
-        const txPayload = {
-            type: 'entry_function_payload',
-            function: request.payload.function,
-            type_arguments: request.payload.type_arguments,
-            arguments: request.payload.arguments,
-        };
+        // Initialize Aptos client for Movement testnet
+        const config = new AptosConfig({
+            fullnode: MOVEMENT_TESTNET_CONFIG.fullnodeUrl,
+            indexer: MOVEMENT_TESTNET_CONFIG.indexerUrl,
+        });
+        const aptos = new Aptos(config);
 
-        // Step 2: For hackathon/testnet, we can use a simpler approach:
-        // Backend holds a funded account and submits on behalf of user
-        // The user's address is recorded in the event, maintaining attribution
+        // For sponsored transactions, we need a signer
+        // In production, this would be the user's wallet signing
+        // For hackathon, we use a backend key or create a temp one
+        let sender: Ed25519Account;
 
-        // Alternative: If Shinami has Movement support, use their API:
-        const sponsorResponse = await fetch('https://api.shinami.com/aptos/gas/v1', {
-            method: 'POST',
-            headers: {
-                'X-Api-Key': shinamiApiKey,
-                'Content-Type': 'application/json',
+        if (backendPrivateKey) {
+            const privateKey = new Ed25519PrivateKey(backendPrivateKey);
+            sender = new Ed25519Account({ privateKey });
+        } else {
+            // Create ephemeral account for this submission
+            // The user's address is still recorded in the event data
+            sender = Ed25519Account.generate();
+        }
+
+        // Build the transaction
+        const transaction = await aptos.transaction.build.simple({
+            sender: sender.accountAddress,
+            data: {
+                function: `${params.missionIndexAddress}::mission_index::record_mission`,
+                typeArguments: [],
+                functionArguments: [
+                    hexToBytes(params.runHash),
+                    params.score,
+                    stringToBytes(params.endingId),
+                ],
             },
-            body: JSON.stringify({
-                jsonrpc: '2.0',
-                method: 'gas_sponsorTransaction',
-                params: {
-                    sender: request.sender,
-                    payload: txPayload,
-                    options: {
-                        max_gas_amount: '10000',
-                        gas_unit_price: '100',
-                    },
-                },
-                id: 1,
-            }),
         });
 
-        if (!sponsorResponse.ok) {
-            const errorText = await sponsorResponse.text();
-            console.error('Shinami sponsor error:', errorText);
-            return { success: false, error: `Shinami error: ${sponsorResponse.status}` };
-        }
+        // Get sponsorship from Shinami
+        const feePayerAuth = await gasClient.sponsorTransaction(transaction);
 
-        const sponsorData = await sponsorResponse.json();
-
-        if (sponsorData.error) {
-            return { success: false, error: sponsorData.error.message };
-        }
-
-        // Step 3: Submit the sponsored transaction to Movement
-        const submitResponse = await fetch(`${movementRpcUrl}/transactions`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(sponsorData.result.signedTransaction),
+        // Sign the transaction with sender
+        const senderAuth = aptos.transaction.sign({
+            signer: sender,
+            transaction,
         });
 
-        if (!submitResponse.ok) {
-            const errorText = await submitResponse.text();
-            console.error('Movement submit error:', errorText);
-            return { success: false, error: 'Transaction submission failed' };
-        }
+        // Submit the sponsored transaction
+        const pendingTx = await aptos.transaction.submit.simple({
+            transaction,
+            senderAuthenticator: senderAuth,
+            feePayerAuthenticator: feePayerAuth,
+        });
 
-        const submitData = await submitResponse.json();
+        // Wait for confirmation
+        const executedTx = await aptos.waitForTransaction({
+            transactionHash: pendingTx.hash,
+        });
 
         return {
-            success: true,
-            txHash: submitData.hash,
+            success: executedTx.success,
+            txHash: pendingTx.hash,
+            explorerUrl: `https://explorer.movementnetwork.xyz/tx/${pendingTx.hash}?network=testnet`,
         };
     } catch (error) {
-        console.error('Sponsored transaction error:', error);
+        console.error('Shinami sponsored transaction error:', error);
         return {
             success: false,
             error: error instanceof Error ? error.message : 'Unknown error',
@@ -117,28 +123,38 @@ export async function submitSponsoredTransaction(
 }
 
 /**
- * Build the MissionIndex record_mission payload
+ * Simple version: Just check if Shinami is available and get fund info
  */
-export function buildRecordMissionPayload(
-    missionIndexAddress: string,
-    runHash: string,
-    score: number,
-    endingId: string,
-) {
-    return {
-        function: `${missionIndexAddress}::mission_index::record_mission`,
-        type_arguments: [],
-        arguments: [
-            // run_hash as hex bytes
-            `0x${runHash}`,
-            // score as u64
-            score,
-            // ending_id as bytes
-            stringToHex(endingId),
-        ],
-    };
+export async function checkGasStationFund(shinamiApiKey: string): Promise<{
+    available: boolean;
+    balance?: number;
+    error?: string;
+}> {
+    try {
+        const gasClient = new GasStationClient(shinamiApiKey);
+        const fund = await gasClient.getFund();
+        return {
+            available: true,
+            balance: fund.balance,
+        };
+    } catch (error) {
+        return {
+            available: false,
+            error: error instanceof Error ? error.message : 'Unknown error',
+        };
+    }
 }
 
-function stringToHex(str: string): string {
-    return '0x' + Buffer.from(str, 'utf8').toString('hex');
+// Helper functions
+function hexToBytes(hex: string): Uint8Array {
+    const cleanHex = hex.startsWith('0x') ? hex.slice(2) : hex;
+    const bytes = new Uint8Array(cleanHex.length / 2);
+    for (let i = 0; i < bytes.length; i++) {
+        bytes[i] = parseInt(cleanHex.substr(i * 2, 2), 16);
+    }
+    return bytes;
+}
+
+function stringToBytes(str: string): Uint8Array {
+    return new TextEncoder().encode(str);
 }

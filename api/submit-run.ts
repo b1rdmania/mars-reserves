@@ -356,72 +356,30 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         let onChainStatus: 'disabled' | 'queued' | 'submitted' | 'error' = 'disabled';
         let explorerUrl: string | null = null;
 
-        if (onChainEnabled && missionIndexAddress && shinamiApiKey && movementRpcUrl) {
+        if (onChainEnabled && missionIndexAddress && shinamiApiKey) {
             try {
-                // Build the record_mission payload
-                const txPayload = {
-                    function: `${missionIndexAddress}::mission_index::record_mission`,
-                    type_arguments: [],
-                    arguments: [
-                        `0x${runHash}`,                              // run_hash as bytes
-                        finalScore,                               // score as u64
-                        `0x${Buffer.from(verifiedEndingId).toString('hex')}`, // ending_id as bytes
-                    ],
-                };
+                // Use the Shinami SDK for proper transaction sponsorship
+                const { recordMissionOnChain } = await import('./shinami-client.js');
 
-                // Request sponsored transaction from Shinami (Movement-specific endpoint)
-                const sponsorResponse = await fetch(`https://api.us1.shinami.com/movement/gas/v1/${shinamiApiKey}`, {
-                    method: 'POST',
-                    headers: {
-                        'X-Api-Key': shinamiApiKey,
-                        'Content-Type': 'application/json',
+                const result = await recordMissionOnChain(
+                    {
+                        userAddress: body.wallet,
+                        runHash,
+                        score: finalScore,
+                        endingId: verifiedEndingId,
+                        missionIndexAddress,
                     },
-                    body: JSON.stringify({
-                        jsonrpc: '2.0',
-                        method: 'gas_sponsorTransaction',
-                        params: {
-                            sender: body.wallet,
-                            payload: {
-                                type: 'entry_function_payload',
-                                ...txPayload,
-                            },
-                            options: {
-                                max_gas_amount: '10000',
-                                gas_unit_price: '100',
-                            },
-                        },
-                        id: 1,
-                    }),
-                });
+                    shinamiApiKey,
+                );
 
-                if (sponsorResponse.ok) {
-                    const sponsorData = await sponsorResponse.json();
-
-                    if (sponsorData.result?.signedTransaction) {
-                        // Submit sponsored transaction to Movement
-                        const submitResponse = await fetch(`${movementRpcUrl}/transactions`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(sponsorData.result.signedTransaction),
-                        });
-
-                        if (submitResponse.ok) {
-                            const submitData = await submitResponse.json();
-                            txHash = submitData.hash;
-                            onChainStatus = 'submitted';
-                            explorerUrl = `https://explorer.movementnetwork.xyz/tx/${txHash}?network=bardock`;
-                            console.log('On-chain mission recorded:', txHash);
-                        } else {
-                            onChainStatus = 'error';
-                            console.error('Movement submit error:', await submitResponse.text());
-                        }
-                    } else {
-                        onChainStatus = 'error';
-                        console.error('Shinami sponsor failed:', sponsorData.error);
-                    }
+                if (result.success && result.txHash) {
+                    txHash = result.txHash;
+                    onChainStatus = 'submitted';
+                    explorerUrl = result.explorerUrl || `https://explorer.movementnetwork.xyz/tx/${txHash}?network=testnet`;
+                    console.log('On-chain mission recorded:', txHash);
                 } else {
                     onChainStatus = 'error';
-                    console.error('Shinami request failed:', sponsorResponse.status);
+                    console.error('Shinami sponsorship failed:', result.error);
                 }
             } catch (err) {
                 onChainStatus = 'error';
