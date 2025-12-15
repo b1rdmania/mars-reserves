@@ -71,7 +71,7 @@ export const RecordMissionModal: React.FC<RecordMissionModalProps> = ({
             }
 
             const result = await response.json();
-            setTxHash(result.onChain?.txHash || result.runHash);
+            setTxHash(result.onChain?.txHash || null);
             setSubmitted(true);
         } catch (err) {
             console.error('Submit failed:', err);
