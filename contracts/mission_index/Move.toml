@@ -1,0 +1,10 @@
+[package]
+name = "mission_index"
+version = "1.0.0"
+authors = ["Mars Reserves"]
+
+[addresses]
+mission_index = "_"
+
+[dependencies]
+AptosFramework = { git = "https://github.com/aptos-labs/aptos-core.git", subdir = "aptos-move/framework/aptos-framework", rev = "mainnet" }

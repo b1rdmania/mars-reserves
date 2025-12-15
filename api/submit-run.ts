@@ -355,29 +355,89 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             }
         }
 
-        // On-chain submission
+        // On-chain submission via Shinami Gas Station
         const onChainEnabled = process.env.ENABLE_ONCHAIN === 'true';
+        const missionIndexAddress = process.env.MISSION_INDEX_ADDRESS;
+        const shinamiApiKey = process.env.SHINAMI_API_KEY;
+        const movementRpcUrl = process.env.MOVEMENT_RPC_URL;
+
         let txHash: string | null = null;
         let onChainStatus: 'disabled' | 'queued' | 'submitted' | 'error' = 'disabled';
-        let indexDelta: number | null = null;
+        let explorerUrl: string | null = null;
 
-        if (onChainEnabled) {
+        if (onChainEnabled && missionIndexAddress && shinamiApiKey && movementRpcUrl) {
             try {
-                // Calculate index delta (score / 1M, min 1)
-                indexDelta = Math.max(1, Math.floor(verifiedScore / 1_000_000));
+                // Build the record_mission payload
+                const txPayload = {
+                    function: `${missionIndexAddress}::mission_index::record_mission`,
+                    type_arguments: [],
+                    arguments: [
+                        `0x${runHash}`,                              // run_hash as bytes
+                        verifiedScore,                               // score as u64
+                        `0x${Buffer.from(verifiedEndingId).toString('hex')}`, // ending_id as bytes
+                    ],
+                };
 
-                // TODO: Integrate with Movement/Aptos SDK
-                // const client = new AptosClient(process.env.MOVEMENT_RPC_URL);
-                // const txn = await client.submitTransaction(...);
-                // txHash = txn.hash;
+                // Request sponsored transaction from Shinami
+                const sponsorResponse = await fetch('https://api.shinami.com/aptos/gas/v1', {
+                    method: 'POST',
+                    headers: {
+                        'X-Api-Key': shinamiApiKey,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        jsonrpc: '2.0',
+                        method: 'gas_sponsorTransaction',
+                        params: {
+                            sender: body.wallet,
+                            payload: {
+                                type: 'entry_function_payload',
+                                ...txPayload,
+                            },
+                            options: {
+                                max_gas_amount: '10000',
+                                gas_unit_price: '100',
+                            },
+                        },
+                        id: 1,
+                    }),
+                });
 
-                // For now, mark as queued (backend would process async)
-                onChainStatus = 'queued';
-                console.log('On-chain submission queued for run:', runHash, 'delta:', indexDelta);
+                if (sponsorResponse.ok) {
+                    const sponsorData = await sponsorResponse.json();
+
+                    if (sponsorData.result?.signedTransaction) {
+                        // Submit sponsored transaction to Movement
+                        const submitResponse = await fetch(`${movementRpcUrl}/transactions`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(sponsorData.result.signedTransaction),
+                        });
+
+                        if (submitResponse.ok) {
+                            const submitData = await submitResponse.json();
+                            txHash = submitData.hash;
+                            onChainStatus = 'submitted';
+                            explorerUrl = `https://explorer.movementnetwork.xyz/tx/${txHash}?network=bardock`;
+                            console.log('On-chain mission recorded:', txHash);
+                        } else {
+                            onChainStatus = 'error';
+                            console.error('Movement submit error:', await submitResponse.text());
+                        }
+                    } else {
+                        onChainStatus = 'error';
+                        console.error('Shinami sponsor failed:', sponsorData.error);
+                    }
+                } else {
+                    onChainStatus = 'error';
+                    console.error('Shinami request failed:', sponsorResponse.status);
+                }
             } catch (err) {
                 onChainStatus = 'error';
                 console.error('On-chain submission error:', err);
             }
+        } else if (onChainEnabled) {
+            console.warn('On-chain enabled but missing config:', { missionIndexAddress: !!missionIndexAddress, shinamiApiKey: !!shinamiApiKey });
         }
 
         // Always return stable response structure
