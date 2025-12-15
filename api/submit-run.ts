@@ -40,7 +40,7 @@ function initialState(): MinimalState {
         maxTurns: 20,
         colonyReserves: 1_000_000_000,
         legacy: 0,
-        rage: 20,
+        rage: 10,
         oversightPressure: 10,
         cred: 60,
         techHype: 40,
@@ -458,7 +458,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                 enabled: onChainEnabled,
                 status: onChainStatus,
                 txHash,
-                indexDelta,
+                explorerUrl,
             },
             ...(supabaseError && { supabaseError }),
         });
