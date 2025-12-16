@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { usePrivy } from "@privy-io/react-auth";
 import type { GameState } from "../engine/state";
-import { formatMoney } from "./format";
+import { formatMoney, formatStockpile } from "./format";
 import { THEME } from "../theme";
 
 interface Props {
@@ -168,13 +168,21 @@ export const TopPanel: React.FC<Props> = ({ state, maxTurns, showDescription = t
         <div className="flex justify-center">
           <div className="stat-display text-center">
             <span className="stat-label">Colony Stockpile</span>
-            <span className="stat-value">{formatMoney(colonyReserves)}</span>
-            <span className="text-[9px] text-slate-500 italic mt-1">
+            <span className="text-[8px] text-slate-600 block -mt-0.5">Energy · Materials · Oxygen Margin</span>
+            <span className="stat-value">{formatStockpile(colonyReserves)}</span>
+            <span className={`text-[9px] italic mt-1 ${(() => {
+              const pct = (colonyReserves / 1_000_000_000) * 100;
+              if (pct > 80) return "text-slate-500";
+              if (pct > 40) return "text-amber-500/80";
+              return "text-red-400";
+            })()
+              }`}>
               {(() => {
                 const pct = (colonyReserves / 1_000_000_000) * 100;
-                if (pct > 80) return "Operational buffer healthy.";
-                if (pct > 40) return "Redundancy thinning.";
-                return "Life support margins critical.";
+                if (pct > 80) return "Healthy buffer";
+                if (pct > 60) return "Redundancy thinning";
+                if (pct > 40) return "Critical margins";
+                return "Life support at risk";
               })()}
             </span>
           </div>
@@ -187,7 +195,7 @@ export const TopPanel: React.FC<Props> = ({ state, maxTurns, showDescription = t
           <MeterBar label="Unrest" value={rage} type="rage" />
           <MeterBar label="Oversight" value={oversightPressure} type="heat" />
           <MeterBar label="Trust" value={cred} type="cred" />
-          <MeterBar label="Research" value={techHype} type="tech" />
+          <MeterBar label="Momentum" value={techHype} type="tech" />
         </div>
       </div>
     </div>
