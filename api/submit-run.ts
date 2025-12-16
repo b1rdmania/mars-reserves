@@ -356,7 +356,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         let onChainStatus: 'disabled' | 'queued' | 'submitted' | 'error' = 'disabled';
         let explorerUrl: string | null = null;
 
+        console.log('[OnChain] Config:', { onChainEnabled, hasMissionIndex: !!missionIndexAddress, hasShinami: !!shinamiApiKey });
+
         if (onChainEnabled && missionIndexAddress && shinamiApiKey) {
+            console.log('[OnChain] Attempting on-chain recording...');
             try {
                 // Use the Shinami SDK for proper transaction sponsorship
                 const { recordMissionOnChain } = await import('./shinami-client.js');
