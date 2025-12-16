@@ -431,6 +431,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                 status: onChainStatus,
                 txHash,
                 explorerUrl,
+                // Diagnostics (remove after debugging)
+                _debug: {
+                    hasEnableOnchain: !!process.env.ENABLE_ONCHAIN,
+                    enableOnchainValue: process.env.ENABLE_ONCHAIN,
+                    hasMissionIndex: !!missionIndexAddress,
+                    hasShinami: !!shinamiApiKey,
+                },
             },
             ...(supabaseError && { supabaseError }),
         });
