@@ -62,17 +62,6 @@ const MeterBar: React.FC<{
   );
 };
 
-const StatBox: React.FC<{ label: string; value: string; highlight?: boolean }> = ({
-  label,
-  value,
-  highlight,
-}) => (
-  <div className="stat-display">
-    <span className="stat-label">{label}</span>
-    <span className={`stat-value ${highlight ? "text-emerald-400" : ""}`}>{value}</span>
-  </div>
-);
-
 export const TopPanel: React.FC<Props> = ({ state, maxTurns, showDescription = true, muted, onToggleMute }) => {
   const { colonyReserves, legacy, rage, oversightPressure, cred, techHype } = state;
   const { user, authenticated } = usePrivy();
@@ -174,10 +163,21 @@ export const TopPanel: React.FC<Props> = ({ state, maxTurns, showDescription = t
         </div>
       </div>
 
-      {/* Colony Stats */}
+      {/* Colony Stockpile */}
       <div className="game-card">
         <div className="flex justify-center">
-          <StatBox label="Colony Reserves" value={formatMoney(colonyReserves)} />
+          <div className="stat-display text-center">
+            <span className="stat-label">Colony Stockpile</span>
+            <span className="stat-value">{formatMoney(colonyReserves)}</span>
+            <span className="text-[9px] text-slate-500 italic mt-1">
+              {(() => {
+                const pct = (colonyReserves / 1_000_000_000) * 100;
+                if (pct > 80) return "Operational buffer healthy.";
+                if (pct > 40) return "Redundancy thinning.";
+                return "Life support margins critical.";
+              })()}
+            </span>
+          </div>
         </div>
       </div>
 

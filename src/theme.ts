@@ -7,7 +7,7 @@ export const THEME = {
 
   // Metric display names
   metrics: {
-    colonyReserves: "Colony Reserves",
+    colonyReserves: "Colony Stockpile",
     legacy: "Legacy Capital",
     rage: "Crew Unrest",
     oversightPressure: "Earth Oversight",

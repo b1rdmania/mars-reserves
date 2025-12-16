@@ -78,7 +78,7 @@ export const ActionPanel: React.FC<Props> = ({ state, onSelect, disabled }) => {
                     className={`action-btn ${CATEGORY_CLASS[a.category]}`}
                   >
                     <div className="font-semibold text-sm leading-tight text-slate-100">
-                      {a.name}
+                      {a.name.replace("[Your Name]", state.founderName)}
                     </div>
                     <div className="text-xs text-slate-400 leading-tight mt-1">
                       {a.description}
