@@ -134,7 +134,7 @@ export function initialState(params?: {
   const { chainName = "Olympus Base", founderName = "Commander", ticker = "OLY", seasonId = "dust_season" } = params ?? {};
   return {
     turn: 0,
-    maxTurns: 20,
+    maxTurns: 10,
     chainName,
     founderName,
     ticker: ticker.toUpperCase().slice(0, 4),
