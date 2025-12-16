@@ -347,10 +347,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         }
 
         // On-chain submission via Shinami Gas Station
-        const onChainEnabled = process.env.ENABLE_ONCHAIN === 'true';
-        const missionIndexAddress = process.env.MISSION_INDEX_ADDRESS;
-        const shinamiApiKey = process.env.SHINAMI_API_KEY;
-        const movementRpcUrl = process.env.MOVEMENT_RPC_URL;
+        // Sanitize address env vars at startup to prevent whitespace issues
+        const onChainEnabled = (process.env.ENABLE_ONCHAIN ?? '').trim() === 'true';
+        const missionIndexAddress = (process.env.MISSION_INDEX_ADDRESS ?? '').trim();
+        const shinamiApiKey = (process.env.SHINAMI_API_KEY ?? '').trim();
+
+        // Validate address format if on-chain is enabled
+        if (onChainEnabled && missionIndexAddress) {
+            if (!/^0x[0-9a-fA-F]{64}$/.test(missionIndexAddress)) {
+                console.error(`Invalid MISSION_INDEX_ADDRESS format: ${JSON.stringify(process.env.MISSION_INDEX_ADDRESS)}`);
+            }
+        }
 
         let txHash: string | null = null;
         let onChainStatus: 'disabled' | 'queued' | 'submitted' | 'error' = 'disabled';
