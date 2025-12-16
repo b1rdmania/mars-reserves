@@ -58,21 +58,19 @@ function getSeverityColor(label: string): string {
 }
 
 function isNegativeDelta(label: string, delta: number): boolean {
-  const badWhenUp = label.toLowerCase().includes("rage") || label.toLowerCase().includes("heat");
+  const badWhenUp = label.toLowerCase().includes("unrest") || label.toLowerCase().includes("oversight");
   if (badWhenUp) return delta > 0;
   return delta < 0;
 }
 
 function getStatEmoji(label: string): string {
   const l = label.toLowerCase();
-  if (l.includes("treasury")) return "🏦";
+  if (l.includes("treasury") || l.includes("reserves")) return "🏦";
   if (l.includes("legacy")) return "💰";
-  if (l.includes("rage")) return "😤";
-  if (l.includes("heat")) return "🔥";
-  if (l.includes("cred")) return "⭐";
-  if (l.includes("tech")) return "🚀";
-  if (l.includes("price")) return "📈";
-  if (l.includes("tvl")) return "💧";
+  if (l.includes("unrest")) return "😤";
+  if (l.includes("oversight")) return "👁️";
+  if (l.includes("trust")) return "⭐";
+  if (l.includes("research")) return "🚀";
   return "•";
 }
 
@@ -158,6 +156,21 @@ export const TurnResultModal: React.FC<Props> = ({ open, onClose, actionName, se
             </div>
           );
         })()}
+        {/* Ominous Dread Message */}
+        <div className="text-center text-[10px] text-slate-500 italic mb-3">
+          {(() => {
+            const messages = [
+              "Earth is reviewing this.",
+              "Crew sentiment logged.",
+              "This will be remembered.",
+              "Oversight has noted this.",
+              "This incident has been archived.",
+            ];
+            // Use a simple hash to pick consistently per action
+            const hash = (actionName.length + deltas.length) % messages.length;
+            return messages[hash];
+          })()}
+        </div>
 
         {/* Action Button */}
         <button
@@ -167,7 +180,7 @@ export const TurnResultModal: React.FC<Props> = ({ open, onClose, actionName, se
             : "bg-sky-500 hover:bg-sky-400 text-white"
             }`}
         >
-          {hasNegative ? "Survive Another Turn →" : "Next Turn →"}
+          {hasNegative ? "Continue →" : "Continue →"}
         </button>
       </div>
     </div>

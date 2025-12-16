@@ -1,25 +1,17 @@
 import type { GameState } from "./state";
 import type { SeasonDef } from "./seasons";
-import { SCANDAL_FRAGMENTS } from "../content/events.web3";
 
 export type EventId =
-  | "founder_meltdown"
-  | "influencer_thread"
-  | "vitalik_tag"
-  | "meme_coin_summer"
-  | "influencer_livestream"
-  | "conference_backroom_rumour"
-  | "cofounder_ragequit"
-  | "vc_tweetstorm"
-  | "solana_outage"
-  | "bridge_hack"
-  | "smart_contract_bug"
+  // Communications events (renamed from crypto)
+  | "commander_outburst"
+  | "external_analyst_thread"
+  | "supply_manifest_discrepancy"
+  | "life_support_integrity_issue"
   | "contractor_withdrawal"
-  | "scandal_fragment"
   | "audit_notice"
-  | "team_discord_leak"
-  | "community_never_forgets"
-  | "diversification_pays_off"
+  | "team_comms_leak"
+  | "archive_compilation"
+  | "reserve_management_noticed"
   // Mars environment events
   | "dust_storm"
   | "solar_flare"
@@ -38,15 +30,16 @@ export interface EventDef {
 }
 
 const BASE_EVENTS: EventDef[] = [
+  // === COMMUNICATIONS / COMMAND EVENTS ===
   {
-    id: "founder_meltdown",
-    name: "Founder Meltdown in Discord",
+    id: "commander_outburst",
+    name: "Commander Outburst in Comms",
     weight: (s, season) => {
       void season;
       return s.rage > 50 ? 2 : 0.3;
     },
     apply: (s) => {
-      const log = `You argued with a 19-year-old anon in Discord for 3 hours. Screenshots everywhere.`;
+      const log = `You argued with a junior officer on open comms for 3 hours. The transcript circulates.`;
       return {
         ...s,
         rage: Math.min(100, s.rage + 15),
@@ -56,227 +49,89 @@ const BASE_EVENTS: EventDef[] = [
           founderStability: s.hidden.founderStability - 0.2,
           communityMemory: s.hidden.communityMemory + 0.1,
         },
-        recentEvents: ["founder_meltdown", ...s.recentEvents].slice(0, 5),
+        recentEvents: ["commander_outburst", ...s.recentEvents].slice(0, 5),
         log: [log, ...s.log],
       };
     },
   },
   {
-    id: "influencer_thread",
-    name: "Influencer Threads You",
+    id: "external_analyst_thread",
+    name: "External Analyst Publishes Critical Analysis",
     weight: (s, season) => {
       void season;
       return s.hidden.scrutiny > 0.2 ? 2 : 0.5;
     },
     apply: (s) => {
-      const log = `Influencer posts a 19-tweet thread about your treasury flows.`;
+      const log = `Earth analyst publishes detailed report on your resource allocation patterns.`;
       return {
         ...s,
         rage: Math.min(100, s.rage + 10),
         oversightPressure: Math.min(100, s.oversightPressure + 10),
-        recentEvents: ["influencer_thread", ...s.recentEvents].slice(0, 5),
+        recentEvents: ["external_analyst_thread", ...s.recentEvents].slice(0, 5),
         log: [log, ...s.log],
       };
     },
   },
   {
-    id: "vitalik_tag",
-    name: "Vitalik Replies",
+    id: "supply_manifest_discrepancy",
+    name: "Supply Manifest Discrepancy",
     weight: (s, season) => {
       void season;
-      return s.cred > 60 ? 1.5 : 0.05;
-    },
-    apply: (s) => {
-      const log = `Vitalik replies to your post with something ambiguous but positive.`;
-      return {
-        ...s,
-        cred: Math.min(100, s.cred + 20),
-        oversightPressure: Math.min(100, s.oversightPressure + 5),
-        log: [log, ...s.log],
-      };
-    },
-  },
-  {
-    id: "meme_coin_summer",
-    name: "Meme Coin Summer",
-    weight: (_s, season) => {
-      void season;
-      return 0.1;
-    },
-    apply: (s) => {
-      const log = `Meme Coin Summer hits. Everyone is distracted by penguin coins.`;
-      return {
-        ...s,
-        rage: Math.max(0, s.rage - 15),
-        techHype: Math.min(100, s.techHype + 5),
-        log: [log, ...s.log],
-      };
-    },
-  },
-  {
-    id: "influencer_livestream",
-    name: "Influencer Livestream Slip-up",
-    weight: (s, season) => {
-      void season;
-      return s.cred > 30 ? 0.8 : 0.3;
-    },
-    apply: (s) => {
-      const rageSpike = s.hidden.communityMemory > 0.3 ? 25 : 15;
-      const log = `You rambled on a livestream and hinted at token plans. Clips go viral.`;
-      return {
-        ...s,
-        rage: Math.min(100, s.rage + rageSpike),
-        oversightPressure: Math.min(100, s.oversightPressure + 10),
-        cred: Math.max(0, s.cred - 10),
-        hidden: {
-          ...s.hidden,
-          communityMemory: s.hidden.communityMemory + 0.1,
-        },
-        log: [log, ...s.log],
-        recentEvents: ["influencer_livestream", ...s.recentEvents].slice(0, 5),
-      };
-    },
-  },
-  {
-    id: "conference_backroom_rumour",
-    name: "Conference Backroom Rumour",
-    weight: (s, season) => {
-      void season;
-      return s.techHype > 20 ? 0.9 : 0.3;
-    },
-    apply: (s) => {
-      const log = `Backroom whispers say your protocol has a secret partnership.`;
-      return {
-        ...s,
-        cred: Math.min(100, s.cred + 10),
-        oversightPressure: Math.min(100, s.oversightPressure + 8),
-        log: [log, ...s.log],
-        recentEvents: ["conference_backroom_rumour", ...s.recentEvents].slice(0, 5),
-      };
-    },
-  },
-  {
-    id: "cofounder_ragequit",
-    name: "Co-Founder Rage Quits",
-    weight: (s, season) => {
-      void season;
-      return s.hidden.founderStability < 0.6 ? 0.8 : 0.1;
-    },
-    apply: (s) => {
-      const log = `Your co-founder posts a long goodbye note. Community panics.`;
-      return {
-        ...s,
-        cred: Math.max(0, s.cred - 25),
-        rage: Math.min(100, s.rage + 10),
-        hidden: {
-          ...s.hidden,
-          founderStability: Math.max(0, s.hidden.founderStability - 0.4),
-        },
-        log: [log, ...s.log],
-        recentEvents: ["cofounder_ragequit", ...s.recentEvents].slice(0, 5),
-      };
-    },
-  },
-  {
-    id: "vc_tweetstorm",
-    name: "VC Tweetstorm",
-    weight: (_s, season) => {
-      void season;
-      return 0.6;
-    },
-    apply: (s) => {
-      const log = `A top VC threads your protocol as “the future of everything”.`;
-      return {
-        ...s,
-        techHype: Math.min(100, s.techHype + 30),
-        oversightPressure: Math.min(100, s.oversightPressure + 10),
-        cred: Math.min(100, s.cred + 5),
-        log: [log, ...s.log],
-        recentEvents: ["vc_tweetstorm", ...s.recentEvents].slice(0, 5),
-      };
-    },
-  },
-  {
-    id: "solana_outage",
-    name: "Solana Outage",
-    weight: (_s, season) => {
-      void season;
-      return 0.3;
-    },
-    apply: (s) => {
-      const log = `Solana goes down; everyone stops yelling at you for a moment.`;
-      return {
-        ...s,
-        rage: Math.max(0, s.rage - 15),
-        oversightPressure: Math.max(0, s.oversightPressure - 5),
-        techHype: Math.min(100, s.techHype + 5),
-        log: [log, ...s.log],
-        recentEvents: ["solana_outage", ...s.recentEvents].slice(0, 5),
-      };
-    },
-  },
-  {
-    id: "bridge_hack",
-    name: "Bridge Exploit",
-    weight: (s, season) => {
-      void season;
-      // More likely if audit risk is high
       return s.hidden.scrutiny > 0.3 ? 0.8 : 0.15;
     },
     apply: (s) => {
-      const hackAmount = Math.floor(s.tvl * (0.1 + Math.random() * 0.2)); // 10-30% of TVL
-      const log = `🚨 BRIDGE EXPLOIT: Hackers drained $${(hackAmount / 1_000_000).toFixed(1)}M from the bridge. TVL nuked.`;
+      const discrepancy = Math.floor(s.colonyReserves * (0.1 + Math.random() * 0.15)); // 10-25% of reserves
+      const log = `📋 SUPPLY DISCREPANCY: Audit reveals ${(discrepancy / 1_000_000).toFixed(1)}M in unaccounted materials. Oversight intensifies.`;
       return {
         ...s,
-        tvl: Math.max(10_000_000, s.tvl - hackAmount),
-        tokenPrice: s.tokenPrice * 0.6, // 40% crash
-        colonyReserves: s.colonyReserves * 0.85, // Treasury takes a hit too
-        rage: Math.min(100, s.rage + 35),
+        colonyReserves: Math.max(0, s.colonyReserves - discrepancy),
+        tokenPrice: s.tokenPrice * 0.7, // 30% confidence drop
+        rage: Math.min(100, s.rage + 25),
         oversightPressure: Math.min(100, s.oversightPressure + 25),
-        cred: Math.max(0, s.cred - 30),
+        cred: Math.max(0, s.cred - 20),
         hidden: {
           ...s.hidden,
           scrutiny: Math.min(1, s.hidden.scrutiny + 0.3),
           communityMemory: s.hidden.communityMemory + 0.3,
         },
         log: [log, ...s.log],
-        recentEvents: ["bridge_hack", ...s.recentEvents].slice(0, 5),
+        recentEvents: ["supply_manifest_discrepancy", ...s.recentEvents].slice(0, 5),
       };
     },
   },
   {
-    id: "smart_contract_bug",
-    name: "Smart Contract Bug Found",
+    id: "life_support_integrity_issue",
+    name: "Life Support Integrity Issue",
     weight: (s, season) => {
       void season;
-      return s.techHype > 50 ? 0.4 : 0.2; // Ironic: more hype = more scrutiny
+      return s.techHype > 50 ? 0.4 : 0.2;
     },
     apply: (s) => {
       const severity = Math.random();
       if (severity > 0.7) {
-        // Critical bug - funds at risk
-        const lostFunds = Math.floor(s.tvl * 0.08);
-        const log = `🐛 CRITICAL BUG: Whitehat discloses infinite mint bug. Some funds drained before patch.`;
+        // Critical - resources at risk
+        const lostResources = Math.floor(s.colonyReserves * 0.08);
+        const log = `🚨 CRITICAL SYSTEMS FAILURE: Life support cascade. Emergency reserves deployed.`;
         return {
           ...s,
-          tvl: s.tvl - lostFunds,
+          colonyReserves: Math.max(0, s.colonyReserves - lostResources),
           tokenPrice: s.tokenPrice * 0.75,
           rage: Math.min(100, s.rage + 25),
           techHype: Math.max(0, s.techHype - 25),
           cred: Math.max(0, s.cred - 20),
           log: [log, ...s.log],
-          recentEvents: ["smart_contract_bug", ...s.recentEvents].slice(0, 5),
+          recentEvents: ["life_support_integrity_issue", ...s.recentEvents].slice(0, 5),
         };
       }
-      // Minor bug - just embarrassing
-      const log = `🐛 Bug bounty payout: researcher found an edge case. Fixed before exploit.`;
+      // Minor issue - just concerning
+      const log = `🔧 Systems integrity issue identified. Engineering team addresses before escalation.`;
       return {
         ...s,
-        colonyReserves: Math.max(0, s.colonyReserves - Math.floor(s.colonyReserves * 0.005)), // Bounty payment
+        colonyReserves: Math.max(0, s.colonyReserves - Math.floor(s.colonyReserves * 0.005)), // Repair costs
         techHype: Math.max(0, s.techHype - 10),
         cred: Math.max(0, s.cred - 5),
         log: [log, ...s.log],
-        recentEvents: ["smart_contract_bug", ...s.recentEvents].slice(0, 5),
+        recentEvents: ["life_support_integrity_issue", ...s.recentEvents].slice(0, 5),
       };
     },
   },
@@ -289,10 +144,10 @@ const BASE_EVENTS: EventDef[] = [
     },
     apply: (s) => {
       const withdrawalPct = 5 + Math.floor(Math.random() * 10); // 5-15% of funding
-      const log = `📉 CONTRACTOR WITHDRAWAL: Major Earth sponsor just pulled ${withdrawalPct}% of committed funding. Supply index in freefall.`;
+      const log = `📉 CONTRACTOR WITHDRAWAL: Major Earth sponsor pulled ${withdrawalPct}% of committed funding. Confidence drops.`;
       return {
         ...s,
-        tokenPrice: s.tokenPrice * (0.65 + Math.random() * 0.15), // 20-35% crash
+        tokenPrice: s.tokenPrice * (0.65 + Math.random() * 0.15), // 20-35% drop
         rage: Math.min(100, s.rage + 20),
         cred: Math.max(0, s.cred - 10),
         log: [log, ...s.log],
@@ -303,7 +158,7 @@ const BASE_EVENTS: EventDef[] = [
   // === HIDDEN STATE TRIGGER EVENTS ===
   {
     id: "audit_notice",
-    name: "Audit Firm Sends Notice",
+    name: "Earth Oversight Sends Notice",
     weight: (s, season) => {
       void season;
       return s.hidden.scrutiny > 0.4 ? 1.5 : 0; // Only triggers if audit risk is high
@@ -311,8 +166,8 @@ const BASE_EVENTS: EventDef[] = [
     apply: (s) => {
       const isSevere = s.hidden.scrutiny > 0.7;
       const log = isSevere
-        ? `📋 Big 4 firm requests 'urgent clarification' on treasury movements. This is bad.`
-        : `📋 Auditors asking questions about 'expense categorization.' Stay calm.`;
+        ? `📋 Earth oversight requests 'urgent clarification' on resource allocations. This is serious.`
+        : `📋 Auditors asking questions about 'expense categorization.' Standard procedure—for now.`;
       return {
         ...s,
         oversightPressure: Math.min(100, s.oversightPressure + (isSevere ? 25 : 12)),
@@ -327,14 +182,14 @@ const BASE_EVENTS: EventDef[] = [
     },
   },
   {
-    id: "team_discord_leak",
-    name: "Team Discord Leak",
+    id: "team_comms_leak",
+    name: "Internal Comms Leak",
     weight: (s, season) => {
       void season;
       return s.hidden.founderStability < 0.5 ? 1.2 : 0; // Only when team is unstable
     },
     apply: (s) => {
-      const log = `💬 Someone leaked internal comms. Screenshots of you calling the mission 'unsalvageable' went viral on Earth.`;
+      const log = `💬 Someone leaked internal comms. Your private remarks about the mission being 'unsalvageable' reach Earth.`;
       return {
         ...s,
         rage: Math.min(100, s.rage + 20),
@@ -345,19 +200,19 @@ const BASE_EVENTS: EventDef[] = [
           communityMemory: s.hidden.communityMemory + 0.2,
         },
         log: [log, ...s.log],
-        recentEvents: ["team_discord_leak", ...s.recentEvents].slice(0, 5),
+        recentEvents: ["team_comms_leak", ...s.recentEvents].slice(0, 5),
       };
     },
   },
   {
-    id: "community_never_forgets",
-    name: "Community Never Forgets",
+    id: "archive_compilation",
+    name: "Archive Compiles Broken Commitments",
     weight: (s, season) => {
       void season;
       return s.hidden.communityMemory > 0.3 ? 1.0 : 0; // Triggers when community has long memory
     },
     apply: (s) => {
-      const log = `🧵 Anonymous post compiles all your broken commitments. 'The Complete Command Failure Timeline.' Gaining traction on Earth.`;
+      const log = `🧵 Anonymous analyst compiles all your missed targets. 'The Complete Command Failure Timeline' circulates on Earth.`;
       return {
         ...s,
         rage: Math.min(100, s.rage + 15),
@@ -367,26 +222,26 @@ const BASE_EVENTS: EventDef[] = [
           communityMemory: s.hidden.communityMemory + 0.1,
         },
         log: [log, ...s.log],
-        recentEvents: ["community_never_forgets", ...s.recentEvents].slice(0, 5),
+        recentEvents: ["archive_compilation", ...s.recentEvents].slice(0, 5),
       };
     },
   },
   {
-    id: "diversification_pays_off",
-    name: "Diversification Pays Off",
+    id: "reserve_management_noticed",
+    name: "Reserve Management Noticed",
     weight: (s, season) => {
       void season;
-      return s.hidden.stablecoinRatio > 0.5 ? 0.8 : 0; // Reward for good treasury management
+      return s.hidden.reserveLiquidity > 0.5 ? 0.8 : 0; // Reward for good resource management
     },
     apply: (s) => {
-      const log = `📊 Market dips 30%, but your treasury is mostly stables. CT impressed. 'Actually based treasury management.'`;
+      const log = `📊 External crisis tests resources, but your reserves are well-managed. Earth oversight impressed.`;
       return {
         ...s,
         cred: Math.min(100, s.cred + 10),
         rage: Math.max(0, s.rage - 8),
         oversightPressure: Math.max(0, s.oversightPressure - 5),
         log: [log, ...s.log],
-        recentEvents: ["diversification_pays_off", ...s.recentEvents].slice(0, 5),
+        recentEvents: ["reserve_management_noticed", ...s.recentEvents].slice(0, 5),
       };
     },
   },
@@ -505,7 +360,7 @@ const BASE_EVENTS: EventDef[] = [
       const positive = Math.random() > 0.5;
       const log = positive
         ? `📰 Earth media runs positive story on Mars colony. Public support surges.`
-        : `📰 Earth media runs hit piece on colony management. Oversight intensifies.`;
+        : `📰 Earth media runs critical piece on colony management. Oversight intensifies.`;
       return {
         ...s,
         oversightPressure: positive ? Math.max(0, s.oversightPressure - 10) : Math.min(100, s.oversightPressure + 10),
@@ -536,50 +391,7 @@ const BASE_EVENTS: EventDef[] = [
   },
 ];
 
-function severityToWeight(severity?: string): number {
-  switch (severity) {
-    case "low":
-      return 0.4;
-    case "medium":
-      return 0.7;
-    case "high":
-      return 1.0;
-    case "very high":
-      return 1.2;
-    case "extreme":
-      return 1.5;
-    default:
-      return 0.6;
-  }
-}
-
-const SCANDAL_EVENTS: EventDef[] = SCANDAL_FRAGMENTS.map((frag) => ({
-  id: "scandal_fragment",
-  name: frag.key,
-  weight: () => severityToWeight(frag.severity),
-  apply: (s) => {
-    const sev = frag.severity ?? "medium";
-    const rageBump = sev === "extreme" ? 30 : sev === "very high" ? 22 : sev === "high" ? 16 : sev === "medium" ? 12 : 8;
-    const heatBump = sev === "extreme" ? 25 : sev === "very high" ? 18 : sev === "high" ? 14 : sev === "medium" ? 10 : 6;
-    const credDrop = sev === "extreme" ? 18 : sev === "very high" ? 14 : sev === "high" ? 10 : sev === "medium" ? 8 : 5;
-    const log = frag.narrative;
-    return {
-      ...s,
-      rage: Math.min(100, s.rage + rageBump),
-      oversightPressure: Math.min(100, s.oversightPressure + heatBump),
-      cred: Math.max(0, s.cred - credDrop),
-      hidden: {
-        ...s.hidden,
-        communityMemory: s.hidden.communityMemory + 0.1,
-        scrutiny: s.hidden.scrutiny + 0.05,
-      },
-      recentEvents: [frag.key, ...s.recentEvents].slice(0, 5),
-      log: [log, ...s.log],
-    };
-  },
-}));
-
-export const EVENTS: EventDef[] = [...BASE_EVENTS, ...SCANDAL_EVENTS];
+export const EVENTS: EventDef[] = BASE_EVENTS;
 
 export function pickRandomEvent(state: GameState, rng: () => number, season: SeasonDef): EventDef | null {
   const candidates = EVENTS.filter((e) => e.weight(state, season) > 0);
@@ -597,4 +409,3 @@ export function pickRandomEvent(state: GameState, rng: () => number, season: Sea
   }
   return candidates[candidates.length - 1];
 }
-

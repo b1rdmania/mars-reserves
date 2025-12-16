@@ -8,7 +8,7 @@ export type CrisisId =
   | "oversight_discovery"
   | "promotion_leak"
   | "earth_investor_threat"
-  | "compliance_thread"
+  | "legal_memo"
   | "fake_breakthrough"
   | "engineering_mutiny"
   | "earth_recall_threat"
@@ -146,7 +146,7 @@ export const CRISES: CrisisDef[] = [
             };
           }
           return {
-            narrative: "Legendary leak: screenshots everywhere.",
+            narrative: "Damaging leak: the transcript circulates widely.",
             apply: (st) => ({
               ...st,
               oversightPressure: Math.min(100, st.oversightPressure + 30),
@@ -267,7 +267,7 @@ export const CRISES: CrisisDef[] = [
             };
           }
           return {
-            narrative: "Your org chart becomes a meme on Earth. Legendary ratio.",
+            narrative: "Your org chart circulates in oversight circles. The tone hardens.",
             apply: (st) => ({
               ...st,
               rage: Math.min(100, st.rage + 30),
@@ -297,7 +297,7 @@ export const CRISES: CrisisDef[] = [
           void s;
           if (rng() < 0.2) {
             return {
-              narrative: "Somehow this becomes a meme in your favor. Pioneer king energy.",
+              narrative: "Somehow this plays well. Pioneer credibility rises.",
               apply: (st) => ({
                 ...st,
                 cred: Math.min(100, st.cred + 10),
@@ -486,7 +486,7 @@ export const CRISES: CrisisDef[] = [
             };
           }
           return {
-            narrative: "Briefing recording leaks. 'This is totally sustainable' clip goes viral.",
+            narrative: "Briefing recording leaks. 'This is totally sustainable' clip spreads beyond internal channels.",
             apply: (st) => ({
               ...st,
               oversightPressure: Math.min(100, st.oversightPressure + 30),
@@ -499,7 +499,7 @@ export const CRISES: CrisisDef[] = [
         id: "attack_investor",
         label: "Publicly criticize the investor",
         resolve: () => ({
-          narrative: "Investor withdraws everything. Value craters. But your reputation for boldness grows.",
+          narrative: "Sponsor withdraws everything. Funding confidence collapses. But your reputation for boldness grows.",
           apply: (st) => ({
             ...st,
             tokenPrice: st.tokenPrice * 0.6,
@@ -513,9 +513,9 @@ export const CRISES: CrisisDef[] = [
   },
 
   {
-    id: "compliance_thread",
-    name: "\"Is This Legal?\" Analysis Goes Viral",
-    description: "Law analyst with a small following just questioned everything about your operation.",
+    id: "legal_memo",
+    name: "\"Is This Legal?\" Analysis Circulates",
+    description: "A legal reviewer published a critical memo questioning your operational practices.",
     severity: "high",
     weight: (s) => (s.oversightPressure > 40 ? 0.7 : 0.25),
     options: [
@@ -582,12 +582,12 @@ export const CRISES: CrisisDef[] = [
       },
       {
         id: "meme",
-        label: "Meme through it",
+        label: "Attempt a charm offensive",
         resolve: (s, rng) => {
           void s;
           if (rng() < 0.35) {
             return {
-              narrative: "'We're pioneers, not accountants' becomes legendary. Hall of fame.",
+              narrative: "'We're pioneers, not accountants' lands well. Public support grows.",
               apply: (st) => ({
                 ...st,
                 techHype: Math.min(100, st.techHype + 20),
@@ -767,7 +767,7 @@ export const CRISES: CrisisDef[] = [
             };
           }
           return {
-            narrative: "Lead engineer replies: 'lol we can't build any of this'. Brutal.",
+            narrative: "Lead engineer replies: 'We cannot build any of this.' A blunt response.",
             apply: (st) => ({
               ...st,
               cred: Math.max(0, st.cred - 25),

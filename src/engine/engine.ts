@@ -9,10 +9,10 @@ import type { SeasonId } from "./seasons";
 import { rollSeverity } from "./severity";
 import { sampleActionsForTurn } from "./actions";
 
-function applyMarketDrift(state: GameState, rng: RNG): GameState {
-  // BALANCED PRICE MODEL v2
-  // More symmetric pressure: good play can pump, bad play dumps
-  // Price has momentum to reduce wild swings
+function applyEarthConfidenceDrift(state: GameState, rng: RNG): GameState {
+  // Earth Confidence Index drift model
+  // Confidence affected by colony performance metrics
+  // More symmetric pressure: good play improves confidence, poor play reduces it
 
   // Sentiment factors - REBALANCED for fairness (-28% to +21%)
   // Low rage now gives POSITIVE pressure (reward for keeping community happy)
@@ -23,10 +23,10 @@ function applyMarketDrift(state: GameState, rng: RNG): GameState {
   // Combined sentiment (-28% to +21% range - more balanced!)
   const sentiment = ragePressure + credPressure + techPressure;
 
-  // Base volatility by season (slightly reduced)
-  const baseVol = state.seasonId === "meme_summer" ? 0.20
-    : state.seasonId === "regulator_season" ? 0.10
-      : state.seasonId === "builder_winter" ? 0.12
+  // Base volatility by season
+  const baseVol = state.seasonId === "solar_maximum" ? 0.20
+    : state.seasonId === "winter_ops" ? 0.10
+      : state.seasonId === "resupply_window" ? 0.12
         : 0.15;
 
   // Extra volatility when things are bad (reduced from 0.15)
@@ -55,9 +55,9 @@ function applyMarketDrift(state: GameState, rng: RNG): GameState {
   let tvl = state.tvl * (1 + realizedDelta * 0.6 + tvlNoise * tvlSentiment);
   tvl = Math.max(10_000_000, tvl); // Floor at 10M
 
-  // Treasury exposure to native token - uses stablecoinRatio from hidden state
+  // Treasury exposure to native token - uses reserveLiquidity from hidden state
   // Diversification actions can improve this ratio over time
-  const stableRatio = state.hidden.stablecoinRatio ?? 0.3;
+  const stableRatio = state.hidden.reserveLiquidity ?? 0.3;
   const nativeRatio = 1 - stableRatio;
   const nativePortion = state.colonyReserves * nativeRatio;
   const stablePortion = state.colonyReserves * stableRatio;
@@ -97,7 +97,7 @@ function applyDrift(state: GameState, rng: RNG): GameState {
     techHype: Math.max(0, Math.round(techHype * 10) / 10),
     cred: Math.max(0, Math.round(cred * 10) / 10),
   };
-  next = applyMarketDrift(next, rng);
+  next = applyEarthConfidenceDrift(next, rng);
   return next;
 }
 
@@ -154,7 +154,7 @@ export function initialState(params?: {
       scrutiny: 0,
       founderStability: 1,
       communityMemory: 0,
-      stablecoinRatio: 0.3,
+      reserveLiquidity: 0.3,
     },
     log: ["Welcome to Mars. Your mission begins now."],
     recentEvents: [],

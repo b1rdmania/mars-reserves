@@ -22,54 +22,54 @@ function countActions(state: GameState, ...actionIds: string[]): number {
 export const OPERATIVE_COMBOS: OperativeCombo[] = [
     {
         id: "propaganda_master",
-        name: "Propaganda Master",
+        name: "Communications Master",
         emoji: "📣",
-        description: "Launched mascot, morale campaign, and research pivot",
+        description: "Launched mascot, morale campaign, and research announcement",
         multiplier: 1.15,
         check: (state) => {
-            return hasAction(state, "launch_mascot") &&
-                hasAction(state, "meme_coin_launch") &&
-                hasAction(state, "ai_pivot");
+            return hasAction(state, "mascot_campaign") &&
+                hasAction(state, "morale_event") &&
+                hasAction(state, "publish_findings");
         },
     },
     {
         id: "bureaucracy_expert",
         name: "Bureaucracy Expert",
         emoji: "📋",
-        description: "Mastered committee delays, emergency protocols, delegate programs",
+        description: "Mastered protocols, delegate programs, and crew assemblies",
         multiplier: 1.10,
         check: (state) => {
-            return hasAction(state, "freeze_governance") &&
-                hasAction(state, "emergency_emissions_vote") &&
-                hasAction(state, "delegate_program");
+            return hasAction(state, "suspend_protocols") &&
+                hasAction(state, "delegate_authority") &&
+                hasAction(state, "crew_assembly");
         },
     },
     {
         id: "sponsor_diplomat",
         name: "Sponsor Diplomat",
         emoji: "🤝",
-        description: "Successfully negotiated with Earth sponsors 3+ times",
+        description: "Successfully managed Earth communications 3+ times",
         multiplier: 1.08,
         check: (state) => {
-            return countActions(state, "dm_whale_reassurance", "whale_early_access") >= 3;
+            return countActions(state, "earth_partnership", "investor_briefing", "earth_broadcast") >= 3;
         },
     },
     {
         id: "technically_compliant",
         name: "Technically Compliant",
         emoji: "📑",
-        description: "Resource diversification + off-book deals + extraction optimization",
+        description: "Resource allocation + systems audit + legal counsel",
         multiplier: 1.05,
         check: (state) => {
-            return hasAction(state, "treasury_diversification") &&
-                hasAction(state, "mev_sandwich_fund");
+            return hasAction(state, "resource_reallocation") &&
+                hasAction(state, "systems_audit");
         },
     },
     {
         id: "risk_commander",
         name: "Risk Commander",
         emoji: "👑",
-        description: "Survived 5+ crises while extracting >50% of reserves",
+        description: "Survived 5+ crises while building >50% of reserves as legacy",
         multiplier: 1.20,
         check: (state) => {
             return state.crisisCount >= 5 && state.legacy > state.colonyReserves * 0.5;
@@ -79,25 +79,25 @@ export const OPERATIVE_COMBOS: OperativeCombo[] = [
         id: "reputation_destroyer",
         name: "Reputation Destroyer",
         emoji: "😈",
-        description: "Silenced critics, deflected blame, attacked investigators",
+        description: "Silenced critics, exposed detractors, blamed equipment",
         multiplier: 1.12,
         check: (state) => {
-            return countActions(state, "screenshot_shame", "attack_sleuth_credibility", "ratio_fud") >= 2;
+            return countActions(state, "expose_critic", "blame_equipment", "counter_narrative") >= 2;
         },
     },
     {
         id: "narrative_architect",
         name: "Narrative Architect",
         emoji: "🏛️",
-        description: "Research pivots, infrastructure announcements, contractor partnerships",
+        description: "Research pivots, infrastructure announcements, breakthrough claims",
         multiplier: 1.15,
         check: (state) => {
             const narrativeActions = [
-                "zk_pivot_announcement",
-                "depin_announcement",
-                "rwa_tokenization_angle",
-                "institutions_soon",
-                "ai_pivot"
+                "mission_pivot",
+                "infrastructure_announcement",
+                "breakthrough_claim",
+                "terraforming_preview",
+                "tech_milestone"
             ];
             return countActions(state, ...narrativeActions) >= 3;
         },
@@ -112,26 +112,26 @@ export const OPERATIVE_COMBOS: OperativeCombo[] = [
     },
     {
         id: "extraction_specialist",
-        name: "Extraction Specialist",
+        name: "Legacy Maximalist",
         emoji: "💰",
-        description: "Used 6+ different resource extraction methods",
+        description: "Used 6+ different legacy-building methods",
         multiplier: 1.18,
         check: (state) => {
-            const siphonActions = [
-                "siphon_advisory", "strategic_consultants", "founder_wage_increase",
-                "expense_account", "family_office_vehicle", "real_estate_hq",
-                "token_buyback", "foundation_grant", "treasury_diversification",
-                "mev_sandwich_fund"
+            const legacyActions = [
+                "mining_acceleration", "external_contractors", "commander_bonus",
+                "discretionary_budget", "private_reserve", "luxury_habitat",
+                "resource_speculation", "research_grant", "emergency_reserves",
+                "private_shipment"
             ];
-            const uniqueSiphons = new Set(state.usedActionIds.filter(id => siphonActions.includes(id)));
-            return uniqueSiphons.size >= 6;
+            const uniqueLegacy = new Set(state.usedActionIds.filter(id => legacyActions.includes(id)));
+            return uniqueLegacy.size >= 6;
         },
     },
     {
         id: "audit_dodger",
         name: "Audit Survivor",
         emoji: "🕵️",
-        description: "High investigation risk (>0.5) but never got caught",
+        description: "High scrutiny risk (>0.5) but survived the mission",
         multiplier: 1.15,
         check: (state) => {
             const survived = state.turn >= state.maxTurns;

@@ -6,7 +6,7 @@ export interface HiddenState {
   scrutiny: number;           // Was scrutiny
   founderStability: number;
   communityMemory: number;
-  stablecoinRatio: number;
+  reserveLiquidity: number;
 }
 
 export interface GameState {

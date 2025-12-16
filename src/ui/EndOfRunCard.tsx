@@ -25,6 +25,26 @@ function getVibeColors(ending: EndingDef): string {
   return "bg-red-500/10 border-red-500/30 text-red-400";
 }
 
+// Explain WHY the game ended
+function getGameOverReason(state: GameState): string | null {
+  if (state.turn >= state.maxTurns) {
+    return "Mission completed — you survived all cycles.";
+  }
+  if (state.rage >= 100) {
+    return "Crew unrest hit critical levels — mutiny triggered.";
+  }
+  if (state.oversightPressure >= 100) {
+    return "Earth oversight maxed out — mission terminated.";
+  }
+  if (state.cred <= 0) {
+    return "Command trust collapsed — you were removed.";
+  }
+  if (state.colonyReserves <= 0) {
+    return "Colony reserves depleted — mission failed.";
+  }
+  return null;
+}
+
 export const EndOfRunCard: React.FC<Props> = ({ state, onRestart, onChangeNames, seed = 0, actionIds = [] }) => {
   const [showRecordModal, setShowRecordModal] = useState(false);
 
@@ -32,6 +52,7 @@ export const EndOfRunCard: React.FC<Props> = ({ state, onRestart, onChangeNames,
 
   const ending = evaluateEnding(state) ?? getFallbackEnding(state);
   const vibeColors = getVibeColors(ending);
+  const gameOverReason = getGameOverReason(state);
 
   return (
     <>
@@ -48,6 +69,13 @@ export const EndOfRunCard: React.FC<Props> = ({ state, onRestart, onChangeNames,
               </div>
             )}
           </div>
+
+          {/* Game Over Reason */}
+          {gameOverReason && (
+            <div className="text-center text-xs text-slate-400 mt-3 px-4">
+              {gameOverReason}
+            </div>
+          )}
 
           {/* Compact Narrative */}
           <div className="bg-slate-800/50 rounded-lg p-3 my-3 border border-slate-700/50">
@@ -68,23 +96,22 @@ export const EndOfRunCard: React.FC<Props> = ({ state, onRestart, onChangeNames,
             <span>Record Mission</span>
           </button>
 
-          {/* Compact Action Buttons */}
-          <div className="flex gap-2 mt-3">
+          {/* Try Again - NOW LARGER AND MORE PROMINENT */}
+          <button
+            onClick={onRestart}
+            className="w-full mt-3 py-4 px-4 bg-sky-500 hover:bg-sky-400 text-white font-bold rounded-xl transition-colors text-lg"
+          >
+            🔄 Try Again
+          </button>
+
+          {onChangeNames && (
             <button
-              onClick={onRestart}
-              className="flex-1 py-2.5 px-4 bg-sky-500 hover:bg-sky-400 text-white font-semibold rounded-xl transition-colors text-sm"
+              onClick={onChangeNames}
+              className="w-full mt-2 py-2 px-4 bg-slate-700 hover:bg-slate-600 text-slate-300 font-medium rounded-xl transition-colors text-sm"
             >
-              Try Again
+              New Commander
             </button>
-            {onChangeNames && (
-              <button
-                onClick={onChangeNames}
-                className="py-2.5 px-4 bg-slate-700 hover:bg-slate-600 text-slate-200 font-medium rounded-xl transition-colors text-xs"
-              >
-                New Mission
-              </button>
-            )}
-          </div>
+          )}
         </div>
       </div>
 

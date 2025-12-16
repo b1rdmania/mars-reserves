@@ -81,7 +81,7 @@ export const ACTIONS: ActionDef[] = [
     id: "mining_acceleration",
     category: "Ambition",
     name: "[Your Name] Extraction Initiative",
-    description: "Accelerate resource output under your personal oversight. The mining reports will bear your signature.",
+    description: "Your name on the extraction reports.",
     tags: ["+Legacy", "+Unrest", "+Oversight", "-Trust", "-Reserves"],
     apply: (s) => {
       const amount = Math.floor(s.colonyReserves * 0.1);
@@ -102,7 +102,7 @@ export const ACTIONS: ActionDef[] = [
     id: "external_contractors",
     category: "Ambition",
     name: "Commission External Research Team",
-    description: "Fund a specialist research unit reporting directly to you. Findings credited accordingly.",
+    description: "Specialists reporting to you. Credit accordingly.",
     tags: ["+Legacy", "+Unrest", "+Oversight", "-Trust", "-Reserves"],
     apply: (s) => {
       const amount = Math.floor(s.colonyReserves * 0.12);
@@ -123,7 +123,7 @@ export const ACTIONS: ActionDef[] = [
     id: "commander_bonus",
     category: "Ambition",
     name: "Commander Recognition Fund",
-    description: "Establish a fund for command excellence. You define the criteria.",
+    description: "You define the criteria.",
     tags: ["+Legacy", "+Unrest", "-Trust", "-Reserves"],
     apply: (s) => {
       const amount = Math.floor(s.colonyReserves * 0.05);
@@ -144,7 +144,7 @@ export const ACTIONS: ActionDef[] = [
     id: "discretionary_budget",
     category: "Ambition",
     name: "Expand Discretionary Budget",
-    description: "Personal quarters upgrades, 'morale supplies', transport privileges.",
+    description: "Quarters, supplies, privileges.",
     tags: ["+Legacy", "+Unrest", "+Oversight", "-Trust", "-Reserves"],
     apply: (s) => {
       const amount = Math.floor(s.colonyReserves * 0.06);
@@ -165,7 +165,7 @@ export const ACTIONS: ActionDef[] = [
     id: "private_reserve",
     category: "Ambition",
     name: "Commander's Strategic Reserve",
-    description: "Establish a discretionary fund for 'rapid response initiatives.' Oversight: minimal.",
+    description: "Discretionary fund. Minimal oversight.",
     tags: ["+Legacy", "+Unrest", "+Oversight", "-Trust", "-Reserves"],
     apply: (s) => {
       const amount = Math.floor(s.colonyReserves * 0.25);
@@ -186,7 +186,7 @@ export const ACTIONS: ActionDef[] = [
     id: "luxury_habitat",
     category: "Ambition",
     name: "The [Your Name] Command Annex",
-    description: "Commission a dedicated command facility. Architectural significance is paramount.",
+    description: "A dedicated command facility.",
     tags: ["+Legacy", "+Unrest", "+Oversight", "-Trust", "-Reserves"],
     apply: (s) => {
       const amount = Math.floor(s.colonyReserves * 0.3);
@@ -207,7 +207,7 @@ export const ACTIONS: ActionDef[] = [
     id: "resource_speculation",
     category: "Ambition",
     name: "Resource Valuation Initiative",
-    description: "Redefine resource metrics under your methodology. The accounting footnotes will credit you.",
+    description: "Your methodology becomes standard.",
     tags: ["+Legacy", "+Momentum", "+Oversight", "+Unrest", "-Reserves"],
     apply: (s) => {
       const cost = Math.floor(s.colonyReserves * 0.08);
@@ -228,7 +228,7 @@ export const ACTIONS: ActionDef[] = [
     id: "research_grant",
     category: "Ambition",
     name: "[Your Name] Research Fellowship",
-    description: "Endow a research fellowship. Selection committee: you.",
+    description: "Selection committee: you.",
     tags: ["+Legacy", "+Oversight", "+Unrest", "-Trust", "-Reserves"],
     apply: (s) => {
       const amount = Math.floor(s.colonyReserves * 0.07);
@@ -248,7 +248,7 @@ export const ACTIONS: ActionDef[] = [
     id: "emergency_reserves",
     category: "Ambition",
     name: "Emergency Contingency Reallocation",
-    description: "Redirect emergency reserves toward 'strategic priorities.' Documentation pending.",
+    description: "Redirect reserves. Paperwork pending.",
     tags: ["+Legacy", "+Unrest", "+Oversight", "-Reserves"],
     apply: (s) => {
       const amount = Math.floor(s.colonyReserves * 0.15);
@@ -268,13 +268,14 @@ export const ACTIONS: ActionDef[] = [
     id: "private_shipment",
     category: "Ambition",
     name: "Priority Earth Consignment",
-    description: "Arrange personal transport allocation for 'research samples.' Manifest classified.",
+    description: "Personal transport. Manifest classified.",
     tags: ["+Legacy", "+Oversight", "-Reserves"],
     apply: (s) => {
       const amount = Math.floor(s.colonyReserves * 0.08);
       const log = `Priority consignment dispatched to Earth. Contents: research artifacts bearing command insignia.`;
       return {
         ...s,
+        colonyReserves: Math.max(0, s.colonyReserves - amount),
         legacy: s.legacy + amount,
         tokenPrice: s.tokenPrice * 0.9,
         oversightPressure: clamp(s.oversightPressure + 15),
@@ -287,7 +288,7 @@ export const ACTIONS: ActionDef[] = [
     id: "early_extraction",
     category: "Ambition",
     name: "Accelerated Project Timeline",
-    description: "Push all project milestones forward. Your name on the completion certificates.",
+    description: "Push milestones. Your name on certificates.",
     tags: ["+Legacy", "+++Unrest", "+Oversight"],
     apply: (s) => {
       const amount = Math.floor(s.colonyReserves * 0.2);
@@ -307,7 +308,7 @@ export const ACTIONS: ActionDef[] = [
     id: "automated_skimming",
     category: "Ambition",
     name: "Efficiency Optimization Protocol",
-    description: "Implement automated resource allocation favoring command-designated priorities.",
+    description: "Automated allocation. Command priority.",
     tags: ["+Legacy gradual", "+Oversight if discovered"],
     apply: (s) => {
       const amount = Math.floor(s.colonyReserves * (0.03 + Math.random() * 0.03));
@@ -333,7 +334,7 @@ export const ACTIONS: ActionDef[] = [
     id: "emergency_rationing",
     category: "Command",
     name: "Emergency Rationing Protocol",
-    description: "Impose rationing to refill reserves. Crew won't be happy.",
+    description: "Refill reserves. Crew won't like it.",
     tags: ["+Reserves", "+Unrest", "-Trust", "+Oversight"],
     apply: (s) => {
       const inflow = 300;
@@ -352,7 +353,7 @@ export const ACTIONS: ActionDef[] = [
     id: "work_incentives",
     category: "Command",
     name: "Work Incentive Adjustment",
-    description: "Restructure incentives. Some benefit, most don't.",
+    description: "Some benefit. Most don't.",
     tags: ["-Reserves", "+Momentum", "+/-Unrest", "-Trust"],
     apply: (s) => {
       const cost = Math.floor(s.colonyReserves * 0.02);
@@ -371,7 +372,7 @@ export const ACTIONS: ActionDef[] = [
     id: "resource_reallocation",
     category: "Command",
     name: "Resource Reallocation",
-    description: "Redistribute supplies with suspicious efficiency losses.",
+    description: "Suspicious efficiency losses.",
     tags: ["-Reserves", "+Oversight", "-Trust", "+Legacy"],
     apply: (s) => {
       const slip = Math.floor(s.colonyReserves * 0.05);
@@ -391,7 +392,7 @@ export const ACTIONS: ActionDef[] = [
     id: "delegate_authority",
     category: "Command",
     name: "Delegate Authority Program",
-    description: "Appoint loyal deputies to 'share responsibility'.",
+    description: "Appoint loyal deputies.",
     tags: ["-Reserves", "-Unrest", "+Trust", "+Oversight"],
     apply: (s) => {
       const cost = Math.floor(s.colonyReserves * 0.015);
@@ -410,7 +411,7 @@ export const ACTIONS: ActionDef[] = [
     id: "suspend_protocols",
     category: "Command",
     name: "Suspend Standard Protocols",
-    description: "Pause normal procedures 'for operational efficiency'.",
+    description: "Pause procedures. 'Efficiency.'",
     tags: ["+Unrest", "+Oversight", "-Trust"],
     apply: (s) => {
       const log = `Protocols suspended. Crew forums ignite with complaints.`;
@@ -428,7 +429,7 @@ export const ACTIONS: ActionDef[] = [
     id: "crew_assembly",
     category: "Command",
     name: "Crew Assembly (Scripted)",
-    description: "Hold an assembly with pre-selected speakers. Looks democratic.",
+    description: "Pre-selected speakers. Looks democratic.",
     tags: ["+Trust", "-Unrest", "+Oversight"],
     apply: (s) => {
       const log = `Assembly went smoothly. Nobody noticed the speaker list was curated.`;
@@ -445,7 +446,7 @@ export const ACTIONS: ActionDef[] = [
     id: "night_directive",
     category: "Command",
     name: "Late Night Directive",
-    description: "Push through orders when most crew is in sleep cycle.",
+    description: "Orders during sleep cycle.",
     tags: ["+Reserves", "++Unrest next cycle", "-Trust"],
     apply: (s) => {
       const amount = Math.floor(s.colonyReserves * 0.02);
@@ -464,13 +465,13 @@ export const ACTIONS: ActionDef[] = [
     id: "ai_proposal",
     category: "Command",
     name: "AI-Generated Proposal",
-    description: "Submit a proposal written by AI at 2am. Hope nobody reads it.",
+    description: "AI drafts it. Hope nobody reads it.",
     tags: ["±Trust", "±Momentum", "-Unrest minor"],
     apply: (s) => {
       const quality = Math.random();
       const log = quality > 0.5
         ? `AI proposal is coherent. Some are impressed.`
-        : `AI proposal is gibberish. Screenshots everywhere.`;
+        : `AI proposal is incoherent. The transcript circulates.`;
       return {
         ...s,
         cred: clamp(s.cred + (quality > 0.5 ? 5 : -12)),
@@ -488,7 +489,7 @@ export const ACTIONS: ActionDef[] = [
     id: "earth_partnership",
     category: "Communications",
     name: "Announce Earth Partnership",
-    description: "Claim a big-name partner; details TBD.",
+    description: "Big-name partner. Details TBD.",
     tags: ["+Momentum", "+Trust", "-Unrest", "+Oversight"],
     apply: (s) => {
       const log = `Partnership announced. Earth has questions but excitement builds.`;
@@ -506,7 +507,7 @@ export const ACTIONS: ActionDef[] = [
     id: "tech_milestone",
     category: "Communications",
     name: "Ship Tech Milestone",
-    description: "Actually deliver something. Calms people down.",
+    description: "Deliver something. Calms people.",
     tags: ["-Unrest", "+Trust", "+Momentum", "-Reserves"],
     apply: (s) => {
       const cost = Math.floor(s.colonyReserves * 0.02);
@@ -525,7 +526,7 @@ export const ACTIONS: ActionDef[] = [
     id: "mission_pivot",
     category: "Communications",
     name: "Announce Mission Pivot",
-    description: "Rebrand as a terraforming initiative. Bold move.",
+    description: "Rebrand the mission. Bold move.",
     tags: ["-Unrest", "+Trust", "+Momentum", "+Oversight"],
     apply: (s) => {
       const log = `Mission pivot announced. Earth investors applaud, crew is confused.`;
@@ -543,7 +544,7 @@ export const ACTIONS: ActionDef[] = [
     id: "publish_findings",
     category: "Communications",
     name: "Publish Research Findings",
-    description: "Release a paper about the future of Mars colonization.",
+    description: "Release a paper. Academics argue.",
     tags: ["-Unrest", "+Trust", "+Momentum", "+Oversight"],
     apply: (s) => {
       const log = `Research published. Academics argue for 48 hours.`;
@@ -561,7 +562,7 @@ export const ACTIONS: ActionDef[] = [
     id: "mascot_campaign",
     category: "Communications",
     name: "Launch Colony Mascot",
-    description: "Roll out a mascot; hope it's endearing not cringe.",
+    description: "Endearing or ill-advised?",
     tags: ["+Momentum", "+/-Unrest", "+/-Trust"],
     apply: (s) => {
       const log = `Mascot campaign launched. Memes spread across Earth networks.`;
@@ -580,7 +581,7 @@ export const ACTIONS: ActionDef[] = [
     id: "earth_broadcast",
     category: "Communications",
     name: "Sponsor Earth Broadcast",
-    description: "Fund an over-the-top media event on Earth.",
+    description: "Over-the-top Earth media event.",
     tags: ["-Reserves", "-Unrest", "+Trust", "+Momentum", "+Oversight"],
     apply: (s) => {
       const cost = Math.floor(s.colonyReserves * 0.025);
@@ -601,7 +602,7 @@ export const ACTIONS: ActionDef[] = [
     id: "breakthrough_claim",
     category: "Communications",
     name: "Claim Major Breakthrough",
-    description: "Announce something groundbreaking. Verification pending.",
+    description: "Groundbreaking. Verification pending.",
     tags: ["+++Momentum", "+Trust", "+Oversight"],
     apply: (s) => {
       const log = `Breakthrough announced. Investors are ecstatic.`;
@@ -619,7 +620,7 @@ export const ACTIONS: ActionDef[] = [
     id: "infrastructure_announcement",
     category: "Communications",
     name: "Infrastructure Expansion",
-    description: "Announce massive expansion plans. Details to follow.",
+    description: "Massive expansion. Details later.",
     tags: ["+Momentum", "±Trust", "-Unrest"],
     apply: (s) => {
       const log = `Infrastructure expansion plans released. Hardware crews are interested.`;
@@ -636,10 +637,10 @@ export const ACTIONS: ActionDef[] = [
     id: "terraforming_preview",
     category: "Communications",
     name: "Terraforming Preview",
-    description: "Release visionary plans. Announce first, figure out feasibility later.",
+    description: "Announce first, feasibility later.",
     tags: ["+Momentum", "+++Oversight", "Reserves stable"],
     apply: (s) => {
-      const log = `Terraforming preview released. Lawyers are sweating. Investors are DMing.`;
+      const log = `Terraforming preview released. Lawyers seek clarification. Sponsors are requesting private briefings.`;
       return {
         ...s,
         techHype: clamp(s.techHype + 15),
@@ -655,10 +656,10 @@ export const ACTIONS: ActionDef[] = [
     id: "investor_briefing",
     category: "Communications",
     name: "'Major Progress' Briefing",
-    description: "Promise big things coming soon. Classic hype narrative.",
-    tags: ["+Price", "-Unrest", "follow-up scrutiny"],
+    description: "'Big things soon.' Classic.",
+    tags: ["+Confidence", "-Unrest", "follow-up scrutiny"],
     apply: (s) => {
-      const log = `'Major milestones imminent.' Mission value pumps. Earth screenshots this for later.`;
+      const log = `'Major milestones imminent.' Earth confidence surges. The briefing is archived for future reference.`;
       return {
         ...s,
         tokenPrice: s.tokenPrice * 1.06,
@@ -677,7 +678,7 @@ export const ACTIONS: ActionDef[] = [
     id: "legal_counsel",
     category: "Crisis Response",
     name: "Retain Legal Counsel",
-    description: "Hire top lawyers to buffer incoming pressure.",
+    description: "Top lawyers. Buffer pressure.",
     tags: ["-Reserves", "-Oversight", "+Unrest", "+Trust"],
     defensive: true,
     apply: (s) => {
@@ -697,7 +698,7 @@ export const ACTIONS: ActionDef[] = [
     id: "official_statement",
     category: "Crisis Response",
     name: "Issue Official Statement",
-    description: "Release a statement that addresses everything and nothing.",
+    description: "Addresses everything and nothing.",
     tags: ["-Unrest", "+Trust", "+Oversight"],
     defensive: true,
     apply: (s) => {
@@ -715,7 +716,7 @@ export const ACTIONS: ActionDef[] = [
     id: "systems_audit",
     category: "Crisis Response",
     name: "Launch Systems Audit",
-    description: "Hire auditors to give you a clean bill of health.",
+    description: "Auditors give you clean bill.",
     tags: ["-Reserves", "-Oversight", "+Trust", "-Unrest"],
     defensive: true,
     apply: (s) => {
@@ -730,7 +731,7 @@ export const ACTIONS: ActionDef[] = [
         hidden: {
           ...s.hidden,
           scrutiny: s.hidden.scrutiny + 0.1,
-          stablecoinRatio: Math.min(0.6, s.hidden.stablecoinRatio + 0.05),
+          reserveLiquidity: Math.min(0.6, s.hidden.reserveLiquidity + 0.05),
         },
         log: [log, ...s.log],
       };
@@ -740,7 +741,7 @@ export const ACTIONS: ActionDef[] = [
     id: "counter_narrative",
     category: "Crisis Response",
     name: "Counter-Narrative Campaign",
-    description: "Declare everything is misinformation; hope it sticks.",
+    description: "It's all misinformation.",
     tags: ["+/-Unrest", "+Oversight", "-Trust"],
     apply: (s) => {
       const log = `Counter-narrative deployed.`;
@@ -759,7 +760,7 @@ export const ACTIONS: ActionDef[] = [
     id: "reassign_officer",
     category: "Crisis Response",
     name: "Reassign Scapegoat Officer",
-    description: "Blame and demote a subordinate.",
+    description: "Blame a subordinate.",
     tags: ["-Unrest", "-Trust", "+Oversight"],
     apply: (s) => {
       const log = `Officer reassigned. The crew wants more accountability.`;
@@ -776,7 +777,7 @@ export const ACTIONS: ActionDef[] = [
     id: "blame_equipment",
     category: "Crisis Response",
     name: "Blame Equipment Failure",
-    description: "Claim problems were caused by faulty systems.",
+    description: "Faulty systems caused it.",
     tags: ["-Oversight", "-Trust", "+Unrest"],
     apply: (s) => {
       const log = `Equipment failure blamed. Technical team is furious.`;
@@ -793,7 +794,7 @@ export const ACTIONS: ActionDef[] = [
     id: "feature_not_bug",
     category: "Crisis Response",
     name: "Spin Problem as 'Design Choice'",
-    description: "The 'that's actually intended' play.",
+    description: "That was intended.",
     tags: ["-Trust", "+Unrest", "-Momentum"],
     apply: (s) => {
       const believed = Math.random() < 0.3;
@@ -813,7 +814,7 @@ export const ACTIONS: ActionDef[] = [
     id: "earth_lobbyist",
     category: "Crisis Response",
     name: "Hire Earth Lobbyist",
-    description: "Yes, this is a real thing colony commanders do.",
+    description: "Yes, colonies do this.",
     tags: ["-Unrest", "-Oversight", "-Reserves"],
     apply: (s) => {
       const cost = Math.floor(s.colonyReserves * 0.015);
@@ -832,7 +833,7 @@ export const ACTIONS: ActionDef[] = [
     id: "expose_critic",
     category: "Crisis Response",
     name: "Expose a Critic",
-    description: "Publicly release private communications from a detractor. Nuclear option.",
+    description: "Release their private comms. Nuclear option.",
     tags: ["-Unrest", "-Trust", "+Oversight", "social meltdown"],
     apply: (s) => {
       const backfires = Math.random() < 0.4;
@@ -857,7 +858,7 @@ export const ACTIONS: ActionDef[] = [
     id: "crew_broadcast",
     category: "Crew Relations",
     name: "Crew-Wide Broadcast",
-    description: "Post a message to all crew. Could inspire or backfire.",
+    description: "Inspire or backfire.",
     tags: ["+/-Trust", "+/-Unrest", "+Momentum"],
     apply: (s) => {
       const log = `Crew broadcast sent. Replies are a mix of support and criticism.`;
@@ -876,7 +877,7 @@ export const ACTIONS: ActionDef[] = [
     id: "senior_staff_meeting",
     category: "Crew Relations",
     name: "Senior Staff Meeting",
-    description: "Hop into a meeting and wing it.",
+    description: "Wing it.",
     tags: ["+/-Trust", "+/-Unrest", "+/-Momentum"],
     apply: (s) => {
       const success = Math.random() < s.cred / 120;
@@ -895,7 +896,7 @@ export const ACTIONS: ActionDef[] = [
     id: "private_reassurance",
     category: "Crew Relations",
     name: "Private Reassurance",
-    description: "Whisper reassurances to key personnel.",
+    description: "Quiet reassurances.",
     tags: ["-Unrest", "+/-Trust", "+/-Momentum", "+Oversight?"],
     apply: (s) => {
       const leak = Math.random() < 0.25;
@@ -915,7 +916,7 @@ export const ACTIONS: ActionDef[] = [
     id: "recreation_event",
     category: "Crew Relations",
     name: "Recreation Event",
-    description: "Organize an event. Morale boost with visibility costs.",
+    description: "Morale boost. Visibility cost.",
     tags: ["+Momentum", "-Trust", "+Oversight", "-Stability"],
     apply: (s) => {
       const log = `Recreation event held. Cameras were definitely on.`;
@@ -933,11 +934,11 @@ export const ACTIONS: ActionDef[] = [
     id: "earth_celebrity",
     category: "Crew Relations",
     name: "Call Earth Celebrity",
-    description: "Shoot your shot with a famous Earth supporter.",
+    description: "Shoot your shot.",
     tags: ["+/-Trust", "+/-Unrest", "+Oversight"],
     apply: (s) => {
       const success = Math.random() < 0.25;
-      const log = success ? `Celebrity responds positively. Clout boost!` : `No response. Awkward silence.`;
+      const log = success ? `Celebrity responds positively. Public support boost.` : `No response. Awkward silence.`;
       return {
         ...s,
         cred: clamp(s.cred + (success ? 18 : -6)),
@@ -951,7 +952,7 @@ export const ACTIONS: ActionDef[] = [
     id: "morale_event",
     category: "Crew Relations",
     name: "Launch Morale Event",
-    description: "Spin up a celebration to distract the crew.",
+    description: "Distraction celebration.",
     tags: ["+Reserves", "-Unrest", "+Oversight", "-Trust", "+Momentum"],
     apply: (s) => {
       const inflow = 80;
@@ -971,13 +972,13 @@ export const ACTIONS: ActionDef[] = [
     id: "rivalry_challenge",
     category: "Crew Relations",
     name: "Challenge Rival Commander",
-    description: "Start a public dispute with another colony's leadership.",
+    description: "Public dispute with rival leadership.",
     tags: ["±Trust big swing", "++Unrest", "+Momentum"],
     apply: (s) => {
       const won = Math.random() < 0.5;
       const log = won
         ? `You won the public dispute. Rival is humiliated.`
-        : `You lost the argument. Screenshots everywhere.`;
+        : `You lost the argument. The transcript circulates.`;
       return {
         ...s,
         cred: clamp(s.cred + (won ? 15 : -20)),
@@ -991,7 +992,7 @@ export const ACTIONS: ActionDef[] = [
     id: "progress_display",
     category: "Crew Relations",
     name: "Post Progress Visualization",
-    description: "The classic 'we're early' chart. Works every time.",
+    description: "The 'we're early' chart.",
     tags: ["+Momentum", "-Trust", "-Unrest"],
     apply: (s) => {
       const log = `Progress chart posted. Enthusiasts shared it unironically.`;
@@ -1008,7 +1009,7 @@ export const ACTIONS: ActionDef[] = [
     id: "influencer_visit",
     category: "Crew Relations",
     name: "Host Influencer Visit",
-    description: "Bring in a known promoter. Their audience becomes yours.",
+    description: "Their audience becomes yours.",
     tags: ["-Trust", "+Momentum", "+Unrest"],
     apply: (s) => {
       const log = `Influencer visit complete. New followers, old crew furious.`;
@@ -1025,7 +1026,7 @@ export const ACTIONS: ActionDef[] = [
     id: "documentary_crew",
     category: "Crew Relations",
     name: "Documentary Interview",
-    description: "The establishment media route. Credibility pump incoming.",
+    description: "The establishment media route.",
     tags: ["++Trust", "+Oversight", "-Unrest"],
     apply: (s) => {
       const log = `Documentary interview aired. You almost sounded legitimate.`;
@@ -1043,12 +1044,12 @@ export const ACTIONS: ActionDef[] = [
     id: "podcast_interview",
     category: "Crew Relations",
     name: "Podcast Interview",
-    description: "Join a popular show. Host might mock you.",
-    tags: ["+Momentum", "-Unrest", "+Price spike"],
+    description: "Popular show. Host might mock you.",
+    tags: ["+Momentum", "-Unrest", "+Earth Confidence"],
     apply: (s) => {
       const mocked = Math.random() < 0.3;
       const log = mocked
-        ? `Host roasted you live. Clips going everywhere.`
+        ? `Host challenged you on air. Clips spreading through Earth channels.`
         : `Podcast went well. Credibility established.`;
       return {
         ...s,

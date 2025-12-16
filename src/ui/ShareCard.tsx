@@ -1,6 +1,6 @@
 import React, { useRef } from "react";
 import type { GameState } from "../engine/state";
-import { formatMoney, formatTokenPrice } from "./format";
+import { formatMoney } from "./format";
 import { calculateFinalScore, formatScore } from "../engine/scoring";
 import type { EndingDef } from "../engine/endings";
 
@@ -123,20 +123,10 @@ export const ShareCard: React.FC<Props> = ({ state, ending, runHash, indexDelta,
         </div>
 
         {/* Aftermath Stats */}
-        <div className="grid grid-cols-3 gap-1.5 text-center mt-2">
+        <div className="grid grid-cols-1 gap-1.5 text-center mt-2">
           <div className="bg-slate-800/50 rounded-lg p-2">
-            <div className="text-[9px] text-slate-500 uppercase">Reserves</div>
+            <div className="text-[9px] text-slate-500 uppercase">Final Reserves</div>
             <div className="text-xs font-bold text-slate-200">{formatMoney(state.colonyReserves)}</div>
-          </div>
-          <div className="bg-slate-800/50 rounded-lg p-2">
-            <div className="text-[9px] text-slate-500 uppercase">Value</div>
-            <div className={`text-xs font-bold ${state.tokenPrice < 0.5 ? "text-red-400" : state.tokenPrice > 1.2 ? "text-emerald-400" : "text-slate-200"}`}>
-              {formatTokenPrice(state.tokenPrice)}
-            </div>
-          </div>
-          <div className="bg-slate-800/50 rounded-lg p-2">
-            <div className="text-[9px] text-slate-500 uppercase">Infra</div>
-            <div className="text-xs font-bold text-slate-200">{formatMoney(state.tvl)}</div>
           </div>
         </div>
 

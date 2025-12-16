@@ -6,8 +6,6 @@ export const StatsBoard: React.FC<{ state: GameState }> = ({ state }) => {
   const items: Array<[string, React.ReactNode]> = [
     ["TURN", state.turn],
     ["CHAIN", `${state.chainName} (${state.ticker})`],
-    ["PRICE", `$${state.tokenPrice.toFixed(2)}`],
-    ["TVL", `$${formatMillions(state.tvl)}`],
     ["TREASURY", `$${formatMillions(state.colonyReserves)}`],
     ["LEGACY", `$${formatMillions(state.legacy)}`],
     ["RAGE", state.rage],

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { usePrivy } from "@privy-io/react-auth";
 import type { GameState } from "../engine/state";
-import { formatMoney, formatTokenPrice } from "./format";
+import { formatMoney } from "./format";
 import { THEME } from "../theme";
 
 interface Props {
@@ -17,19 +17,40 @@ const MeterBar: React.FC<{
   type: "rage" | "heat" | "cred" | "tech";
 }> = ({ label, value, max = 100, type }) => {
   const pct = Math.min(100, (value / max) * 100);
-  const isCritical = (type === "rage" || type === "heat") && value >= 80;
-  const isLow = type === "cred" && value <= 20;
   const displayValue = value % 1 === 0 ? value.toFixed(0) : value.toFixed(1);
 
+  // Danger zone detection
+  const isDanger = (type === "rage" && value >= 60) || (type === "heat" && value >= 50);
+  const isCritical = (type === "rage" || type === "heat") && value >= 80;
+  const isLow = type === "cred" && value <= 30;
+  const isVeryLow = type === "cred" && value <= 20;
+
+  // Visual danger effects
+  const dangerClass = isCritical || isVeryLow
+    ? "animate-pulse"
+    : isDanger
+      ? "opacity-90"
+      : isLow
+        ? "animate-flicker"
+        : "";
+
+  const labelColor = isCritical || isVeryLow
+    ? "text-red-400"
+    : isDanger
+      ? "text-amber-400"
+      : isLow
+        ? "text-amber-300"
+        : "text-slate-400";
+
   return (
-    <div className="flex-1 min-w-[120px]">
+    <div className={`flex-1 min-w-[120px] ${dangerClass}`}>
       <div className="flex items-center justify-between mb-1">
-        <span className="text-[11px] uppercase tracking-wide text-slate-400">{label}</span>
-        <span className={`text-sm font-bold ${isCritical || isLow ? "text-red-400" : "text-slate-200"}`}>
+        <span className={`text-[11px] uppercase tracking-wide ${labelColor}`}>{label}</span>
+        <span className={`text-sm font-bold ${isCritical || isVeryLow ? "text-red-400" : isDanger || isLow ? "text-amber-400" : "text-slate-200"}`}>
           {displayValue}
         </span>
       </div>
-      <div className={`meter-bar meter-${type} ${isCritical ? "critical" : ""}`}>
+      <div className={`meter-bar meter-${type} ${isCritical ? "critical" : isDanger || isLow ? "warning" : ""}`}>
         <div
           className="meter-fill"
           style={{ width: `${pct}%` }}
@@ -51,7 +72,7 @@ const StatBox: React.FC<{ label: string; value: string; highlight?: boolean }> =
 );
 
 export const TopPanel: React.FC<Props> = ({ state, maxTurns, showDescription = true }) => {
-  const { tokenPrice, tvl, colonyReserves, legacy, rage, oversightPressure, cred, techHype } = state;
+  const { colonyReserves, legacy, rage, oversightPressure, cred, techHype } = state;
   const { user, authenticated } = usePrivy();
   const [commanderName, setCommanderName] = useState<string | null>(null);
 
@@ -100,14 +121,15 @@ export const TopPanel: React.FC<Props> = ({ state, maxTurns, showDescription = t
             <h1 className="text-xl sm:text-2xl font-bold leading-tight">{THEME.gameName}</h1>
             <span className="text-[10px] uppercase tracking-wide bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded-full">V1 Beta</span>
           </div>
-          {authenticated && commanderName && (
-            <div className="flex items-center gap-2 mt-1">
-              <span className="text-xs text-sky-400 font-mono uppercase tracking-wider">
-                CDR. {commanderName}
-              </span>
+          {/* Commander Name - always show */}
+          <div className="flex items-center gap-2 mt-1">
+            <span className="text-xs text-sky-400 font-mono uppercase tracking-wider">
+              {authenticated && commanderName ? `CDR. ${commanderName}` : state.founderName}
+            </span>
+            {authenticated && (
               <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" title="Online" />
-            </div>
-          )}
+            )}
+          </div>
           {showDescription && (
             <p className="text-xs text-slate-400 leading-snug mt-1 max-w-md">
               Build humanity's legacy on Mars in {maxTurns} cycles without triggering mutiny or mission shutdown.
@@ -115,9 +137,15 @@ export const TopPanel: React.FC<Props> = ({ state, maxTurns, showDescription = t
           )}
         </div>
         <div className="text-right shrink-0">
-          <div className="text-2xl font-bold tabular-nums">
-            {state.turn}<span className="text-slate-500">/{maxTurns}</span>
-          </div>
+          {(() => {
+            const turnsLeft = maxTurns - state.turn;
+            const urgencyColor = turnsLeft <= 2 ? "text-red-400" : turnsLeft <= 5 ? "text-amber-400" : "text-white";
+            return (
+              <div className={`text-2xl font-bold tabular-nums ${urgencyColor}`}>
+                {state.turn}<span className="text-slate-500">/{maxTurns}</span>
+              </div>
+            );
+          })()}
           <div className="text-[10px] uppercase text-slate-500">{THEME.ui.turn}</div>
         </div>
       </div>
@@ -133,20 +161,18 @@ export const TopPanel: React.FC<Props> = ({ state, maxTurns, showDescription = t
 
       {/* Colony Stats */}
       <div className="game-card">
-        <div className="grid grid-cols-3 gap-4">
+        <div className="flex justify-center">
           <StatBox label="Colony Reserves" value={formatMoney(colonyReserves)} />
-          <StatBox label="Mission Value" value={formatTokenPrice(tokenPrice)} />
-          <StatBox label="Infrastructure" value={formatMoney(tvl)} />
         </div>
       </div>
 
       {/* Meter Bars */}
       <div className="game-card">
         <div className="flex flex-wrap gap-4">
-          <MeterBar label="Crew Unrest" value={rage} type="rage" />
-          <MeterBar label="Earth Oversight" value={oversightPressure} type="heat" />
-          <MeterBar label="Command Trust" value={cred} type="cred" />
-          <MeterBar label="Research Momentum" value={techHype} type="tech" />
+          <MeterBar label="Unrest" value={rage} type="rage" />
+          <MeterBar label="Oversight" value={oversightPressure} type="heat" />
+          <MeterBar label="Trust" value={cred} type="cred" />
+          <MeterBar label="Research" value={techHype} type="tech" />
         </div>
       </div>
     </div>

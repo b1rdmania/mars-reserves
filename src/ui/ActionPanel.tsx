@@ -57,21 +57,40 @@ export const ActionPanel: React.FC<Props> = ({ state, onSelect, disabled }) => {
               </span>
             </div>
             <div className="space-y-2">
-              {list.map((a) => (
-                <button
-                  key={a.id}
-                  onClick={() => onSelect(a.id)}
-                  disabled={disabled}
-                  className={`action-btn ${CATEGORY_CLASS[a.category]}`}
-                >
-                  <div className="font-semibold text-sm leading-tight text-slate-100">
-                    {a.name}
-                  </div>
-                  <div className="text-xs text-slate-400 leading-tight mt-1">
-                    {a.description}
-                  </div>
-                </button>
-              ))}
+              {list.map((a) => {
+                // Temptation sub-lines for Ambition actions only (Game Boy-style moral pressure)
+                const temptationLines = [
+                  "No one will question this.",
+                  "Oversight won't notice yet.",
+                  "This can be justified later.",
+                  "Standard procedure, really.",
+                  "It's for the mission.",
+                ];
+                const temptation = cat === "Ambition"
+                  ? temptationLines[a.name.length % temptationLines.length]
+                  : null;
+
+                return (
+                  <button
+                    key={a.id}
+                    onClick={() => onSelect(a.id)}
+                    disabled={disabled}
+                    className={`action-btn ${CATEGORY_CLASS[a.category]}`}
+                  >
+                    <div className="font-semibold text-sm leading-tight text-slate-100">
+                      {a.name}
+                    </div>
+                    <div className="text-xs text-slate-400 leading-tight mt-1">
+                      {a.description}
+                    </div>
+                    {temptation && (
+                      <div className="text-[10px] text-amber-500/70 italic mt-1">
+                        {temptation}
+                      </div>
+                    )}
+                  </button>
+                );
+              })}
             </div>
           </div>
         );

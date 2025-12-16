@@ -17,14 +17,30 @@ import { LogSection } from "./ui/LogSection";
 import { HowToPlayModal } from "./ui/HowToPlayModal";
 import { LeaderboardModal } from "./ui/LeaderboardModal";
 import { ArchivePanel } from "./ui/ArchivePanel";
+import { SplashScreen } from "./ui/SplashScreen";
 
 const App: React.FC = () => {
   const [seed, setSeed] = useState(() => Math.floor(Math.random() * 1e9));
   const rng = useMemo(() => mulberry32(seed), [seed]);
 
-  const [chainName, setChainName] = useState("Olympus Base");
-  const [ticker, setTicker] = useState("OLY");
-  const [founderName, setFounderName] = useState("You");
+  // Sci-fi commander names for random selection
+  const COMMANDER_NAMES = [
+    // Star Trek inspired
+    "Cmdr. Archer", "Cmdr. Picard", "Cmdr. Sisko", "Cmdr. Janeway", "Cmdr. Kirk",
+    "Cmdr. Riker", "Lt. Cmdr. Data", "Cmdr. Spock", "Cmdr. Worf", "Cmdr. T'Pol",
+    // Star Wars inspired  
+    "Cmdr. Skywalker", "Cmdr. Solo", "Cmdr. Organa", "Cmdr. Calrissian", "Cmdr. Syndulla",
+    "Cmdr. Andor", "Cmdr. Dameron", "Cmdr. Bridger", "Cmdr. Tano",
+    // Mars/sci-fi
+    "Cmdr. Watney", "Cmdr. Shepard", "Cmdr. Ripley", "Cmdr. Bowman", "Cmdr. Cooper",
+    "Cmdr. Stone", "Cmdr. Holden", "Cmdr. Nagata", "Cmdr. Burton", "Cmdr. Draper",
+    // Generic space
+    "Cmdr. Chen", "Cmdr. Vasquez", "Cmdr. Okonkwo", "Cmdr. Petrov", "Cmdr. Nakamura",
+  ];
+
+  const [founderName, setFounderName] = useState(() =>
+    COMMANDER_NAMES[Math.floor(Math.random() * COMMANDER_NAMES.length)]
+  );
   const seasonId: SeasonId = "dust_season"; // V1: fixed season
   const [state, setState] = useState<GameState | null>(null);
   const [showDebug, setShowDebug] = useState(false);
@@ -32,6 +48,7 @@ const App: React.FC = () => {
   const [muted, setMutedState] = useState(false);
   const [showHowToPlay, setShowHowToPlay] = useState(false);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
+  const [showSplash, setShowSplash] = useState(true);
   const [turnModalData, setTurnModalData] = useState<{
     actionName: string;
     severity: SeverityResult | null;
@@ -81,12 +98,10 @@ const App: React.FC = () => {
       const deltas = [
         { label: "Official Treasury", delta: after.colonyReserves - before.colonyReserves },
         { label: "Legacy", delta: after.legacy - before.legacy },
-        { label: "Rage", delta: after.rage - before.rage },
+        { label: "Unrest", delta: after.rage - before.rage },
         { label: "Oversight", delta: after.oversightPressure - before.oversightPressure },
-        { label: "Cred", delta: after.cred - before.cred },
-        { label: "Tech", delta: after.techHype - before.techHype },
-        { label: "Price", delta: after.tokenPrice - before.tokenPrice },
-        { label: "TVL", delta: after.tvl - before.tvl },
+        { label: "Trust", delta: after.cred - before.cred },
+        { label: "Research", delta: after.techHype - before.techHype },
       ].filter((d) => d.delta !== 0);
 
       // extract severity from newest log line if present
@@ -108,12 +123,30 @@ const App: React.FC = () => {
       const actionDef = ACTIONS.find((a) => a.id === id);
       const actionName = actionDef?.name ?? id.replace(/_/g, " ");
 
-      // Find the actual narrative log (not the severity line)
-      // The narrative should be the log entry added by the action's apply function
-      let narrativeLog = severityLine ? after.log[1] : after.log[0];
+      // The action's log entry was added by action.apply(), but events may have prepended more entries
+      // Log structure after step(): [event_logs..., severity_line, action_log, old_logs...]
+      // Since events prepend their logs, action log position shifts based on how many events fired
+      // Best approach: find the first log entry that matches action patterns (not event patterns)
+      const newLogCount = after.log.length - before.log.length;
+      const newLogs = after.log.slice(0, newLogCount);
 
-      // If we still got a severity-style line or nothing, use action description
-      if (!narrativeLog || narrativeLog.startsWith("Glancing") || narrativeLog.startsWith("Normal") || narrativeLog.startsWith("Critical")) {
+      // Event logs typically start with emojis or specific phrases
+      const eventPrefixes = [
+        "Earth analyst", "📋", "🌪️", "☀️", "🚀 Supply", "🔧 Critical habitat",
+        "🔧 Systems integrity", "💧", "🔬 Major research", "📰", "🎉 Crew celebrates",
+        "💬 Someone leaked", "🧵 Anonymous", "📊 External crisis", "📉 CONTRACTOR",
+        "🚨 CRITICAL SYSTEMS", "You argued with a junior"
+      ];
+
+      const isEventLog = (log: string) => eventPrefixes.some(prefix => log.startsWith(prefix));
+      const isSeverityLog = (log: string) =>
+        log.startsWith("Glancing") || log.startsWith("Normal") || log.startsWith("Critical");
+
+      // Find the action's log (not event, not severity)
+      let narrativeLog = newLogs.find(log => !isEventLog(log) && !isSeverityLog(log)) ?? "";
+
+      // If still empty or still looks wrong, use description
+      if (!narrativeLog) {
         narrativeLog = actionDef?.description ?? "";
       }
 
@@ -149,9 +182,9 @@ const App: React.FC = () => {
   const handleStart = () => {
     playSound("click");
     const base = initialState({
-      chainName: chainName || "ZooChain",
-      founderName: founderName || "You",
-      ticker: ticker || "ZOO",
+      chainName: "Olympus Base",
+      founderName: founderName || "Commander",
+      ticker: "OLY",
       seasonId,
     });
     const sampled = sampleActionsForTurn(base, rng).map((a) => a.id);
@@ -168,9 +201,9 @@ const App: React.FC = () => {
     setSeed(newSeed);
     const newRng = mulberry32(newSeed);
     const base = initialState({
-      chainName: chainName || "ZooChain",
-      founderName: founderName || "You",
-      ticker: ticker || "ZOO",
+      chainName: "Olympus Base",
+      founderName: founderName || "Commander",
+      ticker: "OLY",
       seasonId,
     });
     const sampled = sampleActionsForTurn(base, newRng).map((a) => a.id);
@@ -188,12 +221,10 @@ const App: React.FC = () => {
       const deltas = [
         { label: "Official Treasury", delta: after.colonyReserves - before.colonyReserves },
         { label: "Legacy", delta: after.legacy - before.legacy },
-        { label: "Community Rage", delta: after.rage - before.rage },
-        { label: "Earth Oversight", delta: after.oversightPressure - before.oversightPressure },
-        { label: "Cred", delta: after.cred - before.cred },
-        { label: "Tech", delta: after.techHype - before.techHype },
-        { label: "Price", delta: after.tokenPrice - before.tokenPrice },
-        { label: "TVL", delta: after.tvl - before.tvl },
+        { label: "Unrest", delta: after.rage - before.rage },
+        { label: "Oversight", delta: after.oversightPressure - before.oversightPressure },
+        { label: "Trust", delta: after.cred - before.cred },
+        { label: "Research", delta: after.techHype - before.techHype },
       ].filter((d) => d.delta !== 0);
       setTurnModalData({
         actionName: s.pendingCrisis?.name ?? "Crisis",
@@ -206,7 +237,12 @@ const App: React.FC = () => {
     });
   };
 
-  // Start screen
+  // Splash screen
+  if (showSplash) {
+    return <SplashScreen onStart={() => setShowSplash(false)} />;
+  }
+
+  // Config screen
   if (!started) {
     return (
       <div className="min-h-screen min-h-[100dvh] flex items-center justify-center p-4">
@@ -220,31 +256,13 @@ const App: React.FC = () => {
               Over {maxTurnsDisplay} cycles, build your legacy on humanity&apos;s first Mars colony
               — without triggering mutiny, Earth recall, or mission failure.
             </p>
+            <p className="text-xs text-slate-500 italic mt-2">Your actions will be recorded.</p>
           </div>
 
           {/* Colony Archive */}
           <ArchivePanel />
 
           <div className="space-y-3">
-            <label className="block">
-              <span className="text-xs uppercase tracking-wide text-slate-500">Colony Name</span>
-              <input
-                className="w-full mt-1 rounded-lg bg-slate-800 border border-slate-700 px-4 py-3 text-sm focus:outline-none focus:border-sky-500 transition-colors"
-                value={chainName}
-                onChange={(e) => setChainName(e.target.value)}
-                placeholder="Olympus Base"
-              />
-            </label>
-            <label className="block">
-              <span className="text-xs uppercase tracking-wide text-slate-500">Mission Code</span>
-              <input
-                className="w-full mt-1 rounded-lg bg-slate-800 border border-slate-700 px-4 py-3 text-sm uppercase focus:outline-none focus:border-sky-500 transition-colors"
-                value={ticker}
-                onChange={(e) => setTicker(e.target.value.toUpperCase())}
-                placeholder="OLY"
-                maxLength={4}
-              />
-            </label>
             <label className="block">
               <span className="text-xs uppercase tracking-wide text-slate-500">Commander Name</span>
               <input
@@ -257,6 +275,12 @@ const App: React.FC = () => {
           </div>
 
           <div className="flex gap-3">
+            <button
+              onClick={() => setShowLeaderboard(true)}
+              className="py-4 px-4 bg-slate-700 hover:bg-slate-600 text-white font-semibold rounded-xl transition-colors text-base"
+            >
+              🏆
+            </button>
             <button
               onClick={() => setShowHowToPlay(true)}
               className="flex-1 py-4 px-4 bg-slate-700 hover:bg-slate-600 text-white font-semibold rounded-xl transition-colors text-base"
@@ -272,6 +296,7 @@ const App: React.FC = () => {
           </div>
 
           <HowToPlayModal open={showHowToPlay} onClose={() => setShowHowToPlay(false)} />
+          <LeaderboardModal open={showLeaderboard} onClose={() => setShowLeaderboard(false)} />
         </div>
       </div>
     );
@@ -283,14 +308,8 @@ const App: React.FC = () => {
       <div className="flex-1 max-w-2xl w-full mx-auto p-4 pb-8">
         <TopPanel state={state} maxTurns={state.maxTurns} showDescription={false} />
 
-        {/* Mute and Leaderboard buttons */}
-        <div className="flex items-center justify-between mb-3">
-          <button
-            className="text-xs text-slate-500 hover:text-slate-400 transition-colors flex items-center gap-1"
-            onClick={() => setShowLeaderboard(true)}
-          >
-            🏆 Leaderboard
-          </button>
+        {/* Mute button */}
+        <div className="flex items-center justify-end mb-3">
           <button
             className="text-xs text-slate-500 hover:text-slate-400 transition-colors flex items-center gap-1"
             onClick={toggleMute}
@@ -336,12 +355,9 @@ const App: React.FC = () => {
           <div className="fixed bottom-4 left-4 game-card text-[11px] space-y-1 z-10 max-w-xs">
             <div className="font-semibold text-slate-200">Debug (~)</div>
             <div>Seed: {seed}</div>
-            <div>Ticker: {state.ticker}</div>
-            <div>Price: ${state.tokenPrice.toFixed(2)}</div>
-            <div>TVL: {state.tvl.toFixed(0)}</div>
-            <div>Official treasury: {state.colonyReserves.toFixed(0)}</div>
-            <div>Siphoned: {state.legacy.toFixed(0)}</div>
-            <div>Audit risk: {state.hidden.scrutiny.toFixed(2)}</div>
+            <div>Reserves: {state.colonyReserves.toFixed(0)}</div>
+            <div>Legacy: {state.legacy.toFixed(0)}</div>
+            <div>Scrutiny: {state.hidden.scrutiny.toFixed(2)}</div>
             <div>Founder stability: {state.hidden.founderStability.toFixed(2)}</div>
             <div>Community memory: {state.hidden.communityMemory.toFixed(2)}</div>
             <div>Recent events: {state.recentEvents.join(", ") || "None"}</div>

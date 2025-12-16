@@ -20,7 +20,7 @@ export const THEME = {
     scrutiny: "Oversight Scrutiny",
     founderStability: "Command Composure",
     communityMemory: "Institutional Memory",
-    stablecoinRatio: "Resource Stability",
+    reserveLiquidity: "Resource Stability",
   },
 
   // Category names
