@@ -22,7 +22,7 @@ const movementBardock = {
     blockExplorers: {
         default: {
             name: 'Movement Explorer',
-            url: 'https://explorer.devnet.imola.movementlabs.xyz',
+            url: 'https://explorer.movementnetwork.xyz',
         },
     },
     testnet: true,

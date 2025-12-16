@@ -106,9 +106,9 @@ export const LeaderboardModal: React.FC<LeaderboardModalProps> = ({ open, onClos
                                 >
                                     {/* Rank */}
                                     <div className={`w-8 text-center font-bold ${index === 0 ? 'text-amber-400' :
-                                            index === 1 ? 'text-slate-300' :
-                                                index === 2 ? 'text-amber-600' :
-                                                    'text-slate-500'
+                                        index === 1 ? 'text-slate-300' :
+                                            index === 2 ? 'text-amber-600' :
+                                                'text-slate-500'
                                         }`}>
                                         {index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `#${index + 1}`}
                                     </div>
@@ -128,7 +128,7 @@ export const LeaderboardModal: React.FC<LeaderboardModalProps> = ({ open, onClos
                                         <div className="text-lg font-bold text-emerald-400">{formatScore(entry.score)}</div>
                                         {entry.on_chain_tx && (
                                             <a
-                                                href={`https://explorer.devnet.imola.movementlabs.xyz/tx/${entry.on_chain_tx}`}
+                                                href={`https://explorer.movementnetwork.xyz/tx/${entry.on_chain_tx}`}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
                                                 className="text-[10px] text-sky-400 hover:text-sky-300"

@@ -86,7 +86,7 @@ export const ShareCard: React.FC<Props> = ({ state, ending, runHash, indexDelta,
   };
 
   const explorerUrl = txHash
-    ? `https://explorer.devnet.imola.movementlabs.xyz/tx/${txHash}`
+    ? `https://explorer.movementnetwork.xyz/tx/${txHash}`
     : null;
 
   return (

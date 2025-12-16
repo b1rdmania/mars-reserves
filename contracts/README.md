@@ -78,4 +78,4 @@ struct RunRecorded {
 
 - **Network**: Movement Bardock (Devnet)
 - **RPC**: https://aptos.devnet.imola.movementlabs.xyz/v1
-- **Explorer**: https://explorer.devnet.imola.movementlabs.xyz
+- **Explorer**: https://explorer.movementnetwork.xyz
