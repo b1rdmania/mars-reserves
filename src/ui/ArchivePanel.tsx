@@ -57,20 +57,6 @@ function formatTimeAgo(dateStr: string): string {
     return date.toLocaleDateString();
 }
 
-// Generate call sign from wallet or name
-function generateCallSign(entry: ArchiveEntry, index: number): string {
-    if (entry.commander_name && entry.commander_name !== 'Unknown Commander') {
-        // Use first initial + number derived from wallet/id
-        const initial = entry.commander_name.charAt(0).toUpperCase();
-        const num = (parseInt(entry.id.slice(-3), 16) % 900) + 100;
-        return `CMD. ${initial}-${num}`;
-    }
-    // Fallback to generated call sign
-    const letter = String.fromCharCode(65 + (index % 26));
-    const num = (parseInt(entry.wallet?.slice(-4) || entry.id.slice(-4), 16) % 900) + 100;
-    return `CMD. ${letter}-${num}`;
-}
-
 export const ArchivePanel: React.FC = () => {
     const [data, setData] = useState<ArchiveData | null>(null);
     const [loading, setLoading] = useState(true);
@@ -114,13 +100,16 @@ export const ArchivePanel: React.FC = () => {
         );
     }
 
-    // Find notable record (highest score)
-    const notableRecord = data.recent.length > 0
-        ? data.recent.reduce((best, entry) => entry.score > best.score ? entry : best, data.recent[0])
+    // Filter to only show on-chain recorded missions
+    const onChainRecords = data.recent.filter(e => e.on_chain_tx);
+
+    // Find notable record (highest score among on-chain)
+    const notableRecord = onChainRecords.length > 0
+        ? onChainRecords.reduce((best, entry) => entry.score > best.score ? entry : best, onChainRecords[0])
         : null;
 
     // Other records (excluding notable)
-    const otherRecords = data.recent.filter(e => e.id !== notableRecord?.id).slice(0, 4);
+    const otherRecords = onChainRecords.filter(e => e.id !== notableRecord?.id).slice(0, 4);
 
     return (
         <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700/50">
@@ -129,11 +118,11 @@ export const ArchivePanel: React.FC = () => {
                 <div className="flex items-center justify-between">
                     <span className="font-semibold text-slate-300 text-sm">Colony Archive</span>
                     <span className="text-[10px] text-slate-600">
-                        {data.stats.total_missions} recorded
+                        {onChainRecords.length} on-chain
                     </span>
                 </div>
                 <p className="text-[10px] text-slate-500 italic mt-0.5">
-                    A partial record of past command tenures.
+                    Permanently recorded command tenures.
                 </p>
             </div>
 
@@ -143,8 +132,8 @@ export const ArchivePanel: React.FC = () => {
                     <div className="text-[9px] uppercase tracking-wide text-slate-500 mb-1">Notable Record</div>
                     <div className="flex items-center justify-between">
                         <div>
-                            <div className="text-sm text-slate-200 font-mono">
-                                {generateCallSign(notableRecord, 0)}
+                            <div className="text-sm text-slate-200">
+                                {notableRecord.commander_name || 'Unknown Commander'}
                             </div>
                             <div className="text-[10px] text-slate-500">
                                 {ENDING_NAMES[notableRecord.ending_id] || 'Mission Complete'}
@@ -154,9 +143,14 @@ export const ArchivePanel: React.FC = () => {
                             <div className="text-sm text-slate-300 font-mono">
                                 {formatScore(notableRecord.score)}
                             </div>
-                            <div className="text-[9px] text-slate-600">
-                                {notableRecord.on_chain_tx ? 'Archived' : formatTimeAgo(notableRecord.created_at)}
-                            </div>
+                            <a
+                                href={`https://explorer.movementnetwork.xyz/tx/${notableRecord.on_chain_tx}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-[9px] text-sky-400 hover:text-sky-300"
+                            >
+                                View on Explorer ↗
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -164,28 +158,41 @@ export const ArchivePanel: React.FC = () => {
 
             {/* Other Records */}
             {otherRecords.length > 0 && (
-                <div className="space-y-1">
-                    {otherRecords.map((entry, idx) => (
+                <div className="space-y-1.5">
+                    {otherRecords.map((entry) => (
                         <div
                             key={entry.id}
-                            className="flex items-center justify-between px-2 py-1.5 text-slate-500"
+                            className="flex items-center justify-between px-2 py-1.5 bg-slate-900/30 rounded"
                         >
-                            <div className="flex items-center gap-2">
-                                <span className="text-xs font-mono">{generateCallSign(entry, idx + 1)}</span>
-                                <span className="text-[10px]">·</span>
-                                <span className="text-[10px]">{ENDING_NAMES[entry.ending_id] || 'Complete'}</span>
+                            <div className="flex-1 min-w-0">
+                                <div className="text-xs text-slate-300 truncate">
+                                    {entry.commander_name || 'Unknown'}
+                                </div>
+                                <div className="text-[10px] text-slate-500">
+                                    {ENDING_NAMES[entry.ending_id] || 'Complete'} · {formatTimeAgo(entry.created_at)}
+                                </div>
                             </div>
-                            <span className="text-[10px] font-mono text-slate-400">
-                                {formatScore(entry.score)}
-                            </span>
+                            <div className="text-right ml-2">
+                                <div className="text-xs font-mono text-slate-400">
+                                    {formatScore(entry.score)}
+                                </div>
+                                <a
+                                    href={`https://explorer.movementnetwork.xyz/tx/${entry.on_chain_tx}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-[9px] text-sky-400 hover:text-sky-300"
+                                >
+                                    ↗
+                                </a>
+                            </div>
                         </div>
                     ))}
                 </div>
             )}
 
-            {data.recent.length === 0 && (
+            {onChainRecords.length === 0 && (
                 <div className="text-center py-3 text-slate-600 text-xs italic">
-                    No missions archived yet.
+                    No missions archived on-chain yet.
                 </div>
             )}
         </div>
