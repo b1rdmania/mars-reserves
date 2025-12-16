@@ -362,7 +362,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             console.log('[OnChain] Attempting on-chain recording...');
             try {
                 // Use the Shinami SDK for proper transaction sponsorship
-                const { recordMissionOnChain } = await import('./shinami-client');
+                const { recordMissionOnChain } = await import('./shinami-client.js');
 
                 const result = await recordMissionOnChain(
                     {
@@ -380,6 +380,26 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                     onChainStatus = 'submitted';
                     explorerUrl = result.explorerUrl || `https://explorer.movementnetwork.xyz/tx/${txHash}?network=testnet`;
                     console.log('On-chain mission recorded:', txHash);
+
+                    // Update the database with the tx hash using REST API
+                    if (supabaseUrl && supabaseKey) {
+                        const updateResponse = await fetch(
+                            `${supabaseUrl}/rest/v1/runs?run_hash=eq.${runHash}`,
+                            {
+                                method: 'PATCH',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'apikey': supabaseKey,
+                                    'Authorization': `Bearer ${supabaseKey}`,
+                                } as Record<string, string>,
+                                body: JSON.stringify({ on_chain_tx: txHash }),
+                            }
+                        );
+
+                        if (!updateResponse.ok) {
+                            console.error('Failed to update on_chain_tx:', await updateResponse.text());
+                        }
+                    }
                 } else {
                     onChainStatus = 'error';
                     console.error('Shinami sponsorship failed:', result.error);
