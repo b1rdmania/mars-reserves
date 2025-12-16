@@ -25,6 +25,7 @@ export type ActionId =
   | "crew_assembly"
   | "night_directive"
   | "ai_proposal"
+  | "routine_ops"  // NEW: Safe action
   // Communications (formerly Narrative)
   | "earth_partnership"
   | "tech_milestone"
@@ -36,6 +37,7 @@ export type ActionId =
   | "infrastructure_announcement"
   | "terraforming_preview"
   | "investor_briefing"
+  | "status_report"  // NEW: Safe action
   // Crisis Response (formerly Damage Control)
   | "legal_counsel"
   | "official_statement"
@@ -57,7 +59,8 @@ export type ActionId =
   | "progress_display"
   | "influencer_visit"
   | "documentary_crew"
-  | "podcast_interview";
+  | "podcast_interview"
+  | "crew_checkin";  // NEW: Safe action
 
 export interface ActionDef {
   id: ActionId;
@@ -481,6 +484,23 @@ export const ACTIONS: ActionDef[] = [
       };
     },
   },
+  {
+    id: "routine_ops",
+    category: "Command",
+    name: "Routine Operations",
+    description: "Standard procedures. Nothing changes.",
+    tags: ["-Unrest (small)", "+Trust (small)"],
+    defensive: true,
+    apply: (s) => {
+      const log = `Routine operations continue. Steady hand at the helm.`;
+      return {
+        ...s,
+        rage: clamp(s.rage - 3),
+        cred: clamp(s.cred + 2),
+        log: [log, ...s.log],
+      };
+    },
+  },
 
   // ═══════════════════════════════════════════════════════════
   // COMMUNICATIONS (formerly Narrative) - Information and hype
@@ -666,6 +686,23 @@ export const ACTIONS: ActionDef[] = [
         rage: clamp(s.rage - 5),
         cred: clamp(s.cred - 3),
         hidden: { ...s.hidden, communityMemory: s.hidden.communityMemory + 0.1 },
+        log: [log, ...s.log],
+      };
+    },
+  },
+  {
+    id: "status_report",
+    category: "Communications",
+    name: "Standard Status Report",
+    description: "Routine update to Earth. No surprises.",
+    tags: ["-Oversight (small)", "+Trust (small)"],
+    defensive: true,
+    apply: (s) => {
+      const log = `Standard status report transmitted. Earth acknowledges.`;
+      return {
+        ...s,
+        oversightPressure: clamp(s.oversightPressure - 3),
+        cred: clamp(s.cred + 2),
         log: [log, ...s.log],
       };
     },
@@ -1057,6 +1094,23 @@ export const ACTIONS: ActionDef[] = [
         rage: clamp(s.rage + (mocked ? 10 : -8)),
         cred: clamp(s.cred + (mocked ? -10 : 8)),
         tokenPrice: s.tokenPrice * (mocked ? 0.97 : 1.05),
+        log: [log, ...s.log],
+      };
+    },
+  },
+  {
+    id: "crew_checkin",
+    category: "Crew Relations",
+    name: "Crew Check-In",
+    description: "Listen to concerns. Low drama.",
+    tags: ["-Unrest", "+Trust"],
+    defensive: true,
+    apply: (s) => {
+      const log = `Routine crew check-in completed. No major concerns raised.`;
+      return {
+        ...s,
+        rage: clamp(s.rage - 5),
+        cred: clamp(s.cred + 3),
         log: [log, ...s.log],
       };
     },

@@ -217,7 +217,7 @@ export function step(state: GameState, actionId: ActionId, rng: RNG): GameState 
   // DEFENSIVE ACTION IMMUNITY: Defensive actions reduce random event chance
   const isDefensive = action?.defensive ?? false;
   const eventRoll = rng();
-  const eventThreshold = isDefensive ? 0.3 : 1.0; // 70% reduction for defensive plays
+  const eventThreshold = isDefensive ? 0.25 : 0.5; // Defensive: 25%, Normal: 50%
 
   if (eventRoll < eventThreshold) {
     const ev = pickRandomEvent(next, rng, season);
