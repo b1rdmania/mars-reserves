@@ -105,8 +105,8 @@ export const ArchivePanel: React.FC = () => {
             {/* Header */}
             <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
-                    <span className="text-lg">📡</span>
-                    <span className="font-semibold text-slate-200">Colony Archive</span>
+                    <span className="text-lg">🏆</span>
+                    <span className="font-semibold text-slate-200">Leaderboard</span>
                 </div>
                 <span className="text-xs text-slate-500">
                     {data.stats.total_missions} missions
@@ -123,7 +123,7 @@ export const ArchivePanel: React.FC = () => {
             {/* Recent Missions */}
             {data.recent.length > 0 ? (
                 <div className="space-y-2">
-                    <div className="text-[10px] uppercase tracking-wide text-slate-500 mb-2">Recent Missions</div>
+                    <div className="text-[10px] uppercase tracking-wide text-slate-500 mb-2">Top Scores</div>
                     {data.recent.slice(0, 5).map((entry) => (
                         <div
                             key={entry.id}

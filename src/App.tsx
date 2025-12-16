@@ -276,20 +276,14 @@ const App: React.FC = () => {
 
           <div className="flex gap-3">
             <button
-              onClick={() => setShowLeaderboard(true)}
-              className="py-4 px-4 bg-slate-700 hover:bg-slate-600 text-white font-semibold rounded-xl transition-colors text-base"
-            >
-              🏆
-            </button>
-            <button
               onClick={() => setShowHowToPlay(true)}
-              className="flex-1 py-4 px-4 bg-slate-700 hover:bg-slate-600 text-white font-semibold rounded-xl transition-colors text-base"
+              className="py-4 px-4 bg-slate-700 hover:bg-slate-600 text-white font-semibold rounded-xl transition-colors text-base"
             >
               ❓ Briefing
             </button>
             <button
               onClick={handleStart}
-              className="flex-[2] py-4 px-4 bg-sky-500 hover:bg-sky-400 text-white font-semibold rounded-xl transition-colors text-base"
+              className="flex-1 py-4 px-4 bg-sky-500 hover:bg-sky-400 text-white font-semibold rounded-xl transition-colors text-base"
             >
               Begin Mission →
             </button>
