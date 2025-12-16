@@ -80,12 +80,12 @@ export const ACTIONS: ActionDef[] = [
   {
     id: "mining_acceleration",
     category: "Ambition",
-    name: "[Your Name] Extraction Initiative",
-    description: "Your name on the extraction reports.",
+    name: "[Your Name] Water Ice Initiative",
+    description: "Your name on the extraction manifests.",
     tags: ["+Legacy", "+Unrest", "+Oversight", "-Trust", "-Reserves"],
     apply: (s) => {
       const amount = Math.floor(s.colonyReserves * 0.1);
-      const log = `The ${s.founderName} Extraction Initiative exceeds quarterly targets. Crew notes the attribution.`;
+      const log = `The ${s.founderName} Water Ice Initiative exceeds extraction targets. Crew notes the attribution.`;
       return {
         ...s,
         colonyReserves: Math.max(0, s.colonyReserves - amount),
@@ -101,12 +101,12 @@ export const ACTIONS: ActionDef[] = [
   {
     id: "external_contractors",
     category: "Ambition",
-    name: "Commission External Research Team",
-    description: "Specialists reporting to you. Credit accordingly.",
+    name: "Commission Geological Survey Team",
+    description: "Specialists reporting to you. Credit for discoveries.",
     tags: ["+Legacy", "+Unrest", "+Oversight", "-Trust", "-Reserves"],
     apply: (s) => {
       const amount = Math.floor(s.colonyReserves * 0.12);
-      const log = `External research team established. Publications will cite command authority.`;
+      const log = `External geological team established. Any fossil finds will cite command authority.`;
       return {
         ...s,
         colonyReserves: Math.max(0, s.colonyReserves - amount),
@@ -185,12 +185,12 @@ export const ACTIONS: ActionDef[] = [
   {
     id: "luxury_habitat",
     category: "Ambition",
-    name: "The [Your Name] Command Annex",
-    description: "A dedicated command facility.",
+    name: "The [Your Name] Dome",
+    description: "A pressurized private dome. Command privilege.",
     tags: ["+Legacy", "+Unrest", "+Oversight", "-Trust", "-Reserves"],
     apply: (s) => {
       const amount = Math.floor(s.colonyReserves * 0.3);
-      const log = `The ${s.founderName} Command Annex opens. Earth media covers the dedication ceremony.`;
+      const log = `The ${s.founderName} Dome opens. First private structure on Mars. Earth media covers the dedication.`;
       return {
         ...s,
         colonyReserves: Math.max(0, s.colonyReserves - amount),
@@ -543,11 +543,11 @@ export const ACTIONS: ActionDef[] = [
   {
     id: "publish_findings",
     category: "Communications",
-    name: "Publish Research Findings",
-    description: "Release a paper. Academics argue.",
+    name: "Publish Geological Findings",
+    description: "Release the survey data. Academics argue.",
     tags: ["-Unrest", "+Trust", "+Momentum", "+Oversight"],
     apply: (s) => {
-      const log = `Research published. Academics argue for 48 hours.`;
+      const log = `Geological data published. Earth scientists debate the stratification patterns.`;
       return {
         ...s,
         cred: clamp(s.cred + 6),
@@ -601,11 +601,11 @@ export const ACTIONS: ActionDef[] = [
   {
     id: "breakthrough_claim",
     category: "Communications",
-    name: "Claim Major Breakthrough",
-    description: "Groundbreaking. Verification pending.",
+    name: "Claim Fossil Discovery",
+    description: "Possible proof of ancient life. Verification pending.",
     tags: ["+++Momentum", "+Trust", "+Oversight"],
     apply: (s) => {
-      const log = `Breakthrough announced. Investors are ecstatic.`;
+      const log = `Potential microbial fossils announced. Earth is ecstatic.`;
       return {
         ...s,
         techHype: clamp(s.techHype + 25),
@@ -619,11 +619,11 @@ export const ACTIONS: ActionDef[] = [
   {
     id: "infrastructure_announcement",
     category: "Communications",
-    name: "Infrastructure Expansion",
-    description: "Massive expansion. Details later.",
+    name: "Announce Habitat Expansion",
+    description: "New pressurized zones. Designs pending.",
     tags: ["+Momentum", "±Trust", "-Unrest"],
     apply: (s) => {
-      const log = `Infrastructure expansion plans released. Hardware crews are interested.`;
+      const log = `Habitat expansion plans released. Engineering crews are interested.`;
       return {
         ...s,
         techHype: clamp(s.techHype + 12),
@@ -776,11 +776,11 @@ export const ACTIONS: ActionDef[] = [
   {
     id: "blame_equipment",
     category: "Crisis Response",
-    name: "Blame Equipment Failure",
-    description: "Faulty systems caused it.",
+    name: "Blame Dust Storm Damage",
+    description: "Martian conditions caused it.",
     tags: ["-Oversight", "-Trust", "+Unrest"],
     apply: (s) => {
-      const log = `Equipment failure blamed. Technical team is furious.`;
+      const log = `Dust storm damage blamed. Maintenance team is furious.`;
       return {
         ...s,
         oversightPressure: clamp(s.oversightPressure - 12),
