@@ -142,9 +142,10 @@ export const TopPanel: React.FC<Props> = ({ state, maxTurns, showDescription = t
           <div>
             {(() => {
               const turnsLeft = maxTurns - state.turn;
-              const urgencyColor = turnsLeft <= 2 ? "text-red-400" : turnsLeft <= 5 ? "text-amber-400" : "text-white";
+              const urgencyColor = turnsLeft <= 2 ? "text-red-400" : turnsLeft <= 3 ? "text-amber-400" : "text-white";
+              const pulseClass = turnsLeft <= 3 ? "animate-pulse" : "";
               return (
-                <div className={`text-2xl font-bold tabular-nums ${urgencyColor}`}>
+                <div className={`text-2xl font-bold tabular-nums ${urgencyColor} ${pulseClass}`}>
                   {state.turn}<span className="text-slate-500">/{maxTurns}</span>
                 </div>
               );

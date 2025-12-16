@@ -1046,7 +1046,7 @@ export function pickCrisis(state: GameState, rng: RNG, _season: SeasonDef): Cris
 // Wrapper that applies chance-based gating
 export function maybePickCrisis(state: GameState, rng: RNG, season: SeasonDef): CrisisDef | null {
   // Grace period: no crises in early turns (let player learn)
-  if (state.turn <= 3) return null;
+  if (state.turn <= 2) return null;
 
   // Base 10% chance per turn, modified by hidden scrutiny and season
   const base = 0.1;
