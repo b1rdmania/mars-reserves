@@ -74,26 +74,41 @@ export async function recordMissionOnChain(
             sender = Ed25519Account.generate();
         }
 
-        console.log('[Shinami] Building transaction for:', params.missionIndexAddress);
-        console.log('[Shinami] Sender:', sender.accountAddress.toString());
+        // CRITICAL: Trim addresses to remove any whitespace/newlines (Vercel env var issue)
+        const cleanMissionIndexAddress = params.missionIndexAddress.trim();
+        const senderAddress = sender.accountAddress.toString();
+
+        // Debug logging for address validation
+        console.log('[Shinami] Address diagnostics:', {
+            missionIndexRaw: JSON.stringify(params.missionIndexAddress),
+            missionIndexTrimmed: cleanMissionIndexAddress,
+            missionIndexLen: cleanMissionIndexAddress.length,
+            senderAddress,
+            senderLen: senderAddress.length,
+            fn: `${cleanMissionIndexAddress}::mission_index::record_mission`,
+        });
+
+        // Validate address format (should be 0x + 64 hex chars = 66 total)
+        if (cleanMissionIndexAddress.length !== 66) {
+            throw new Error(`Invalid MISSION_INDEX_ADDRESS length: ${cleanMissionIndexAddress.length}, expected 66`);
+        }
 
         // Build the transaction with fee payer support
-        // Convert arguments to proper byte arrays for vector<u8>
         const runHashBytes = hexToBytes(params.runHash);
         const endingIdBytes = stringToBytes(params.endingId);
 
         console.log('[Shinami] Arg lengths - runHash:', runHashBytes.length, 'endingId:', endingIdBytes.length);
 
         const transaction = await aptos.transaction.build.simple({
-            sender: sender.accountAddress,
-            withFeePayer: true,  // Required for Shinami sponsorship
+            sender: senderAddress,  // Pass as string, not object
+            withFeePayer: true,
             data: {
-                function: `${params.missionIndexAddress}::mission_index::record_mission`,
+                function: `${cleanMissionIndexAddress}::mission_index::record_mission`,
                 typeArguments: [],
                 functionArguments: [
-                    Array.from(runHashBytes),  // Convert Uint8Array to number[]
-                    params.score,
-                    Array.from(endingIdBytes),  // Convert Uint8Array to number[]
+                    runHashBytes,           // Uint8Array for vector<u8>
+                    BigInt(params.score),   // BigInt for u64
+                    endingIdBytes,          // Uint8Array for vector<u8>
                 ],
             },
         });
