@@ -362,7 +362,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             console.log('[OnChain] Attempting on-chain recording...');
             try {
                 // Use the Shinami SDK for proper transaction sponsorship
-                const { recordMissionOnChain } = await import('./shinami-client.js');
+                const { recordMissionOnChain } = await import('./shinami-client');
 
                 const result = await recordMissionOnChain(
                     {
