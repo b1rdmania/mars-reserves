@@ -355,6 +355,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         let txHash: string | null = null;
         let onChainStatus: 'disabled' | 'queued' | 'submitted' | 'error' = 'disabled';
         let explorerUrl: string | null = null;
+        let onChainError: string | null = null;
 
         console.log('[OnChain] Config:', { onChainEnabled, hasMissionIndex: !!missionIndexAddress, hasShinami: !!shinamiApiKey });
 
@@ -402,10 +403,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                     }
                 } else {
                     onChainStatus = 'error';
+                    onChainError = result.error || 'Unknown Shinami error';
                     console.error('Shinami sponsorship failed:', result.error);
                 }
             } catch (err) {
                 onChainStatus = 'error';
+                onChainError = err instanceof Error ? err.message : String(err);
                 console.error('On-chain submission error:', err);
             }
         } else if (onChainEnabled) {
@@ -437,6 +440,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                     enableOnchainValue: process.env.ENABLE_ONCHAIN,
                     hasMissionIndex: !!missionIndexAddress,
                     hasShinami: !!shinamiApiKey,
+                    error: onChainError,
                 },
             },
             ...(supabaseError && { supabaseError }),
