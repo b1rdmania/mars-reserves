@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { usePrivy } from "@privy-io/react-auth";
 import type { GameState } from "../engine/state";
-import { formatMoney, formatStockpile } from "./format";
+import { formatMoney } from "./format";
 import { THEME } from "../theme";
 
 interface Props {
@@ -164,31 +164,75 @@ export const TopPanel: React.FC<Props> = ({ state, maxTurns, showDescription = t
         </div>
       </div>
 
-      {/* Colony Stockpile */}
-      <div className="game-card">
-        <div className="flex justify-center">
-          <div className="stat-display text-center">
-            <span className="stat-label">Colony Stockpile</span>
-            <span className="text-[8px] text-slate-600 block -mt-0.5">Energy · Materials · Oxygen Margin</span>
-            <span className="stat-value">{formatStockpile(colonyReserves)}</span>
-            <span className={`text-[9px] italic mt-1 ${(() => {
-              const pct = (colonyReserves / 1_000_000_000) * 100;
-              if (pct > 80) return "text-slate-500";
-              if (pct > 40) return "text-amber-500/80";
-              return "text-red-400";
-            })()
-              }`}>
-              {(() => {
-                const pct = (colonyReserves / 1_000_000_000) * 100;
-                if (pct > 80) return "Healthy buffer";
-                if (pct > 60) return "Redundancy thinning";
-                if (pct > 40) return "Critical margins";
-                return "Life support at risk";
-              })()}
-            </span>
+      {/* Operational Margin */}
+      {(() => {
+        const pct = (colonyReserves / 1_000_000_000) * 100;
+
+        // Determine margin state
+        let marginState: string;
+        let marginColor: string;
+        let bgColor: string;
+
+        if (pct > 85) {
+          marginState = "HIGH";
+          marginColor = "text-amber-400";
+          bgColor = "bg-amber-500/5 border-amber-500/20";
+        } else if (pct > 70) {
+          marginState = "STABLE";
+          marginColor = "text-amber-400";
+          bgColor = "bg-amber-500/5 border-amber-500/20";
+        } else if (pct > 55) {
+          marginState = "THINNING";
+          marginColor = "text-amber-500";
+          bgColor = "bg-amber-500/10 border-amber-500/30";
+        } else if (pct > 40) {
+          marginState = "STRAINED";
+          marginColor = "text-orange-500";
+          bgColor = "bg-orange-500/10 border-orange-500/30";
+        } else if (pct > 20) {
+          marginState = "CRITICAL";
+          marginColor = "text-red-500";
+          bgColor = "bg-red-500/10 border-red-500/30";
+        } else {
+          marginState = "UNSAFE";
+          marginColor = "text-red-400";
+          bgColor = "bg-red-500/15 border-red-500/40";
+        }
+
+        // Format quantity without currency
+        const formatUnits = (v: number) => {
+          if (v >= 1_000_000_000) return `${(v / 1_000_000_000).toFixed(1)}B units`;
+          if (v >= 1_000_000) return `${(v / 1_000_000).toFixed(1)}M units`;
+          return `${Math.round(v)} units`;
+        };
+
+        return (
+          <div className={`rounded-xl p-4 border ${bgColor}`}>
+            {/* Header - small, institutional */}
+            <div className="text-[10px] uppercase tracking-wider text-slate-500 mb-2">
+              Operational Margin
+            </div>
+
+            {/* Primary Readout - the star */}
+            <div className="text-center mb-2">
+              <span className="text-xs text-slate-500 mr-1">Margin:</span>
+              <span className={`text-xl font-bold tracking-wide ${marginColor}`}>
+                {marginState}
+              </span>
+            </div>
+
+            {/* Context Line - worldbuilding */}
+            <div className="text-[9px] text-slate-600 text-center mb-2">
+              Life support · Power · Logistics
+            </div>
+
+            {/* Quantity - demoted, muted */}
+            <div className="text-[10px] text-slate-500 text-center font-mono">
+              {formatUnits(colonyReserves)}
+            </div>
           </div>
-        </div>
-      </div>
+        );
+      })()}
 
       {/* Meter Bars */}
       <div className="game-card">
