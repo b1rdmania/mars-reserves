@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import type { GameState } from "../engine/state";
-import { ShareCard } from "./ShareCard";
 import { evaluateEnding, getFallbackEnding, type EndingDef } from "../engine/endings";
 import { RecordMissionModal } from "./RecordMissionModal";
+import { calculateFinalScore, formatScore } from "../engine/scoring";
 
 interface Props {
   state: GameState;
@@ -31,16 +31,16 @@ function getGameOverReason(state: GameState): string | null {
     return "Mission completed — you survived all cycles.";
   }
   if (state.rage >= 100) {
-    return "Crew unrest hit critical levels — mutiny triggered.";
+    return "Crew unrest reached critical levels.";
   }
   if (state.oversightPressure >= 100) {
-    return "Earth oversight maxed out — mission terminated.";
+    return "Earth oversight terminated the mission.";
   }
   if (state.cred <= 0) {
-    return "Command trust collapsed — you were removed.";
+    return "Command trust collapsed entirely.";
   }
   if (state.colonyReserves <= 0) {
-    return "Colony reserves depleted — mission failed.";
+    return "Colony reserves were depleted.";
   }
   return null;
 }
@@ -54,63 +54,90 @@ export const EndOfRunCard: React.FC<Props> = ({ state, onRestart, onChangeNames,
   const vibeColors = getVibeColors(ending);
   const gameOverReason = getGameOverReason(state);
 
+  // Calculate legacy for the verdict strip
+  const scoring = calculateFinalScore(state);
+  const endingMultiplier = ending?.scoreMultiplier ?? 1;
+  const finalScore = scoring.finalScore * endingMultiplier;
+  const initialReserves = 1_000_000_000;
+  const extractionRate = ((state.legacy / initialReserves) * 100).toFixed(0);
+
   return (
     <>
       <div className="modal-backdrop">
         <div className="modal-content max-w-md">
-          {/* Compact Header */}
-          <div className={`text-center py-4 -mx-6 -mt-6 rounded-t-2xl border-b ${vibeColors}`}>
-            <div className="text-4xl mb-1">{ending.emoji}</div>
-            <h2 className="text-2xl font-bold tracking-tight">{ending.headline}</h2>
-            <p className="text-xs opacity-80 mt-1">{ending.subline}</p>
-            {ending.badge && (
-              <div className="mt-2 inline-block px-2 py-0.5 rounded-full bg-black/20 text-[10px] uppercase tracking-wide">
-                🏷️ {ending.badge}
-              </div>
-            )}
+
+          {/* SECTION 1: THE OUTCOME (dominant) */}
+          <div className={`text-center py-5 -mx-6 -mt-6 rounded-t-2xl border-b ${vibeColors}`}>
+            <div className="text-4xl mb-2">{ending.emoji}</div>
+            <h2 className="text-2xl font-bold tracking-tight px-4">{ending.headline}</h2>
+            <p className="text-sm opacity-80 mt-1 px-4">{ending.subline}</p>
           </div>
 
-          {/* Game Over Reason */}
+          {/* Why this happened - subtle context */}
           {gameOverReason && (
-            <div className="text-center text-xs text-slate-400 mt-3 px-4">
+            <div className="text-center text-xs text-slate-500 mt-4">
               {gameOverReason}
             </div>
           )}
 
-          {/* Compact Narrative */}
-          <div className="bg-slate-800/50 rounded-lg p-3 my-3 border border-slate-700/50">
-            <p className="text-xs text-slate-300 leading-relaxed italic">
+          {/* THE NARRATIVE (the star - let it breathe) */}
+          <div className="my-4 px-2">
+            <p className="text-sm text-slate-300 leading-relaxed italic text-center">
               "{ending.narrative}"
             </p>
           </div>
 
-          {/* Share Card - condensed */}
-          <ShareCard state={state} ending={ending} />
+          {/* SECTION 2: THE VERDICT (compact, not celebratory) */}
+          <div className="bg-slate-800/40 rounded-lg px-4 py-3 border border-slate-700/30">
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-slate-400">Legacy recorded:</span>
+              <span className="text-slate-200 font-mono">{formatScore(finalScore)}</span>
+            </div>
+            <div className="text-[10px] text-slate-500 mt-1 text-right">
+              {extractionRate}% of colony reserves redirected
+            </div>
+          </div>
 
-          {/* Record Mission CTA */}
-          <button
-            onClick={() => setShowRecordModal(true)}
-            className="w-full mt-3 py-3 px-4 bg-emerald-500 hover:bg-emerald-400 text-white font-semibold rounded-xl transition-colors flex items-center justify-center gap-2"
-          >
-            <span>🚀</span>
-            <span>Record Mission</span>
-          </button>
-
-          {/* Try Again - NOW LARGER AND MORE PROMINENT */}
-          <button
-            onClick={onRestart}
-            className="w-full mt-3 py-4 px-4 bg-sky-500 hover:bg-sky-400 text-white font-bold rounded-xl transition-colors text-lg"
-          >
-            🔄 Try Again
-          </button>
-
-          {onChangeNames && (
+          {/* SECTION 3: THE ARCHIVE HOOK */}
+          <div className="mt-5 text-center">
+            <p className="text-xs text-slate-500 italic mb-3">
+              This mission can be entered into the Colony Archive.
+            </p>
             <button
-              onClick={onChangeNames}
-              className="w-full mt-2 py-2 px-4 bg-slate-700 hover:bg-slate-600 text-slate-300 font-medium rounded-xl transition-colors text-sm"
+              onClick={() => setShowRecordModal(true)}
+              className="w-full py-3.5 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-xl transition-colors text-base"
             >
-              New Commander
+              📡 Record Mission
             </button>
+          </div>
+
+          {/* SECTION 4: SECONDARY ACTIONS (demoted) */}
+          <div className="mt-4 pt-3 border-t border-slate-700/30">
+            <div className="flex gap-2">
+              <button
+                onClick={onRestart}
+                className="flex-1 py-2.5 px-4 bg-slate-700 hover:bg-slate-600 text-slate-200 font-medium rounded-lg transition-colors text-sm"
+              >
+                Try Again
+              </button>
+              {onChangeNames && (
+                <button
+                  onClick={onChangeNames}
+                  className="py-2.5 px-4 bg-slate-800 hover:bg-slate-700 text-slate-400 font-medium rounded-lg transition-colors text-xs"
+                >
+                  New
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Badge - only if earned, small */}
+          {ending.badge && (
+            <div className="mt-3 text-center">
+              <span className="inline-block px-2 py-1 rounded-full bg-slate-800 text-[10px] text-slate-400 uppercase tracking-wide">
+                🏷️ {ending.badge}
+              </span>
+            </div>
           )}
         </div>
       </div>
@@ -127,4 +154,3 @@ export const EndOfRunCard: React.FC<Props> = ({ state, onRestart, onChangeNames,
     </>
   );
 };
-
