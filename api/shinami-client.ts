@@ -13,10 +13,10 @@ import {
     Ed25519Account,
 } from '@aptos-labs/ts-sdk';
 
-// Movement testnet configuration
+// Movement testnet configuration (from Shinami example)
 const MOVEMENT_TESTNET_CONFIG = {
-    fullnodeUrl: 'https://aptos.testnet.movementnetwork.xyz/v1',
-    indexerUrl: 'https://indexer.testnet.movementnetwork.xyz/v1/graphql',
+    fullnodeUrl: 'https://testnet.movementnetwork.xyz/v1',
+    faucetUrl: 'https://faucet.testnet.movementnetwork.xyz/',
 };
 
 interface RecordMissionParams {
@@ -52,10 +52,11 @@ export async function recordMissionOnChain(
         // Initialize Shinami Gas Station client
         const gasClient = new GasStationClient(shinamiApiKey);
 
-        // Initialize Aptos client for Movement testnet
+        // Initialize Aptos client for Movement testnet (following Shinami example)
         const config = new AptosConfig({
+            network: Network.CUSTOM,
             fullnode: MOVEMENT_TESTNET_CONFIG.fullnodeUrl,
-            indexer: MOVEMENT_TESTNET_CONFIG.indexerUrl,
+            faucet: MOVEMENT_TESTNET_CONFIG.faucetUrl,
         });
         const aptos = new Aptos(config);
 
@@ -73,9 +74,10 @@ export async function recordMissionOnChain(
             sender = Ed25519Account.generate();
         }
 
-        // Build the transaction
+        // Build the transaction with fee payer support
         const transaction = await aptos.transaction.build.simple({
             sender: sender.accountAddress,
+            withFeePayer: true,  // Required for Shinami sponsorship
             data: {
                 function: `${params.missionIndexAddress}::mission_index::record_mission`,
                 typeArguments: [],
