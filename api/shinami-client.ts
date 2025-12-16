@@ -78,6 +78,10 @@ export async function recordMissionOnChain(
         console.log('[Shinami] Sender:', sender.accountAddress.toString());
 
         // Build the transaction with fee payer support
+        // Note: For vector<u8> args, pass hex strings with 0x prefix
+        const runHashHex = params.runHash.startsWith('0x') ? params.runHash : `0x${params.runHash}`;
+        const endingIdHex = `0x${Buffer.from(params.endingId).toString('hex')}`;
+
         const transaction = await aptos.transaction.build.simple({
             sender: sender.accountAddress,
             withFeePayer: true,  // Required for Shinami sponsorship
@@ -85,9 +89,9 @@ export async function recordMissionOnChain(
                 function: `${params.missionIndexAddress}::mission_index::record_mission`,
                 typeArguments: [],
                 functionArguments: [
-                    hexToBytes(params.runHash),
+                    runHashHex,
                     params.score,
-                    stringToBytes(params.endingId),
+                    endingIdHex,
                 ],
             },
         });
