@@ -74,6 +74,9 @@ export async function recordMissionOnChain(
             sender = Ed25519Account.generate();
         }
 
+        console.log('[Shinami] Building transaction for:', params.missionIndexAddress);
+        console.log('[Shinami] Sender:', sender.accountAddress.toString());
+
         // Build the transaction with fee payer support
         const transaction = await aptos.transaction.build.simple({
             sender: sender.accountAddress,
@@ -89,8 +92,12 @@ export async function recordMissionOnChain(
             },
         });
 
+        console.log('[Shinami] Transaction built, requesting sponsorship...');
+
         // Get sponsorship from Shinami
         const feePayerAuth = await gasClient.sponsorTransaction(transaction);
+
+        console.log('[Shinami] Sponsorship received, signing transaction...');
 
         // Sign the transaction with sender
         const senderAuth = aptos.transaction.sign({
@@ -116,10 +123,13 @@ export async function recordMissionOnChain(
             explorerUrl: `https://explorer.movementnetwork.xyz/tx/${pendingTx.hash}?network=testnet`,
         };
     } catch (error) {
-        console.error('Shinami sponsored transaction error:', error);
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        const errorStack = error instanceof Error ? error.stack : '';
+        console.error('Shinami sponsored transaction error:', errorMessage);
+        console.error('Stack:', errorStack);
         return {
             success: false,
-            error: error instanceof Error ? error.message : 'Unknown error',
+            error: errorMessage,
         };
     }
 }
