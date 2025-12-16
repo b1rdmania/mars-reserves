@@ -71,6 +71,8 @@ export const RecordMissionModal: React.FC<RecordMissionModalProps> = ({
             }
 
             const result = await response.json();
+            console.log('[RecordMission] API Response:', result);
+            console.log('[RecordMission] OnChain Debug:', result.onChain?._debug);
             setTxHash(result.onChain?.txHash || null);
             setSubmitted(true);
         } catch (err) {
