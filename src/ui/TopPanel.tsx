@@ -8,6 +8,8 @@ interface Props {
   state: GameState;
   maxTurns: number;
   showDescription?: boolean;
+  muted?: boolean;
+  onToggleMute?: () => void;
 }
 
 const MeterBar: React.FC<{
@@ -71,7 +73,7 @@ const StatBox: React.FC<{ label: string; value: string; highlight?: boolean }> =
   </div>
 );
 
-export const TopPanel: React.FC<Props> = ({ state, maxTurns, showDescription = true }) => {
+export const TopPanel: React.FC<Props> = ({ state, maxTurns, showDescription = true, muted, onToggleMute }) => {
   const { colonyReserves, legacy, rage, oversightPressure, cred, techHype } = state;
   const { user, authenticated } = usePrivy();
   const [commanderName, setCommanderName] = useState<string | null>(null);
@@ -136,17 +138,30 @@ export const TopPanel: React.FC<Props> = ({ state, maxTurns, showDescription = t
             </p>
           )}
         </div>
-        <div className="text-right shrink-0">
-          {(() => {
-            const turnsLeft = maxTurns - state.turn;
-            const urgencyColor = turnsLeft <= 2 ? "text-red-400" : turnsLeft <= 5 ? "text-amber-400" : "text-white";
-            return (
-              <div className={`text-2xl font-bold tabular-nums ${urgencyColor}`}>
-                {state.turn}<span className="text-slate-500">/{maxTurns}</span>
-              </div>
-            );
-          })()}
-          <div className="text-[10px] uppercase text-slate-500">{THEME.ui.turn}</div>
+        <div className="text-right shrink-0 flex items-start gap-3">
+          {/* Mute Button */}
+          {onToggleMute && (
+            <button
+              onClick={onToggleMute}
+              className="text-xs text-slate-500 hover:text-slate-400 transition-colors p-1"
+              title={muted ? "Unmute" : "Mute"}
+            >
+              {muted ? "🔇" : "🔊"}
+            </button>
+          )}
+          {/* Turn Counter */}
+          <div>
+            {(() => {
+              const turnsLeft = maxTurns - state.turn;
+              const urgencyColor = turnsLeft <= 2 ? "text-red-400" : turnsLeft <= 5 ? "text-amber-400" : "text-white";
+              return (
+                <div className={`text-2xl font-bold tabular-nums ${urgencyColor}`}>
+                  {state.turn}<span className="text-slate-500">/{maxTurns}</span>
+                </div>
+              );
+            })()}
+            <div className="text-[10px] uppercase text-slate-500">{THEME.ui.turn}</div>
+          </div>
         </div>
       </div>
 

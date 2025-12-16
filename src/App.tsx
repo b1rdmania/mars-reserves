@@ -11,7 +11,7 @@ import type { SeasonId } from "./engine/seasons";
 import { TopPanel } from "./ui/TopPanel";
 import { TurnResultModal } from "./ui/TurnResultModal";
 import type { SeverityResult } from "./engine/severity";
-import { playSound, setMuted, initAudio } from "./engine/audio";
+import { playSound, setMuted, initAudio, stopMarsAmbient } from "./engine/audio";
 import { ACTIONS, sampleActionsForTurn } from "./engine/actions";
 import { LogSection } from "./ui/LogSection";
 import { HowToPlayModal } from "./ui/HowToPlayModal";
@@ -87,6 +87,9 @@ const App: React.FC = () => {
     const newMuted = !muted;
     setMutedState(newMuted);
     setMuted(newMuted);
+    if (newMuted) {
+      stopMarsAmbient();
+    }
   };
 
   const handleAction = (id: ActionId) => {
@@ -300,17 +303,7 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen min-h-[100dvh] flex flex-col">
       <div className="flex-1 max-w-2xl w-full mx-auto p-4 pb-8">
-        <TopPanel state={state} maxTurns={state.maxTurns} showDescription={false} />
-
-        {/* Mute button */}
-        <div className="flex items-center justify-end mb-3">
-          <button
-            className="text-xs text-slate-500 hover:text-slate-400 transition-colors flex items-center gap-1"
-            onClick={toggleMute}
-          >
-            {muted ? "🔇 Unmute" : "🔊 Mute"}
-          </button>
-        </div>
+        <TopPanel state={state} maxTurns={state.maxTurns} showDescription={false} muted={muted} onToggleMute={toggleMute} />
 
         {/* Actions */}
         <div className={`${state?.pendingCrisis ? "opacity-50 pointer-events-none" : ""}`}>
