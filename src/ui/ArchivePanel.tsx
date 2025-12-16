@@ -57,6 +57,20 @@ function formatTimeAgo(dateStr: string): string {
     return date.toLocaleDateString();
 }
 
+// Generate call sign from wallet or name
+function generateCallSign(entry: ArchiveEntry, index: number): string {
+    if (entry.commander_name && entry.commander_name !== 'Unknown Commander') {
+        // Use first initial + number derived from wallet/id
+        const initial = entry.commander_name.charAt(0).toUpperCase();
+        const num = (parseInt(entry.id.slice(-3), 16) % 900) + 100;
+        return `CMD. ${initial}-${num}`;
+    }
+    // Fallback to generated call sign
+    const letter = String.fromCharCode(65 + (index % 26));
+    const num = (parseInt(entry.wallet?.slice(-4) || entry.id.slice(-4), 16) % 900) + 100;
+    return `CMD. ${letter}-${num}`;
+}
+
 export const ArchivePanel: React.FC = () => {
     const [data, setData] = useState<ArchiveData | null>(null);
     const [loading, setLoading] = useState(true);
@@ -87,7 +101,7 @@ export const ArchivePanel: React.FC = () => {
     if (loading) {
         return (
             <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700/50">
-                <div className="text-center text-slate-400 text-sm">Loading Archive...</div>
+                <div className="text-center text-slate-500 text-sm">Loading Archive...</div>
             </div>
         );
     }
@@ -100,64 +114,78 @@ export const ArchivePanel: React.FC = () => {
         );
     }
 
+    // Find notable record (highest score)
+    const notableRecord = data.recent.length > 0
+        ? data.recent.reduce((best, entry) => entry.score > best.score ? entry : best, data.recent[0])
+        : null;
+
+    // Other records (excluding notable)
+    const otherRecords = data.recent.filter(e => e.id !== notableRecord?.id).slice(0, 4);
+
     return (
         <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700/50">
             {/* Header */}
-            <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2">
-                    <span className="text-lg">🏆</span>
-                    <span className="font-semibold text-slate-200">Leaderboard</span>
+            <div className="mb-3">
+                <div className="flex items-center justify-between">
+                    <span className="font-semibold text-slate-300 text-sm">Colony Archive</span>
+                    <span className="text-[10px] text-slate-600">
+                        {data.stats.total_missions} recorded
+                    </span>
                 </div>
-                <span className="text-xs text-slate-500">
-                    {data.stats.total_missions} missions
-                </span>
+                <p className="text-[10px] text-slate-500 italic mt-0.5">
+                    A partial record of past command tenures.
+                </p>
             </div>
 
-            {/* Briefing */}
-            {data.briefing && (
-                <div className="bg-slate-900/50 rounded-lg px-3 py-2 mb-3 border-l-2 border-sky-500/50">
-                    <p className="text-xs text-slate-400 italic">{data.briefing}</p>
+            {/* Notable Record */}
+            {notableRecord && (
+                <div className="bg-slate-900/50 rounded-lg px-3 py-2 mb-2 border-l-2 border-slate-500/50">
+                    <div className="text-[9px] uppercase tracking-wide text-slate-500 mb-1">Notable Record</div>
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <div className="text-sm text-slate-200 font-mono">
+                                {generateCallSign(notableRecord, 0)}
+                            </div>
+                            <div className="text-[10px] text-slate-500">
+                                {ENDING_NAMES[notableRecord.ending_id] || 'Mission Complete'}
+                            </div>
+                        </div>
+                        <div className="text-right">
+                            <div className="text-sm text-slate-300 font-mono">
+                                {formatScore(notableRecord.score)}
+                            </div>
+                            <div className="text-[9px] text-slate-600">
+                                {notableRecord.on_chain_tx ? 'Archived' : formatTimeAgo(notableRecord.created_at)}
+                            </div>
+                        </div>
+                    </div>
                 </div>
             )}
 
-            {/* Recent Missions */}
-            {data.recent.length > 0 ? (
-                <div className="space-y-2">
-                    <div className="text-[10px] uppercase tracking-wide text-slate-500 mb-2">Top Scores</div>
-                    {data.recent.slice(0, 5).map((entry) => (
+            {/* Other Records */}
+            {otherRecords.length > 0 && (
+                <div className="space-y-1">
+                    {otherRecords.map((entry, idx) => (
                         <div
                             key={entry.id}
-                            className="flex items-center justify-between bg-slate-900/30 rounded-lg px-3 py-2"
+                            className="flex items-center justify-between px-2 py-1.5 text-slate-500"
                         >
-                            <div className="flex-1 min-w-0">
-                                <div className="text-sm font-medium text-slate-300 truncate">
-                                    {entry.commander_name}
-                                </div>
-                                <div className="text-xs text-slate-500">
-                                    {ENDING_NAMES[entry.ending_id] || entry.ending_id} • {formatTimeAgo(entry.created_at)}
-                                </div>
+                            <div className="flex items-center gap-2">
+                                <span className="text-xs font-mono">{generateCallSign(entry, idx + 1)}</span>
+                                <span className="text-[10px]">·</span>
+                                <span className="text-[10px]">{ENDING_NAMES[entry.ending_id] || 'Complete'}</span>
                             </div>
-                            <div className="text-right ml-3">
-                                <div className="text-sm font-bold text-emerald-400">
-                                    {formatScore(entry.score)}
-                                </div>
-                                {entry.on_chain_tx && (
-                                    <a
-                                        href={`https://explorer.devnet.imola.movementlabs.xyz/tx/${entry.on_chain_tx}`}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-[10px] text-sky-400 hover:text-sky-300"
-                                    >
-                                        on-chain ↗
-                                    </a>
-                                )}
-                            </div>
+                            <span className="text-[10px] font-mono text-slate-400">
+                                {formatScore(entry.score)}
+                            </span>
                         </div>
                     ))}
                 </div>
-            ) : (
-                <div className="text-center py-4 text-slate-500 text-sm">
-                    No missions recorded yet. Be the first!
+            )}
+
+            {data.recent.length === 0 && (
+                <div className="text-center py-3 text-slate-600 text-xs italic">
+                    No missions archived yet.
                 </div>
             )}
         </div>

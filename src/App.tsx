@@ -267,7 +267,7 @@ const App: React.FC = () => {
 
           <div className="space-y-3">
             <label className="block">
-              <span className="text-xs uppercase tracking-wide text-slate-500">Commander Name</span>
+              <span className="text-xs uppercase tracking-wide text-slate-500">Call Sign</span>
               <input
                 className="w-full mt-1 rounded-lg bg-slate-800 border border-slate-700 px-4 py-3 text-sm focus:outline-none focus:border-sky-500 transition-colors"
                 value={founderName}
