@@ -29,40 +29,41 @@ export const EndOfRunCard: React.FC<Props> = ({ state, onRestart, seed = 0, acti
       <div className="modal-backdrop">
         <div className="modal-content max-w-md text-center">
 
-          {/* SECTION 1: THE SENTENCE (this is the screen) */}
-          <div className="py-8">
-            <div className="text-5xl mb-4">{ending.emoji}</div>
-            <h2 className="text-2xl font-bold tracking-tight uppercase mb-2">
+          {/* SECTION 1: THE VERDICT */}
+          <div className="py-6">
+            <div className="text-[10px] uppercase tracking-[0.15em] text-[#4a5565] mb-4">Mission Complete</div>
+            <h2 className="text-xl font-semibold tracking-wide uppercase mb-2 text-[#c8cdd5]">
               {ending.headline}
             </h2>
-            <p className="text-sm text-slate-400 mb-6">{ending.subline}</p>
+            <p className="text-[11px] text-[#5a6475] mb-6">{ending.subline}</p>
 
-            {/* The quote - tightened and final */}
-            <p className="text-sm text-slate-300 leading-relaxed italic px-4">
+            {/* The verdict narrative */}
+            <p className="text-[11px] text-[#8b95a5] leading-relaxed px-4">
               "{ending.narrative}"
             </p>
           </div>
 
-          {/* SECTION 2: THE RECORD (single line, neutral, no box) */}
-          <div className="text-xs text-slate-500 uppercase tracking-wider mb-8">
-            Legacy entered into record: <span className="text-slate-300 font-mono">{formatScore(finalScore)}</span>
+          {/* SECTION 2: THE RECORD */}
+          <div className="border-t border-b border-[#1a1f28] py-3 mb-6">
+            <div className="text-[9px] uppercase tracking-[0.12em] text-[#4a5565] mb-1">Final Legacy</div>
+            <div className="text-lg font-semibold text-[#16a34a] font-mono">{formatScore(finalScore)}</div>
           </div>
 
-          {/* SECTION 3: THE CHOICE (this is the only interaction) */}
+          {/* SECTION 3: RECORD MISSION */}
           <button
             onClick={() => setShowRecordModal(true)}
-            className="w-full py-4 px-6 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-xl transition-colors text-lg"
+            className="w-full py-3 px-4 bg-[#16a34a] hover:bg-[#15803d] text-white font-medium uppercase tracking-wider text-sm"
           >
             Record Mission
-            <span className="block text-xs font-normal text-emerald-200/50 mt-1">Permanent. Public.</span>
+            <span className="block text-[9px] font-normal text-[#16a34a]/50 mt-0.5 tracking-normal normal-case">Permanent. Verified.</span>
           </button>
 
-          {/* SECTION 4: DEFIANCE (understated) */}
+          {/* SECTION 4: TRY AGAIN */}
           <button
             onClick={onRestart}
-            className="mt-6 text-sm text-slate-600 hover:text-slate-400 transition-colors"
+            className="mt-4 text-[11px] text-[#4a5565] hover:text-[#5a6475] uppercase tracking-wide"
           >
-            Try Again
+            New Mission
           </button>
 
         </div>

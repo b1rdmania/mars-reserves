@@ -9,13 +9,13 @@ interface Props {
 function getSeverityStyle(severity: string): { badge: string; border: string } {
   switch (severity) {
     case "legendary":
-      return { badge: "bg-purple-500/20 text-purple-300", border: "border-purple-500" };
+      return { badge: "border border-[#7c3aed] text-[#a78bfa] bg-transparent", border: "border-[#7c3aed]" };
     case "high":
-      return { badge: "bg-red-500/20 text-red-300", border: "border-red-500" };
+      return { badge: "border border-[#dc2626] text-[#f87171] bg-transparent", border: "border-[#dc2626]" };
     case "medium":
-      return { badge: "bg-orange-500/20 text-orange-300", border: "border-orange-500" };
+      return { badge: "border border-[#ea580c] text-[#fb923c] bg-transparent", border: "border-[#ea580c]" };
     default:
-      return { badge: "bg-yellow-500/20 text-yellow-300", border: "border-yellow-500" };
+      return { badge: "border border-[#d97706] text-[#fbbf24] bg-transparent", border: "border-[#d97706]" };
   }
 }
 
@@ -27,35 +27,32 @@ export const CrisisModal: React.FC<Props> = ({ crisis, onResolve }) => {
   return (
     <div className="modal-backdrop crisis-modal">
       <div className={`modal-content ${style.border} border-2`}>
-        {/* Header with warning icon */}
+        {/* Header */}
         <div className="flex items-start justify-between gap-4 mb-4">
-          <div className="flex items-center gap-3">
-            <span className="text-3xl">⚠️</span>
-            <div>
-              <div className="text-[10px] uppercase tracking-wide text-slate-500 mb-1">Crisis Event</div>
-              <h2 className="text-lg font-bold">{crisis.name}</h2>
-            </div>
+          <div>
+            <div className="text-[9px] uppercase tracking-[0.15em] text-[#dc2626] mb-1">⚠ Crisis Event</div>
+            <h2 className="text-base font-semibold text-[#c8cdd5]">{crisis.name}</h2>
           </div>
-          <span className={`px-3 py-1 rounded-full text-[10px] uppercase font-semibold ${style.badge}`}>
+          <span className={`px-2 py-0.5 text-[8px] uppercase tracking-[0.1em] font-semibold ${style.badge}`}>
             {crisis.severity}
           </span>
         </div>
 
         {/* Description */}
-        <div className="text-sm text-slate-300 bg-slate-800/50 rounded-lg p-3 mb-5 leading-relaxed">
+        <div className="text-[11px] text-[#8b95a5] bg-[#0a0c10] border border-[#1a1f28] p-3 mb-4 leading-relaxed">
           {crisis.description}
         </div>
 
         {/* Options */}
-        <div className="text-[10px] uppercase tracking-wide text-slate-500 mb-3">Choose Your Response</div>
-        <div className="space-y-2">
+        <div className="text-[9px] uppercase tracking-[0.12em] text-[#4a5565] mb-2">Select Response</div>
+        <div className="space-y-1.5">
           {crisis.options.map((opt) => (
             <button
               key={opt.id}
-              className="w-full text-left rounded-xl px-4 py-3 bg-slate-800/70 hover:bg-slate-700/80 text-sm transition-all border border-slate-700/50 hover:border-slate-600 min-h-[52px]"
+              className="w-full text-left px-3 py-2.5 bg-[#0d0f13] hover:bg-[#12151c] text-xs border border-[#1a1f28] hover:border-[#2d3544] min-h-[44px]"
               onClick={() => onResolve(opt.id)}
             >
-              <span className="text-slate-200">{opt.label}</span>
+              <span className="text-[#c8cdd5]">{opt.label}</span>
             </button>
           ))}
         </div>

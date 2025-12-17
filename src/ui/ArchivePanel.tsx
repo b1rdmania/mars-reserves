@@ -87,16 +87,16 @@ export const ArchivePanel: React.FC = () => {
 
     if (loading) {
         return (
-            <div className="bg-slate-800/50 rounded-xl p-3 border border-slate-700/50">
-                <div className="text-center text-slate-500 text-xs">Loading Archive...</div>
+            <div className="border border-[#1a1f28] bg-[#0d0f13] px-3 py-2">
+                <div className="text-center text-[#4a5565] text-[10px] uppercase tracking-wide">Loading Registry...</div>
             </div>
         );
     }
 
     if (error || !data) {
         return (
-            <div className="bg-slate-800/50 rounded-xl p-3 border border-slate-700/50">
-                <div className="text-center text-slate-500 text-xs">Archive offline</div>
+            <div className="border border-[#1a1f28] bg-[#0d0f13] px-3 py-2">
+                <div className="text-center text-[#4a5565] text-[10px] uppercase tracking-wide">Registry Offline</div>
             </div>
         );
     }
@@ -113,50 +113,50 @@ export const ArchivePanel: React.FC = () => {
     const otherRecords = onChainRecords.filter(e => e.id !== notableRecord?.id).slice(0, 4);
 
     return (
-        <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 overflow-hidden">
+        <div className="border border-[#1a1f28] bg-[#0d0f13] overflow-hidden">
             {/* Clickable Header - always visible */}
             <button
                 onClick={() => setExpanded(!expanded)}
-                className="w-full px-4 py-3 flex items-center justify-between hover:bg-slate-700/30 transition-colors text-left"
+                className="w-full px-3 py-2 flex items-center justify-between hover:bg-[#12151c] text-left"
             >
                 <div className="flex items-center gap-2">
-                    <span className="font-semibold text-slate-300 text-sm">Colony Archive</span>
-                    <span className="text-[10px] text-slate-600">
-                        {onChainRecords.length} on-chain
+                    <span className="font-medium text-[#8b95a5] text-xs uppercase tracking-[0.1em]">Mission Registry</span>
+                    <span className="text-[9px] text-[#4a5565]">
+                        {onChainRecords.length} verified
                     </span>
                 </div>
-                <span className={`text-slate-500 text-xs transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`}>
+                <span className={`text-[#4a5565] text-[10px] ${expanded ? 'rotate-180' : ''}`}>
                     ▼
                 </span>
             </button>
 
             {/* Expandable Content */}
             {expanded && (
-                <div className="px-4 pb-4 pt-1 border-t border-slate-700/30">
+                <div className="px-3 pb-3 pt-1 border-t border-[#1a1f28]">
                     {/* Notable Record */}
                     {notableRecord && (
-                        <div className="bg-slate-900/50 rounded-lg px-3 py-2 mb-2 border-l-2 border-slate-500/50">
-                            <div className="text-[9px] uppercase tracking-wide text-slate-500 mb-1">Notable Record</div>
+                        <div className="bg-[#0a0c10] border-l-2 border-l-[#16a34a] px-3 py-2 mb-2">
+                            <div className="text-[8px] uppercase tracking-[0.12em] text-[#4a5565] mb-1">Top Record</div>
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <div className="text-sm text-slate-200">
+                                    <div className="text-xs text-[#c8cdd5]">
                                         {notableRecord.commander_name || 'Unknown Commander'}
                                     </div>
-                                    <div className="text-[10px] text-slate-500">
+                                    <div className="text-[9px] text-[#5a6475]">
                                         {ENDING_NAMES[notableRecord.ending_id] || 'Mission Complete'}
                                     </div>
                                 </div>
                                 <div className="text-right">
-                                    <div className="text-sm text-slate-300 font-mono">
+                                    <div className="text-xs text-[#8b95a5] font-mono">
                                         {formatScore(notableRecord.score)}
                                     </div>
                                     <a
                                         href={`https://explorer.movementnetwork.xyz/tx/${notableRecord.on_chain_tx}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="text-[9px] text-sky-400 hover:text-sky-300"
+                                        className="text-[8px] text-[#0891b2] hover:text-[#06b6d4] uppercase tracking-wide"
                                     >
-                                        View on Explorer ↗
+                                        Verify ↗
                                     </a>
                                 </div>
                             </div>
@@ -165,29 +165,29 @@ export const ArchivePanel: React.FC = () => {
 
                     {/* Other Records */}
                     {otherRecords.length > 0 && (
-                        <div className="space-y-1.5">
+                        <div className="space-y-1">
                             {otherRecords.map((entry) => (
                                 <div
                                     key={entry.id}
-                                    className="flex items-center justify-between px-2 py-1.5 bg-slate-900/30 rounded"
+                                    className="flex items-center justify-between px-2 py-1.5 border border-[#1a1f28]"
                                 >
                                     <div className="flex-1 min-w-0">
-                                        <div className="text-xs text-slate-300 truncate">
+                                        <div className="text-[11px] text-[#8b95a5] truncate">
                                             {entry.commander_name || 'Unknown'}
                                         </div>
-                                        <div className="text-[10px] text-slate-500">
+                                        <div className="text-[9px] text-[#4a5565]">
                                             {ENDING_NAMES[entry.ending_id] || 'Complete'} · {formatTimeAgo(entry.created_at)}
                                         </div>
                                     </div>
                                     <div className="text-right ml-2">
-                                        <div className="text-xs font-mono text-slate-400">
+                                        <div className="text-[11px] font-mono text-[#5a6475]">
                                             {formatScore(entry.score)}
                                         </div>
                                         <a
                                             href={`https://explorer.movementnetwork.xyz/tx/${entry.on_chain_tx}`}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="text-[9px] text-sky-400 hover:text-sky-300"
+                                            className="text-[8px] text-[#0891b2]"
                                         >
                                             ↗
                                         </a>
@@ -198,8 +198,8 @@ export const ArchivePanel: React.FC = () => {
                     )}
 
                     {onChainRecords.length === 0 && (
-                        <div className="text-center py-3 text-slate-600 text-xs italic">
-                            No missions archived on-chain yet.
+                        <div className="text-center py-3 text-[#4a5565] text-[10px]">
+                            No verified missions in registry.
                         </div>
                     )}
                 </div>

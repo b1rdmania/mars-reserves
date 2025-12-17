@@ -12,6 +12,14 @@ interface Props {
   onToggleMute?: () => void;
 }
 
+// Meter type mapping for CSS classes
+const METER_TYPE_MAP: Record<string, string> = {
+  rage: "unrest",
+  heat: "oversight",
+  cred: "trust",
+  tech: "momentum",
+};
+
 const MeterBar: React.FC<{
   label: string;
   value: number;
@@ -27,32 +35,28 @@ const MeterBar: React.FC<{
   const isLow = type === "cred" && value <= 30;
   const isVeryLow = type === "cred" && value <= 20;
 
-  // Visual danger effects
-  const dangerClass = isCritical || isVeryLow
-    ? "animate-pulse"
-    : isDanger
-      ? "opacity-90"
-      : isLow
-        ? "animate-flicker"
-        : "";
+  // Minimal danger effects - only pulse on critical
+  const dangerClass = isCritical || isVeryLow ? "animate-pulse" : isLow ? "animate-flicker" : "";
 
   const labelColor = isCritical || isVeryLow
     ? "text-red-400"
     : isDanger
-      ? "text-amber-400"
+      ? "text-amber-500"
       : isLow
-        ? "text-amber-300"
-        : "text-slate-400";
+        ? "text-amber-400"
+        : "text-[#5a6475]";
+
+  const meterCssType = METER_TYPE_MAP[type] || type;
 
   return (
-    <div className={`flex-1 min-w-[120px] ${dangerClass}`}>
+    <div className={`flex-1 min-w-[100px] ${dangerClass}`}>
       <div className="flex items-center justify-between mb-1">
-        <span className={`text-[11px] uppercase tracking-wide ${labelColor}`}>{label}</span>
-        <span className={`text-sm font-bold ${isCritical || isVeryLow ? "text-red-400" : isDanger || isLow ? "text-amber-400" : "text-slate-200"}`}>
+        <span className={`text-[10px] uppercase tracking-[0.08em] ${labelColor}`}>{label}</span>
+        <span className={`text-xs font-semibold tabular-nums ${isCritical || isVeryLow ? "text-red-400" : isDanger || isLow ? "text-amber-500" : "text-[#8b95a5]"}`}>
           {displayValue}
         </span>
       </div>
-      <div className={`meter-bar meter-${type} ${isCritical ? "critical" : isDanger || isLow ? "warning" : ""}`}>
+      <div className={`meter-bar meter-${meterCssType} ${isCritical ? "critical" : isDanger || isLow ? "warning" : ""}`}>
         <div
           className="meter-fill"
           style={{ width: `${pct}%` }}
@@ -104,26 +108,26 @@ export const TopPanel: React.FC<Props> = ({ state, maxTurns, showDescription = t
   }, [authenticated, user?.id]);
 
   return (
-    <div className="space-y-4 mb-4 animate-fadeIn">
-      {/* Header */}
+    <div className="space-y-3 mb-4">
+      {/* Header - terminal style */}
       <div className="flex items-start justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-xl sm:text-2xl font-bold leading-tight">{THEME.gameName}</h1>
-            <span className="text-[10px] uppercase tracking-wide bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded-full">V1 Beta</span>
+            <h1 className="text-lg sm:text-xl font-semibold tracking-wide uppercase">{THEME.gameName}</h1>
+            <span className="text-[8px] uppercase tracking-[0.12em] border border-[#2d3544] text-[#5a6475] px-2 py-0.5">BETA</span>
           </div>
-          {/* Commander Name - always show */}
+          {/* Commander Name */}
           <div className="flex items-center gap-2 mt-1">
-            <span className="text-xs text-sky-400 font-mono uppercase tracking-wider">
+            <span className="text-[10px] text-[#0891b2] font-mono uppercase tracking-[0.1em]">
               {authenticated && commanderName ? `CDR. ${commanderName}` : state.founderName}
             </span>
             {authenticated && (
-              <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" title="Online" />
+              <div className="h-1 w-1 bg-[#16a34a]" title="Online" />
             )}
           </div>
           {showDescription && (
-            <p className="text-xs text-slate-400 leading-snug mt-1 max-w-md">
-              Build humanity's legacy on Mars in {maxTurns} cycles without triggering mutiny or mission shutdown.
+            <p className="text-[10px] text-[#5a6475] leading-snug mt-1 max-w-md">
+              Survive {maxTurns} cycles. Maintain operational margin.
             </p>
           )}
         </div>
@@ -155,12 +159,11 @@ export const TopPanel: React.FC<Props> = ({ state, maxTurns, showDescription = t
         </div>
       </div>
 
-      {/* Legacy Score - Hero Stat */}
-      <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-4 flex items-center gap-4">
-        <span className="text-3xl">🏛️</span>
+      {/* Legacy Score - institutional, rare green */}
+      <div className="terminal-frame border-l-2 border-l-[#16a34a] flex items-center gap-3 py-3">
         <div>
-          <div className="text-emerald-400 font-semibold text-xs uppercase tracking-wide">{THEME.ui.score}</div>
-          <div className="text-emerald-300 text-2xl font-bold tabular-nums">{formatMoney(legacy)}</div>
+          <div className="text-[10px] uppercase tracking-[0.12em] text-[#4a5565] mb-0.5">{THEME.ui.score}</div>
+          <div className="text-[#16a34a] text-xl font-semibold tabular-nums">{formatMoney(legacy)}</div>
         </div>
       </div>
 
@@ -171,32 +174,25 @@ export const TopPanel: React.FC<Props> = ({ state, maxTurns, showDescription = t
         // Determine margin state
         let marginState: string;
         let marginColor: string;
-        let bgColor: string;
 
         if (pct > 85) {
           marginState = "HIGH";
           marginColor = "text-amber-400";
-          bgColor = "bg-amber-500/5 border-amber-500/20";
         } else if (pct > 70) {
           marginState = "STABLE";
           marginColor = "text-amber-400";
-          bgColor = "bg-amber-500/5 border-amber-500/20";
         } else if (pct > 55) {
           marginState = "THINNING";
           marginColor = "text-amber-500";
-          bgColor = "bg-amber-500/10 border-amber-500/30";
         } else if (pct > 40) {
           marginState = "STRAINED";
           marginColor = "text-orange-500";
-          bgColor = "bg-orange-500/10 border-orange-500/30";
         } else if (pct > 20) {
           marginState = "CRITICAL";
           marginColor = "text-red-500";
-          bgColor = "bg-red-500/10 border-red-500/30";
         } else {
           marginState = "UNSAFE";
           marginColor = "text-red-400";
-          bgColor = "bg-red-500/15 border-red-500/40";
         }
 
         // Format quantity without currency
@@ -206,28 +202,42 @@ export const TopPanel: React.FC<Props> = ({ state, maxTurns, showDescription = t
           return `${Math.round(v)} units`;
         };
 
+        // Segmented display: 10 blocks
+        const totalSegments = 10;
+        const filledSegments = Math.round(pct / 10);
+
         return (
-          <div className={`rounded-xl p-4 border ${bgColor}`}>
-            {/* Header - small, institutional */}
-            <div className="text-[10px] uppercase tracking-wider text-slate-500 mb-2">
+          <div className="terminal-frame">
+            {/* Header */}
+            <div className="text-[10px] uppercase tracking-[0.12em] text-[#4a5565] mb-2">
               Operational Margin
             </div>
 
-            {/* Primary Readout - the star */}
-            <div className="text-center mb-2">
-              <span className="text-xs text-slate-500 mr-1">Margin:</span>
-              <span className={`text-xl font-bold tracking-wide ${marginColor}`}>
+            {/* Segmented blocks */}
+            <div className="flex gap-0.5 mb-2">
+              {Array.from({ length: totalSegments }).map((_, i) => {
+                let segmentClass = "h-4 flex-1 border border-[#1a1f28]";
+                if (i < filledSegments) {
+                  if (pct <= 20) segmentClass += " bg-[#dc2626] border-[#dc2626]";
+                  else if (pct <= 40) segmentClass += " bg-[#ea580c] border-[#ea580c]";
+                  else segmentClass += " bg-[#d97706] border-[#d97706]";
+                }
+                return <div key={i} className={segmentClass} />;
+              })}
+            </div>
+
+            {/* Status readout */}
+            <div className="flex items-center justify-between">
+              <span className="text-[9px] uppercase tracking-[0.1em] text-[#4a5565]">
+                Status:
+              </span>
+              <span className={`text-sm font-semibold tracking-wide ${marginColor}`}>
                 {marginState}
               </span>
             </div>
 
-            {/* Context Line - worldbuilding */}
-            <div className="text-[9px] text-slate-600 text-center mb-2">
-              Life support · Power · Logistics
-            </div>
-
-            {/* Quantity - demoted, muted */}
-            <div className="text-[10px] text-slate-500 text-center font-mono">
+            {/* Units - muted */}
+            <div className="text-[9px] text-[#4a5565] text-right font-mono mt-1">
               {formatUnits(colonyReserves)}
             </div>
           </div>

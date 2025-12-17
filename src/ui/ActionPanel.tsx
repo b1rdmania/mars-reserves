@@ -11,20 +11,22 @@ interface Props {
 
 const CATEGORY_ORDER: ActionCategory[] = ["Ambition", "Command", "Communications", "Crisis Response", "Crew Relations"];
 
+// Updated CSS class names for terminal aesthetic
 const CATEGORY_CLASS: Record<ActionCategory, string> = {
   Ambition: "ambition",
-  Command: "governance",
-  Communications: "narrative",
-  "Crisis Response": "damage",
-  "Crew Relations": "social",
+  Command: "command",
+  Communications: "communications",
+  "Crisis Response": "crisis-response",
+  "Crew Relations": "crew-relations",
 };
 
-const CATEGORY_ICON: Record<ActionCategory, string> = {
-  Ambition: "🏛️",
-  Command: "📋",
-  Communications: "📡",
-  "Crisis Response": "🛡️",
-  "Crew Relations": "👥",
+// Classification stamps for procedural weight
+const CATEGORY_STAMP: Record<ActionCategory, string> = {
+  Ambition: "NON-STANDARD",
+  Command: "AUTHORIZED",
+  Communications: "LOGGED",
+  "Crisis Response": "OVERRIDE",
+  "Crew Relations": "INFORMAL",
 };
 
 export const ActionPanel: React.FC<Props> = ({ state, onSelect, disabled }) => {
@@ -44,21 +46,20 @@ export const ActionPanel: React.FC<Props> = ({ state, onSelect, disabled }) => {
   actions.forEach((a) => byCategory[a.category].push(a));
 
   return (
-    <div className="space-y-4 animate-slideUp">
+    <div className="space-y-3">
       {CATEGORY_ORDER.map((cat) => {
         const list = byCategory[cat];
         if (!list.length) return null;
         return (
           <div key={cat} className="min-w-0">
-            <div className="flex items-center gap-2 mb-2">
-              <span className="text-base">{CATEGORY_ICON[cat]}</span>
-              <span className="text-xs uppercase tracking-wide text-slate-400 font-semibold">
+            <div className="flex items-center gap-2 mb-1.5">
+              <span className="text-[10px] uppercase tracking-[0.1em] text-[#5a6475] font-semibold">
                 {cat}
               </span>
             </div>
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               {list.map((a) => {
-                // Temptation sub-lines for Ambition actions only (Game Boy-style moral pressure)
+                // Temptation sub-lines for Ambition actions (subtle moral pressure)
                 const temptationLines = [
                   "No one will question this.",
                   "Oversight won't notice yet.",
@@ -77,14 +78,19 @@ export const ActionPanel: React.FC<Props> = ({ state, onSelect, disabled }) => {
                     disabled={disabled}
                     className={`action-btn ${CATEGORY_CLASS[a.category]}`}
                   >
-                    <div className="font-semibold text-sm leading-tight text-slate-100">
+                    {/* Classification stamp */}
+                    <span className="action-stamp">
+                      {CATEGORY_STAMP[a.category]}
+                    </span>
+
+                    <div className="font-medium text-sm leading-tight text-[#c8cdd5] pr-16">
                       {a.name.replace("[Your Name]", state.founderName)}
                     </div>
-                    <div className="text-xs text-slate-400 leading-tight mt-1">
+                    <div className="text-[11px] text-[#5a6475] leading-tight mt-0.5">
                       {a.description}
                     </div>
                     {temptation && (
-                      <div className="text-[10px] text-amber-500/70 italic mt-1">
+                      <div className="text-[9px] text-[#d97706]/60 mt-1">
                         {temptation}
                       </div>
                     )}

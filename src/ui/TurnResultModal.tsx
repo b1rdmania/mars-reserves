@@ -35,25 +35,14 @@ function formatDelta(delta: number, unit?: string, label?: string) {
   return `${sign}${val}${unit ?? ""}`;
 }
 
-function getSeverityEmoji(label: string): string {
+function getSeverityStyle(label: string): string {
   switch (label) {
     case "Critical":
-      return "💀";
+      return "border-[#dc2626] text-[#f87171]";
     case "Glancing":
-      return "😌";
+      return "border-[#4a5565] text-[#8b95a5]";
     default:
-      return "⚡";
-  }
-}
-
-function getSeverityColor(label: string): string {
-  switch (label) {
-    case "Critical":
-      return "text-red-400 bg-red-500/20 border-red-500/30";
-    case "Glancing":
-      return "text-slate-400 bg-slate-500/20 border-slate-500/30";
-    default:
-      return "text-amber-400 bg-amber-500/20 border-amber-500/30";
+      return "border-[#d97706] text-[#fbbf24]";
   }
 }
 
@@ -63,21 +52,9 @@ function isNegativeDelta(label: string, delta: number): boolean {
   return delta < 0;
 }
 
-function getStatEmoji(label: string): string {
-  const l = label.toLowerCase();
-  if (l.includes("treasury") || l.includes("reserves")) return "🏦";
-  if (l.includes("legacy")) return "💰";
-  if (l.includes("unrest")) return "😤";
-  if (l.includes("oversight")) return "👁️";
-  if (l.includes("trust")) return "⭐";
-  if (l.includes("research")) return "🚀";
-  return "•";
-}
-
 export const TurnResultModal: React.FC<Props> = ({ open, onClose, actionName, severity, deltas, logLine }) => {
   if (!open) return null;
 
-  // Determine overall vibe for the card
   const hasNegative = deltas.some((d) => isNegativeDelta(d.label, d.delta));
   const hasSiphoned = deltas.some((d) => d.label.toLowerCase().includes("legacy") && d.delta > 0);
 
@@ -87,44 +64,41 @@ export const TurnResultModal: React.FC<Props> = ({ open, onClose, actionName, se
 
         {/* Severity Banner */}
         {severity && (
-          <div className={`flex items-center justify-center gap-2 py-2 px-4 rounded-lg mb-4 border ${getSeverityColor(severity.label)}`}>
-            <span className="text-xl">{getSeverityEmoji(severity.label)}</span>
-            <span className="font-semibold uppercase tracking-wide text-sm">
+          <div className={`flex items-center justify-center gap-2 py-1.5 px-3 mb-4 border ${getSeverityStyle(severity.label)}`}>
+            <span className="font-semibold uppercase tracking-[0.12em] text-[10px]">
               {severity.label} Hit
             </span>
           </div>
         )}
 
-        {/* Action Name - Big & Bold */}
-        <h2 className="text-2xl font-bold text-center mb-4 leading-tight">
+        {/* Action Name */}
+        <h2 className="text-base font-semibold text-center mb-3 text-[#c8cdd5] uppercase tracking-wide">
           {actionName}
         </h2>
 
-        {/* Narrative Box - THE STAR OF THE SHOW */}
+        {/* Narrative Box */}
         {logLine && (
-          <div className="bg-gradient-to-br from-slate-800/80 to-slate-900/80 rounded-xl p-4 mb-5 border border-slate-700/50">
-            <p className="text-base text-slate-200 leading-relaxed italic">
+          <div className="bg-[#0a0c10] border border-[#1a1f28] p-3 mb-4">
+            <p className="text-[11px] text-[#8b95a5] leading-relaxed">
               "{logLine}"
             </p>
           </div>
         )}
 
-        {/* Siphoned Callout - Resources secured */}
+        {/* Resources Secured Callout */}
         {hasSiphoned && (
-          <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-lg p-3 mb-4 flex items-center gap-3">
-            <span className="text-2xl">💰</span>
+          <div className="border-l-2 border-l-[#16a34a] bg-[#0a0c10] p-2.5 mb-3 flex items-center gap-2">
             <div>
-              <div className="text-emerald-400 font-semibold text-sm uppercase tracking-wide">Resources Secured</div>
-              <div className="text-emerald-300 text-lg font-bold">
+              <div className="text-[9px] uppercase tracking-[0.12em] text-[#4a5565]">Resources Secured</div>
+              <div className="text-[#16a34a] text-sm font-semibold font-mono">
                 {formatDelta(deltas.find(d => d.label.toLowerCase().includes("legacy"))?.delta ?? 0, undefined, "legacy")}
               </div>
             </div>
           </div>
         )}
 
-        {/* Stat Changes - Only show narrative-relevant stats */}
+        {/* Stat Changes */}
         {deltas.length > 0 && (() => {
-          // Filter to only show: Rage, Oversight, Cred, Tech, Price, TVL (hide Treasury/Legacy)
           const narrativeStats = deltas.filter((d) => {
             const l = d.label.toLowerCase();
             if (l.includes("treasury") || l.includes("legacy")) return false;
@@ -134,20 +108,16 @@ export const TurnResultModal: React.FC<Props> = ({ open, onClose, actionName, se
           if (narrativeStats.length === 0) return null;
 
           return (
-            <div className="grid grid-cols-2 gap-2 mb-5">
+            <div className="grid grid-cols-2 gap-1 mb-4">
               {narrativeStats.map((d) => {
                 const isNeg = isNegativeDelta(d.label, d.delta);
                 return (
                   <div
                     key={d.label}
-                    className={`flex items-center justify-between p-2 rounded-lg ${isNeg ? "bg-red-500/10" : "bg-slate-800/50"
-                      }`}
+                    className={`flex items-center justify-between p-2 border ${isNeg ? "border-[#dc2626]/30 bg-[#dc2626]/5" : "border-[#1a1f28]"}`}
                   >
-                    <span className="flex items-center gap-1.5 text-xs text-slate-400">
-                      <span>{getStatEmoji(d.label)}</span>
-                      <span>{d.label}</span>
-                    </span>
-                    <span className={`text-sm font-bold tabular-nums ${isNeg ? "text-red-400" : "text-emerald-400"}`}>
+                    <span className="text-[10px] text-[#5a6475] uppercase tracking-wide">{d.label}</span>
+                    <span className={`text-xs font-semibold tabular-nums font-mono ${isNeg ? "text-[#f87171]" : "text-[#16a34a]"}`}>
                       {formatDelta(d.delta, d.unit, d.label)}
                     </span>
                   </div>
@@ -156,8 +126,9 @@ export const TurnResultModal: React.FC<Props> = ({ open, onClose, actionName, se
             </div>
           );
         })()}
-        {/* Ominous Dread Message */}
-        <div className="text-center text-[10px] text-slate-500 italic mb-3">
+
+        {/* Ominous Message */}
+        <div className="text-center text-[9px] text-[#4a5565] mb-3 uppercase tracking-wide">
           {(() => {
             const messages = [
               "Earth is reviewing this.",
@@ -166,21 +137,20 @@ export const TurnResultModal: React.FC<Props> = ({ open, onClose, actionName, se
               "Oversight has noted this.",
               "This incident has been archived.",
             ];
-            // Use a simple hash to pick consistently per action
             const hash = (actionName.length + deltas.length) % messages.length;
             return messages[hash];
           })()}
         </div>
 
-        {/* Action Button */}
+        {/* Continue Button */}
         <button
           onClick={onClose}
-          className={`w-full py-3.5 px-4 font-semibold rounded-xl transition-all text-base ${hasNegative
-            ? "bg-slate-700 hover:bg-slate-600 text-slate-200"
-            : "bg-sky-500 hover:bg-sky-400 text-white"
+          className={`w-full py-2.5 px-4 font-medium uppercase tracking-wider text-xs ${hasNegative
+            ? "bg-[#0d0f13] hover:bg-[#12151c] text-[#8b95a5] border border-[#1a1f28]"
+            : "bg-[#0891b2] hover:bg-[#0e7490] text-white"
             }`}
         >
-          {hasNegative ? "Continue →" : "Continue →"}
+          Continue
         </button>
       </div>
     </div>
