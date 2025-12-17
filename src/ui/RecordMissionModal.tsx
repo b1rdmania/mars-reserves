@@ -92,25 +92,25 @@ export const RecordMissionModal: React.FC<RecordMissionModalProps> = ({
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Header */}
-                <div className="text-center mb-6">
-                    <span className="text-4xl mb-2 block">🚀</span>
-                    <h2 className="text-xl font-bold">Record Mission</h2>
-                    <p className="text-sm text-slate-400 mt-1">
-                        Save your run to the Colony Index
+                <div className="text-center mb-5">
+                    <div className="text-[10px] uppercase tracking-[0.15em] text-[#4a5565] mb-2">Mission Archive</div>
+                    <h2 className="text-base font-semibold uppercase tracking-wide text-[#c8cdd5]">Record Mission</h2>
+                    <p className="text-[10px] text-[#5a6475] mt-1">
+                        Save to the Colony Index
                     </p>
                 </div>
 
                 {/* Score Summary */}
-                <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-4 mb-4 text-center">
-                    <div className="text-xs uppercase tracking-wide text-emerald-400 mb-1">
+                <div className="border-l-2 border-l-[#16a34a] bg-[#0a0c10] p-3 mb-4 text-center">
+                    <div className="text-[9px] uppercase tracking-[0.12em] text-[#4a5565] mb-1">
                         Legacy Score
                     </div>
-                    <div className="text-3xl font-bold text-emerald-300">
+                    <div className="text-xl font-semibold text-[#16a34a] font-mono">
                         {formatScore(finalScore)}
                     </div>
                     {ending && (
-                        <div className="text-sm text-slate-400 mt-2">
-                            {ending.emoji} {ending.headline}
+                        <div className="text-[10px] text-[#5a6475] mt-1">
+                            {ending.headline}
                         </div>
                     )}
                 </div>
@@ -118,18 +118,17 @@ export const RecordMissionModal: React.FC<RecordMissionModalProps> = ({
                 {/* Connection State */}
                 {!ready ? (
                     <div className="text-center py-4">
-                        <div className="text-slate-400 text-sm">Loading...</div>
+                        <div className="text-[#4a5565] text-[10px] uppercase tracking-wide">Loading...</div>
                     </div>
                 ) : submitted ? (
                     /* Success State */
-                    <div className="space-y-4">
-                        <div className="bg-emerald-500/20 border border-emerald-500/40 rounded-xl p-4 text-center">
-                            <span className="text-2xl">✅</span>
-                            <div className="text-emerald-300 font-semibold mt-2">
-                                Recorded to Archive!
+                    <div className="space-y-3">
+                        <div className="border border-[#16a34a] bg-[#16a34a]/5 p-3 text-center">
+                            <div className="text-[#16a34a] font-medium text-sm uppercase tracking-wide">
+                                Recorded to Archive
                             </div>
-                            <p className="text-xs text-slate-400 mt-1">
-                                Your mission has been verified and saved to the Colony Archive.
+                            <p className="text-[10px] text-[#5a6475] mt-1">
+                                Your mission has been verified and saved.
                             </p>
                         </div>
                         {txHash && (
@@ -137,66 +136,66 @@ export const RecordMissionModal: React.FC<RecordMissionModalProps> = ({
                                 href={`https://explorer.movementnetwork.xyz/tx/${txHash}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="block w-full py-3 px-4 bg-slate-700 hover:bg-slate-600 text-center text-sm text-sky-400 font-medium rounded-xl transition-colors"
+                                className="block w-full py-2.5 px-4 bg-[#0d0f13] hover:bg-[#12151c] text-center text-[11px] text-[#0891b2] font-medium border border-[#1a1f28] uppercase tracking-wide"
                             >
                                 View on Movement Explorer →
                             </a>
                         )}
                         <button
                             onClick={onClose}
-                            className="w-full py-3 px-4 bg-slate-800 hover:bg-slate-700 text-white font-semibold rounded-xl transition-colors"
+                            className="w-full py-2.5 px-4 bg-[#0d0f13] hover:bg-[#12151c] text-[#8b95a5] font-medium border border-[#1a1f28] text-sm"
                         >
                             Close
                         </button>
                     </div>
                 ) : !authenticated ? (
                     /* Connect State */
-                    <div className="space-y-4">
-                        <p className="text-sm text-slate-400 text-center">
+                    <div className="space-y-3">
+                        <p className="text-[10px] text-[#5a6475] text-center">
                             Connect to save your run to the leaderboard and record it on-chain.
                         </p>
                         <button
                             onClick={handleConnect}
-                            className="w-full py-4 px-4 bg-sky-500 hover:bg-sky-400 text-white font-semibold rounded-xl transition-colors"
+                            className="w-full py-3 px-4 bg-[#0891b2] hover:bg-[#0e7490] text-white font-medium uppercase tracking-wider text-sm"
                         >
                             Connect Wallet
                         </button>
                         <button
                             onClick={onClose}
-                            className="w-full py-3 px-4 bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium rounded-xl transition-colors text-sm"
+                            className="w-full py-2.5 px-4 bg-[#0d0f13] hover:bg-[#12151c] text-[#5a6475] font-medium border border-[#1a1f28] text-xs"
                         >
                             Maybe Later
                         </button>
                     </div>
                 ) : (
                     /* Submit State */
-                    <div className="space-y-4">
+                    <div className="space-y-3">
                         {walletAddress && (
-                            <div className="bg-slate-800/50 rounded-lg p-3 text-center">
-                                <div className="text-xs text-slate-500 uppercase tracking-wide">
+                            <div className="bg-[#0a0c10] border border-[#1a1f28] p-2.5 text-center">
+                                <div className="text-[8px] text-[#4a5565] uppercase tracking-[0.12em]">
                                     Connected as
                                 </div>
-                                <div className="text-sm text-slate-300 font-mono mt-1">
+                                <div className="text-[11px] text-[#8b95a5] font-mono mt-0.5">
                                     {walletAddress.slice(0, 6)}...{walletAddress.slice(-4)}
                                 </div>
                             </div>
                         )}
                         {error && (
-                            <div className="bg-red-500/20 border border-red-500/40 rounded-lg p-3 text-center">
-                                <div className="text-sm text-red-300">{error}</div>
+                            <div className="border border-[#dc2626] bg-[#dc2626]/5 p-2.5 text-center">
+                                <div className="text-[11px] text-[#f87171]">{error}</div>
                             </div>
                         )}
                         <button
                             onClick={handleSubmit}
                             disabled={submitting}
-                            className="w-full py-4 px-4 bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold rounded-xl transition-colors"
+                            className="w-full py-3 px-4 bg-[#16a34a] hover:bg-[#15803d] disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium uppercase tracking-wider text-sm"
                         >
                             {submitting ? 'Recording...' : 'Record Mission'}
                         </button>
                         <button
                             onClick={onClose}
                             disabled={submitting}
-                            className="w-full py-3 px-4 bg-slate-800 hover:bg-slate-700 disabled:opacity-50 text-slate-300 font-medium rounded-xl transition-colors text-sm"
+                            className="w-full py-2.5 px-4 bg-[#0d0f13] hover:bg-[#12151c] disabled:opacity-50 text-[#5a6475] font-medium border border-[#1a1f28] text-xs"
                         >
                             Cancel
                         </button>

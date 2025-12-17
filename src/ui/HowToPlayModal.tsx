@@ -15,63 +15,51 @@ export const HowToPlayModal: React.FC<HowToPlayModalProps> = ({ open, onClose })
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Header */}
-                <div className="text-center mb-6">
-                    <h2 className="text-2xl font-bold mb-2">Mission Briefing</h2>
-                    <p className="text-slate-400 text-sm">a game about colony management</p>
+                <div className="text-center mb-5">
+                    <div className="text-[9px] uppercase tracking-[0.15em] text-[#4a5565] mb-1">Operations Manual</div>
+                    <h2 className="text-base font-semibold uppercase tracking-wide text-[#c8cdd5]">Mission Briefing</h2>
                 </div>
 
                 {/* Objective */}
-                <div className="mb-6">
-                    <h3 className="text-sm uppercase tracking-wide text-amber-400 mb-2">🎯 Objective</h3>
-                    <p className="text-sm text-slate-300 leading-relaxed">
-                        You command humanity's first Mars colony. You have access to all resources. <span className="text-emerald-400">Build your legacy</span> before the crew revolts, Earth recalls you, or nobody believes in the mission anymore. Survive 20 cycles.
+                <div className="mb-5">
+                    <h3 className="text-[10px] uppercase tracking-[0.12em] text-[#d97706] mb-2">Objective</h3>
+                    <p className="text-[11px] text-[#8b95a5] leading-relaxed">
+                        You command humanity's first Mars colony. You have access to all resources. <span className="text-[#16a34a]">Build your legacy</span> before the crew revolts, Earth recalls you, or nobody believes in the mission anymore. Survive 20 cycles.
                     </p>
                 </div>
 
                 {/* Meters */}
-                <div className="mb-6">
-                    <h3 className="text-sm uppercase tracking-wide text-amber-400 mb-3">📊 Status Indicators</h3>
-                    <div className="space-y-3 text-sm">
-                        <div className="flex gap-3">
-                            <span className="text-2xl">😤</span>
-                            <div>
-                                <span className="text-rose-400 font-medium">Crew Unrest</span>
-                                <p className="text-slate-400 text-xs">Crew anger. At 100, they mutiny.</p>
-                            </div>
+                <div className="mb-5">
+                    <h3 className="text-[10px] uppercase tracking-[0.12em] text-[#d97706] mb-3">Status Indicators</h3>
+                    <div className="space-y-2 text-[11px]">
+                        <div className="border border-[#1a1f28] p-2">
+                            <span className="text-[#f87171] font-medium uppercase tracking-wide">Crew Unrest</span>
+                            <p className="text-[#5a6475] text-[10px] mt-0.5">Crew anger. At 100, they mutiny.</p>
                         </div>
-                        <div className="flex gap-3">
-                            <span className="text-2xl">🔥</span>
-                            <div>
-                                <span className="text-orange-400 font-medium">Earth Oversight</span>
-                                <p className="text-slate-400 text-xs">Earth's attention. At 100, mission recalled.</p>
-                            </div>
+                        <div className="border border-[#1a1f28] p-2">
+                            <span className="text-[#fb923c] font-medium uppercase tracking-wide">Earth Oversight</span>
+                            <p className="text-[#5a6475] text-[10px] mt-0.5">Earth's attention. At 100, mission recalled.</p>
                         </div>
-                        <div className="flex gap-3">
-                            <span className="text-2xl">✨</span>
-                            <div>
-                                <span className="text-purple-400 font-medium">Command Trust</span>
-                                <p className="text-slate-400 text-xs">Your credibility. At 0, nobody follows orders.</p>
-                            </div>
+                        <div className="border border-[#1a1f28] p-2">
+                            <span className="text-[#0891b2] font-medium uppercase tracking-wide">Command Trust</span>
+                            <p className="text-[#5a6475] text-[10px] mt-0.5">Your credibility. At 0, nobody follows orders.</p>
                         </div>
-                        <div className="flex gap-3">
-                            <span className="text-2xl">💎</span>
-                            <div>
-                                <span className="text-cyan-400 font-medium">Research Momentum</span>
-                                <p className="text-slate-400 text-xs">Excitement about discoveries. Drives mission value.</p>
-                            </div>
+                        <div className="border border-[#1a1f28] p-2">
+                            <span className="text-[#a78bfa] font-medium uppercase tracking-wide">Research Momentum</span>
+                            <p className="text-[#5a6475] text-[10px] mt-0.5">Excitement about discoveries. Drives mission value.</p>
                         </div>
                     </div>
                 </div>
 
-                <div className="mb-6">
-                    <h3 className="text-sm uppercase tracking-wide text-amber-400 mb-2">🏆 Victory</h3>
-                    <p className="text-emerald-400 text-sm">✅ Survive 20 cycles. Maximize your Legacy Score.</p>
+                <div className="mb-5">
+                    <h3 className="text-[10px] uppercase tracking-[0.12em] text-[#d97706] mb-2">Victory</h3>
+                    <p className="text-[#16a34a] text-[11px]">Survive 20 cycles. Maximize your Legacy Score.</p>
                 </div>
 
                 {/* Pro Tips */}
-                <div className="mb-6">
-                    <h3 className="text-sm uppercase tracking-wide text-amber-400 mb-2">🧠 Commander Tips</h3>
-                    <ul className="space-y-2 text-sm text-slate-300">
+                <div className="mb-5">
+                    <h3 className="text-[10px] uppercase tracking-[0.12em] text-[#d97706] mb-2">Commander Tips</h3>
+                    <ul className="space-y-1.5 text-[11px] text-[#8b95a5]">
                         <li>• Don't extract every cycle. Crew notices.</li>
                         <li>• Crisis Response actions reduce random events by 70%.</li>
                         <li>• Seasons matter. Earth Oversight Season is brutal.</li>
@@ -81,8 +69,8 @@ export const HowToPlayModal: React.FC<HowToPlayModalProps> = ({ open, onClose })
                 </div>
 
                 {/* Disclaimer */}
-                <div className="bg-slate-800/50 rounded-lg p-3 mb-6">
-                    <p className="text-xs text-slate-500 text-center italic">
+                <div className="bg-[#0a0c10] border border-[#1a1f28] p-2.5 mb-5">
+                    <p className="text-[9px] text-[#4a5565] text-center uppercase tracking-wide">
                         Science fiction satire. Not career advice.
                     </p>
                 </div>
@@ -90,7 +78,7 @@ export const HowToPlayModal: React.FC<HowToPlayModalProps> = ({ open, onClose })
                 {/* Close button */}
                 <button
                     onClick={onClose}
-                    className="w-full py-4 px-4 bg-slate-700 hover:bg-slate-600 text-white font-semibold rounded-xl transition-colors text-base"
+                    className="w-full py-3 px-4 bg-[#0891b2] hover:bg-[#0e7490] text-white font-medium uppercase tracking-wider text-sm"
                 >
                     Begin Mission
                 </button>

@@ -64,23 +64,23 @@ export const LeaderboardModal: React.FC<LeaderboardModalProps> = ({ open, onClos
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Header */}
-                <div className="text-center pb-4 border-b border-slate-700">
-                    <span className="text-3xl mb-2 block">🏆</span>
-                    <h2 className="text-xl font-bold">Colony Index</h2>
-                    <p className="text-xs text-slate-400 mt-1">Top Commanders</p>
+                <div className="text-center pb-3 border-b border-[#1a1f28]">
+                    <div className="text-[9px] uppercase tracking-[0.15em] text-[#4a5565] mb-1">Leaderboard</div>
+                    <h2 className="text-base font-semibold uppercase tracking-wide text-[#c8cdd5]">Colony Index</h2>
+                    <p className="text-[10px] text-[#5a6475] mt-1">Top Commanders</p>
                 </div>
 
                 {/* Personal Best */}
                 {personalBest && (
-                    <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-lg p-3 my-4">
+                    <div className="border-l-2 border-l-[#16a34a] bg-[#0a0c10] p-3 my-3">
                         <div className="flex items-center justify-between">
                             <div>
-                                <div className="text-xs text-emerald-400 uppercase tracking-wide">Your Best</div>
-                                <div className="text-xl font-bold text-emerald-300">{formatScore(personalBest.score)}</div>
+                                <div className="text-[9px] text-[#4a5565] uppercase tracking-[0.12em]">Your Best</div>
+                                <div className="text-lg font-semibold text-[#16a34a] font-mono">{formatScore(personalBest.score)}</div>
                             </div>
                             <div className="text-right">
-                                <div className="text-xs text-slate-400">Rank</div>
-                                <div className="text-lg font-semibold text-slate-200">#{personalBest.rank}</div>
+                                <div className="text-[9px] text-[#4a5565] uppercase tracking-[0.12em]">Rank</div>
+                                <div className="text-base font-medium text-[#8b95a5]">#{personalBest.rank}</div>
                             </div>
                         </div>
                     </div>
@@ -89,52 +89,51 @@ export const LeaderboardModal: React.FC<LeaderboardModalProps> = ({ open, onClos
                 {/* Leaderboard */}
                 <div className="flex-1 overflow-y-auto -mx-6 px-6">
                     {loading ? (
-                        <div className="text-center py-8 text-slate-400">Loading...</div>
+                        <div className="text-center py-8 text-[#4a5565] text-[10px] uppercase tracking-wide">Loading...</div>
                     ) : error ? (
-                        <div className="text-center py-8 text-red-400">{error}</div>
+                        <div className="text-center py-8 text-[#f87171] text-[10px]">{error}</div>
                     ) : entries.length === 0 ? (
-                        <div className="text-center py-8 text-slate-400">
+                        <div className="text-center py-8 text-[#5a6475] text-[11px]">
                             No runs recorded yet. Be the first!
                         </div>
                     ) : (
-                        <div className="space-y-2">
+                        <div className="space-y-1">
                             {entries.map((entry, index) => (
                                 <div
                                     key={entry.run_hash}
-                                    className={`flex items-center gap-3 p-2 rounded-lg ${index < 3 ? 'bg-amber-500/10 border border-amber-500/20' : 'bg-slate-800/50'
-                                        }`}
+                                    className={`flex items-center gap-2 p-2 border ${index < 3 ? 'border-[#d97706]/30 bg-[#d97706]/5' : 'border-[#1a1f28]'}`}
                                 >
                                     {/* Rank */}
-                                    <div className={`w-8 text-center font-bold ${index === 0 ? 'text-amber-400' :
-                                        index === 1 ? 'text-slate-300' :
-                                            index === 2 ? 'text-amber-600' :
-                                                'text-slate-500'
+                                    <div className={`w-8 text-center font-semibold text-xs ${index === 0 ? 'text-[#fbbf24]' :
+                                        index === 1 ? 'text-[#8b95a5]' :
+                                            index === 2 ? 'text-[#d97706]' :
+                                                'text-[#4a5565]'
                                         }`}>
-                                        {index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `#${index + 1}`}
+                                        #{index + 1}
                                     </div>
 
                                     {/* Info */}
                                     <div className="flex-1 min-w-0">
-                                        <div className="text-sm font-mono text-slate-300 truncate">
+                                        <div className="text-[11px] font-mono text-[#8b95a5] truncate">
                                             {formatWallet(entry.wallet)}
                                         </div>
-                                        <div className="text-xs text-slate-500">
+                                        <div className="text-[9px] text-[#4a5565]">
                                             {formatDate(entry.created_at)} • {entry.action_count} actions
                                         </div>
                                     </div>
 
                                     {/* Score */}
                                     <div className="text-right">
-                                        <div className="text-lg font-bold text-emerald-400">{formatScore(entry.score)}</div>
+                                        <div className="text-sm font-semibold text-[#16a34a] font-mono">{formatScore(entry.score)}</div>
                                         {entry.on_chain_tx && (
                                             <a
                                                 href={`https://explorer.movementnetwork.xyz/tx/${entry.on_chain_tx}`}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className="text-[10px] text-sky-400 hover:text-sky-300"
+                                                className="text-[8px] text-[#0891b2] hover:text-[#06b6d4] uppercase tracking-wide"
                                                 onClick={(e) => e.stopPropagation()}
                                             >
-                                                On-Chain ↗
+                                                Verified ↗
                                             </a>
                                         )}
                                     </div>
@@ -145,10 +144,10 @@ export const LeaderboardModal: React.FC<LeaderboardModalProps> = ({ open, onClos
                 </div>
 
                 {/* Close Button */}
-                <div className="pt-4 mt-4 border-t border-slate-700">
+                <div className="pt-3 mt-3 border-t border-[#1a1f28]">
                     <button
                         onClick={onClose}
-                        className="w-full py-3 px-4 bg-slate-700 hover:bg-slate-600 text-white font-semibold rounded-xl transition-colors"
+                        className="w-full py-2.5 px-4 bg-[#0d0f13] hover:bg-[#12151c] text-[#8b95a5] font-medium border border-[#1a1f28] text-sm"
                     >
                         Close
                     </button>

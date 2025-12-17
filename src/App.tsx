@@ -249,27 +249,27 @@ const App: React.FC = () => {
   if (!started) {
     return (
       <div className="min-h-screen min-h-[100dvh] flex items-center justify-center p-4">
-        <div className="max-w-md w-full game-card-elevated space-y-5 animate-scaleIn">
+        <div className="max-w-md w-full terminal-frame space-y-4">
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <h1 className="text-2xl font-bold">Move: Mars Reserves</h1>
-              <span className="text-[10px] uppercase tracking-wide bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded-full">Beta</span>
+              <h1 className="text-lg font-semibold uppercase tracking-wide">Move: Mars Reserves</h1>
+              <span className="text-[8px] uppercase tracking-[0.12em] border border-[#2d3544] text-[#5a6475] px-2 py-0.5">BETA</span>
             </div>
-            <p className="text-sm text-slate-400 leading-relaxed">
+            <p className="text-[11px] text-[#5a6475] leading-relaxed">
               Over {maxTurnsDisplay} cycles, build your legacy on humanity&apos;s first Mars colony
               — without triggering mutiny, Earth recall, or mission failure.
             </p>
-            <p className="text-xs text-slate-500 italic mt-2">Your actions will be recorded.</p>
+            <p className="text-[10px] text-[#4a5565] mt-2 uppercase tracking-wide">Your actions will be recorded.</p>
           </div>
 
           {/* Colony Archive */}
           <ArchivePanel />
 
-          <div className="space-y-3">
+          <div className="space-y-2">
             <label className="block">
-              <span className="text-xs uppercase tracking-wide text-slate-500">Call Sign</span>
+              <span className="text-[9px] uppercase tracking-[0.12em] text-[#4a5565]">Call Sign</span>
               <input
-                className="w-full mt-1 rounded-lg bg-slate-800 border border-slate-700 px-4 py-3 text-sm focus:outline-none focus:border-sky-500 transition-colors"
+                className="w-full mt-1 bg-[#0d0f13] border border-[#1a1f28] px-3 py-2.5 text-sm focus:outline-none focus:border-[#0891b2] font-mono"
                 value={founderName}
                 onChange={(e) => setFounderName(e.target.value)}
                 placeholder="Cmdr. Chen"
@@ -277,16 +277,16 @@ const App: React.FC = () => {
             </label>
           </div>
 
-          <div className="flex gap-3">
+          <div className="flex gap-2">
             <button
               onClick={() => setShowHowToPlay(true)}
-              className="py-4 px-4 bg-slate-700 hover:bg-slate-600 text-white font-semibold rounded-xl transition-colors text-base"
+              className="py-3 px-4 bg-[#0d0f13] hover:bg-[#12151c] text-[#8b95a5] font-medium border border-[#1a1f28] text-sm"
             >
-              ❓ Briefing
+              ? Briefing
             </button>
             <button
               onClick={handleStart}
-              className="flex-1 py-4 px-4 bg-sky-500 hover:bg-sky-400 text-white font-semibold rounded-xl transition-colors text-base"
+              className="flex-1 py-3 px-4 bg-[#0891b2] hover:bg-[#0e7490] text-white font-medium uppercase tracking-wider text-sm"
             >
               Begin Mission →
             </button>
