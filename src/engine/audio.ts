@@ -358,8 +358,56 @@ export function startMarsAmbient() {
   oscillators.push(subPulseOsc);
   gains.push(subPulseGain);
 
-  // Pulse pattern
-  const PULSE_INTERVAL = 1800;
+  // ====== OMINOUS "DUN-DUN" OSTINATO (the tension driver) ======
+  // Two-note pattern: E-F semitone (like Jaws but slower, more ominous)
+  const dunOsc1 = ctx.createOscillator();
+  dunOsc1.type = "triangle";
+  dunOsc1.frequency.setValueAtTime(NOTES.E3, ctx.currentTime);
+  const dunGain1 = ctx.createGain();
+  dunGain1.gain.setValueAtTime(0, ctx.currentTime);
+  dunOsc1.connect(dunGain1);
+  dunGain1.connect(masterGain);
+  dunOsc1.start(ctx.currentTime);
+  oscillators.push(dunOsc1);
+  gains.push(dunGain1);
+
+  const dunOsc2 = ctx.createOscillator();
+  dunOsc2.type = "triangle";
+  dunOsc2.frequency.setValueAtTime(NOTES.F3, ctx.currentTime);
+  const dunGain2 = ctx.createGain();
+  dunGain2.gain.setValueAtTime(0, ctx.currentTime);
+  dunOsc2.connect(dunGain2);
+  dunGain2.connect(masterGain);
+  dunOsc2.start(ctx.currentTime);
+  oscillators.push(dunOsc2);
+  gains.push(dunGain2);
+
+  // Dun-dun pattern: alternating notes every 600ms
+  const DUN_INTERVAL = 600;
+  let dunBeat = 0;
+  const doDunDun = () => {
+    if (!marsAmbientPlaying) return;
+    const now = ctx.currentTime;
+    const isFirst = dunBeat % 2 === 0;
+    dunBeat++;
+
+    // First note (E) - slightly louder
+    if (isFirst) {
+      dunGain1.gain.cancelScheduledValues(now);
+      dunGain1.gain.setValueAtTime(0, now);
+      dunGain1.gain.linearRampToValueAtTime(0.045, now + 0.05);
+      dunGain1.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+    } else {
+      // Second note (F) - slightly quieter
+      dunGain2.gain.cancelScheduledValues(now);
+      dunGain2.gain.setValueAtTime(0, now);
+      dunGain2.gain.linearRampToValueAtTime(0.035, now + 0.05);
+      dunGain2.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+    }
+  };
+
+  // Slow bass pulse pattern (less frequent now)
+  const PULSE_INTERVAL = 2400; // Slower, every 2.4s
   const doPulse = () => {
     if (!marsAmbientPlaying) return;
     const now = ctx.currentTime;
@@ -367,26 +415,37 @@ export function startMarsAmbient() {
     // Main pulse
     pulseGain.gain.cancelScheduledValues(now);
     pulseGain.gain.setValueAtTime(0, now);
-    pulseGain.gain.linearRampToValueAtTime(0.1, now + 0.12);
-    pulseGain.gain.setValueAtTime(0.1, now + 0.5);
-    pulseGain.gain.exponentialRampToValueAtTime(0.001, now + 1.5);
+    pulseGain.gain.linearRampToValueAtTime(0.08, now + 0.12);
+    pulseGain.gain.setValueAtTime(0.08, now + 0.5);
+    pulseGain.gain.exponentialRampToValueAtTime(0.001, now + 1.8);
 
     // Sub pulse
     subPulseGain.gain.cancelScheduledValues(now);
     subPulseGain.gain.setValueAtTime(0, now);
-    subPulseGain.gain.linearRampToValueAtTime(0.06, now + 0.12);
-    subPulseGain.gain.setValueAtTime(0.06, now + 0.5);
-    subPulseGain.gain.exponentialRampToValueAtTime(0.001, now + 1.5);
+    subPulseGain.gain.linearRampToValueAtTime(0.05, now + 0.12);
+    subPulseGain.gain.setValueAtTime(0.05, now + 0.5);
+    subPulseGain.gain.exponentialRampToValueAtTime(0.001, now + 1.8);
   };
 
-  // Start pulse after fade-in
+  // Start patterns after fade-in
   const pulseStartTimeout = setTimeout(() => {
     if (!marsAmbientPlaying) return;
-    doPulse();
-    const pulseInterval = setInterval(doPulse, PULSE_INTERVAL);
-    intervals.push(pulseInterval);
-  }, 2500);
+
+    // Start dun-dun ostinato
+    doDunDun();
+    const dunInterval = setInterval(doDunDun, DUN_INTERVAL);
+    intervals.push(dunInterval);
+
+    // Start bass pulse (offset slightly)
+    setTimeout(() => {
+      if (!marsAmbientPlaying) return;
+      doPulse();
+      const pulseInterval = setInterval(doPulse, PULSE_INTERVAL);
+      intervals.push(pulseInterval);
+    }, 300);
+  }, 2000);
   timeouts.push(pulseStartTimeout);
+
 
   // ====== STRING PAD LAYER (swells but never silent) ======
   // Cellos
