@@ -11,6 +11,8 @@ create table if not exists profiles (
   missions_count integer default 0,
   best_score bigint default 0,
   last_ending_id text,
+  archetype text,
+  archetype_blurb text,
   created_at timestamptz default now(),
   updated_at timestamptz default now()
 );
@@ -39,6 +41,7 @@ create table if not exists runs (
   id uuid primary key default gen_random_uuid(),
   wallet text not null,
   privy_user_id text references profiles(privy_user_id),
+  commander_name text,
   score bigint not null,
   seed integer not null,
   ending_id text not null,

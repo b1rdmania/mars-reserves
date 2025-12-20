@@ -1,8 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { usePrivy } from "@privy-io/react-auth";
 import type { GameState } from "../engine/state";
 import { formatMoney } from "./format";
 import { THEME } from "../theme";
+import { SYMBOLS } from "./symbols";
+import { useGameSession } from "../hooks/useGameSession";
+import { CommanderPanel } from "./CommanderPanel";
 
 interface Props {
   state: GameState;
@@ -12,12 +15,12 @@ interface Props {
   onToggleMute?: () => void;
 }
 
-// Meter type mapping for CSS classes
-const METER_TYPE_MAP: Record<string, string> = {
-  rage: "unrest",
-  heat: "oversight",
-  cred: "trust",
-  tech: "momentum",
+// Meter type mapping for CSS classes and symbols
+const METER_TYPE_MAP: Record<string, { cssType: string; symbol: string; label: string }> = {
+  rage: { cssType: "unrest", symbol: SYMBOLS.CREW, label: "Crew Unrest" },
+  heat: { cssType: "oversight", symbol: SYMBOLS.OVERSIGHT, label: "Earth Oversight" },
+  cred: { cssType: "trust", symbol: SYMBOLS.CREW, label: "Crew Trust" },
+  tech: { cssType: "momentum", symbol: SYMBOLS.RESEARCH, label: "Research" },
 };
 
 const MeterBar: React.FC<{
@@ -44,15 +47,20 @@ const MeterBar: React.FC<{
       ? "text-amber-500"
       : isLow
         ? "text-amber-400"
-        : "text-[#5a6475]";
+        : "text-[#4a5565]";
 
-  const meterCssType = METER_TYPE_MAP[type] || type;
+  const meterConfig = METER_TYPE_MAP[type];
+  const meterCssType = meterConfig?.cssType || type;
+  const meterSymbol = meterConfig?.symbol || "";
 
   return (
     <div className={`flex-1 min-w-[100px] ${dangerClass}`}>
       <div className="flex items-center justify-between mb-1">
-        <span className={`text-[10px] uppercase tracking-[0.08em] ${labelColor}`}>{label}</span>
-        <span className={`text-xs font-semibold tabular-nums ${isCritical || isVeryLow ? "text-red-400" : isDanger || isLow ? "text-amber-500" : "text-[#8b95a5]"}`}>
+        <span className={`text-[9px] uppercase tracking-[0.06em] ${labelColor} flex items-center gap-1`}>
+          <span className="text-xs">{meterSymbol}</span>
+          {label}
+        </span>
+        <span className={`text-[10px] font-semibold tabular-nums font-mono ${isCritical || isVeryLow ? "text-red-400" : isDanger || isLow ? "text-amber-500" : "text-[#5a6475]"}`}>
           {displayValue}
         </span>
       </div>
@@ -68,44 +76,14 @@ const MeterBar: React.FC<{
 
 export const TopPanel: React.FC<Props> = ({ state, maxTurns, showDescription = true, muted, onToggleMute }) => {
   const { colonyReserves, legacy, rage, oversightPressure, cred, techHype } = state;
-  const { user, authenticated } = usePrivy();
-  const [commanderName, setCommanderName] = useState<string | null>(null);
+  const { authenticated } = usePrivy();
+  const { profile } = useGameSession();
 
-  // Fetch verified commander name from profile
-  useEffect(() => {
-    async function fetchProfile() {
-      if (!user?.id) return;
-
-      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-      const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
-      if (!supabaseUrl || !supabaseKey) return;
-
-      try {
-        const res = await fetch(`${supabaseUrl}/rest/v1/profiles?privy_user_id=eq.${encodeURIComponent(user.id)}&select=commander_name`, {
-          headers: {
-            'apikey': supabaseKey,
-            'Authorization': `Bearer ${supabaseKey}`,
-          },
-        });
-
-        if (res.ok) {
-          const data = await res.json();
-          if (data && data.length > 0) {
-            setCommanderName(data[0].commander_name);
-          }
-        }
-      } catch (err) {
-        console.error("Failed to fetch profile name:", err);
-      }
-    }
-
-    if (authenticated) {
-      fetchProfile();
-    } else {
-      setCommanderName(null);
-    }
-  }, [authenticated, user?.id]);
+  // Use profile commander name if authenticated, otherwise show guest indicator
+  const isCommander = authenticated && profile?.commander_name;
+  const displayName = isCommander
+    ? `CDR. ${profile.commander_name}`
+    : 'LT. UNREGISTERED';
 
   return (
     <div className="space-y-3 mb-4">
@@ -118,8 +96,8 @@ export const TopPanel: React.FC<Props> = ({ state, maxTurns, showDescription = t
           </div>
           {/* Commander Name */}
           <div className="flex items-center gap-2 mt-1">
-            <span className="text-[10px] text-[#0891b2] font-mono uppercase tracking-[0.1em]">
-              {authenticated && commanderName ? `CDR. ${commanderName}` : state.founderName}
+            <span className={`text-[10px] font-mono uppercase tracking-[0.1em] ${isCommander ? 'text-[#0891b2]' : 'text-[#5a6475]'}`}>
+              {displayName}
             </span>
             {authenticated && (
               <div className="h-1 w-1 bg-[#16a34a]" title="Online" />
@@ -142,6 +120,8 @@ export const TopPanel: React.FC<Props> = ({ state, maxTurns, showDescription = t
               {muted ? "🔇" : "🔊"}
             </button>
           )}
+          {/* Commander Panel for authenticated users */}
+          {authenticated && <CommanderPanel />}
           {/* Turn Counter */}
           <div>
             {(() => {
@@ -207,16 +187,19 @@ export const TopPanel: React.FC<Props> = ({ state, maxTurns, showDescription = t
         const filledSegments = Math.round(pct / 10);
 
         return (
-          <div className="terminal-frame">
-            {/* Header */}
-            <div className="text-[10px] uppercase tracking-[0.12em] text-[#4a5565] mb-2">
-              Operational Margin
+          <div className="terminal-frame py-4">
+            {/* Header - hero element */}
+            <div className="flex items-center gap-2 mb-3">
+              <span className="text-lg">{SYMBOLS.TIME}</span>
+              <div className="text-[11px] uppercase tracking-[0.12em] text-[#5a6475]">
+                Operational Margin
+              </div>
             </div>
 
-            {/* Segmented blocks */}
-            <div className="flex gap-0.5 mb-2">
+            {/* Segmented blocks - larger, more prominent */}
+            <div className="flex gap-1 mb-3">
               {Array.from({ length: totalSegments }).map((_, i) => {
-                let segmentClass = "h-4 flex-1 border border-[#1a1f28]";
+                let segmentClass = "h-6 flex-1 border border-[#1a1f28]";
                 if (i < filledSegments) {
                   if (pct <= 20) segmentClass += " bg-[#dc2626] border-[#dc2626]";
                   else if (pct <= 40) segmentClass += " bg-[#ea580c] border-[#ea580c]";
@@ -226,18 +209,18 @@ export const TopPanel: React.FC<Props> = ({ state, maxTurns, showDescription = t
               })}
             </div>
 
-            {/* Status readout */}
+            {/* Status readout - larger, dominant */}
             <div className="flex items-center justify-between">
               <span className="text-[9px] uppercase tracking-[0.1em] text-[#4a5565]">
                 Status:
               </span>
-              <span className={`text-sm font-semibold tracking-wide ${marginColor}`}>
+              <span className={`text-lg font-bold tracking-wide ${marginColor}`}>
                 {marginState}
               </span>
             </div>
 
-            {/* Units - muted */}
-            <div className="text-[9px] text-[#4a5565] text-right font-mono mt-1">
+            {/* Units - very muted */}
+            <div className="text-[8px] text-[#3a4555] text-right font-mono mt-1">
               {formatUnits(colonyReserves)}
             </div>
           </div>

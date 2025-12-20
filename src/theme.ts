@@ -1,8 +1,8 @@
-// Mars Reserves Theme Configuration
+// Mars Extraction Theme Configuration
 // Maps internal state keys to player-facing display names
 
 export const THEME = {
-  gameName: "Move: Mars Reserves",
+  gameName: "Mars Extraction",
   tagline: "Build your legacy on Mars",
 
   // Metric display names

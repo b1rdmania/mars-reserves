@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { usePrivy } from "@privy-io/react-auth";
 import { initialState, step } from "./engine/engine";
 import { mulberry32 } from "./engine/rng";
 import type { ActionId } from "./engine/actions";
@@ -18,29 +19,18 @@ import { HowToPlayModal } from "./ui/HowToPlayModal";
 import { LeaderboardModal } from "./ui/LeaderboardModal";
 import { ArchivePanel } from "./ui/ArchivePanel";
 import { SplashScreen } from "./ui/SplashScreen";
+import { GuestBanner } from "./ui/GuestBanner";
+import { CommanderNameModal } from "./ui/CommanderNameModal";
+import { useGameSession } from "./hooks/useGameSession";
 
 const App: React.FC = () => {
   const [seed, setSeed] = useState(() => Math.floor(Math.random() * 1e9));
   const rng = useMemo(() => mulberry32(seed), [seed]);
 
-  // Sci-fi commander names for random selection
-  const COMMANDER_NAMES = [
-    // Star Trek inspired
-    "Cmdr. Archer", "Cmdr. Picard", "Cmdr. Sisko", "Cmdr. Janeway", "Cmdr. Kirk",
-    "Cmdr. Riker", "Lt. Cmdr. Data", "Cmdr. Spock", "Cmdr. Worf", "Cmdr. T'Pol",
-    // Star Wars inspired  
-    "Cmdr. Skywalker", "Cmdr. Solo", "Cmdr. Organa", "Cmdr. Calrissian", "Cmdr. Syndulla",
-    "Cmdr. Andor", "Cmdr. Dameron", "Cmdr. Bridger", "Cmdr. Tano",
-    // Mars/sci-fi
-    "Cmdr. Watney", "Cmdr. Shepard", "Cmdr. Ripley", "Cmdr. Bowman", "Cmdr. Cooper",
-    "Cmdr. Stone", "Cmdr. Holden", "Cmdr. Nagata", "Cmdr. Burton", "Cmdr. Draper",
-    // Generic space
-    "Cmdr. Chen", "Cmdr. Vasquez", "Cmdr. Okonkwo", "Cmdr. Petrov", "Cmdr. Nakamura",
-  ];
+  // Session and auth state
+  const { login, authenticated, ready } = usePrivy();
+  const { isGuest, guestCallSign, profile, needsCommanderName, refreshProfile } = useGameSession();
 
-  const [founderName, setFounderName] = useState(() =>
-    COMMANDER_NAMES[Math.floor(Math.random() * COMMANDER_NAMES.length)]
-  );
   const seasonId: SeasonId = "dust_season"; // V1: fixed season
   const [state, setState] = useState<GameState | null>(null);
   const [showDebug, setShowDebug] = useState(false);
@@ -49,6 +39,7 @@ const App: React.FC = () => {
   const [showHowToPlay, setShowHowToPlay] = useState(false);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [showSplash, setShowSplash] = useState(true);
+  const [showCommanderNameModal, setShowCommanderNameModal] = useState(false);
   const [turnModalData, setTurnModalData] = useState<{
     actionName: string;
     severity: SeverityResult | null;
@@ -58,6 +49,18 @@ const App: React.FC = () => {
 
   const started = !!state;
   const maxTurnsDisplay = state?.maxTurns ?? 20;
+
+  // Determine display name based on auth state
+  const displayName = authenticated && profile?.commander_name
+    ? profile.commander_name
+    : guestCallSign;
+
+  // Show commander name modal when needed
+  useEffect(() => {
+    if (ready && authenticated && needsCommanderName && !showCommanderNameModal) {
+      setShowCommanderNameModal(true);
+    }
+  }, [ready, authenticated, needsCommanderName, showCommanderNameModal]);
 
   // Debug toggle
   useEffect(() => {
@@ -186,7 +189,7 @@ const App: React.FC = () => {
     playSound("click");
     const base = initialState({
       chainName: "Olympus Base",
-      founderName: founderName || "Commander",
+      founderName: displayName || "Commander",
       ticker: "OLY",
       seasonId,
     });
@@ -194,18 +197,30 @@ const App: React.FC = () => {
     setState({ ...base, availableActions: sampled });
   };
 
+  const handleSignInAndStart = async () => {
+    playSound("click");
+    try {
+      await login();
+      // Game will start after user sets commander name
+    } catch (err) {
+      console.error("Login failed:", err);
+    }
+  };
+
   const handleRestart = () => {
     playSound("click");
     // Close any open modals and clear their data
     setTurnModalOpen(false);
     setTurnModalData(null);
+    // Refresh profile to get updated stats
+    refreshProfile();
     // Create fresh game with new seed
     const newSeed = Math.floor(Math.random() * 1e9);
     setSeed(newSeed);
     const newRng = mulberry32(newSeed);
     const base = initialState({
       chainName: "Olympus Base",
-      founderName: founderName || "Commander",
+      founderName: displayName || "Commander",
       ticker: "OLY",
       seasonId,
     });
@@ -250,50 +265,89 @@ const App: React.FC = () => {
     return (
       <div className="min-h-screen min-h-[100dvh] flex items-center justify-center p-4">
         <div className="max-w-md w-full terminal-frame space-y-4">
+          {/* Header */}
           <div>
-            <div className="flex items-center gap-2 mb-2">
-              <h1 className="text-lg font-semibold uppercase tracking-wide">Move: Mars Reserves</h1>
-              <span className="text-[8px] uppercase tracking-[0.12em] border border-[#2d3544] text-[#5a6475] px-2 py-0.5">BETA</span>
+            <h1 className="text-lg font-semibold uppercase tracking-wide">Mars Extraction</h1>
+            <p className="text-[11px] text-[#5a6475] mt-1">A public mission. A private legacy.</p>
+          </div>
+
+          {/* System Status Lines */}
+          <div className="border border-[#1a1f28] bg-[#0a0c10] p-3 space-y-1.5">
+            <div className="flex items-center justify-between">
+              <span className="text-[9px] uppercase tracking-[0.1em] text-[#4a5565]">Status</span>
+              <span className="text-[10px] text-[#d97706] font-medium uppercase tracking-wide">Awaiting Command</span>
             </div>
-            <p className="text-[11px] text-[#5a6475] leading-relaxed">
-              Over {maxTurnsDisplay} cycles, build your legacy on humanity&apos;s first Mars colony
-              — without triggering mutiny, Earth recall, or mission failure.
-            </p>
-            <p className="text-[10px] text-[#4a5565] mt-2 uppercase tracking-wide">Your actions will be recorded.</p>
+            <div className="flex items-center justify-between">
+              <span className="text-[9px] uppercase tracking-[0.1em] text-[#4a5565]">Earth Link</span>
+              <span className="text-[10px] text-[#16a34a] font-medium uppercase tracking-wide">Active</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-[9px] uppercase tracking-[0.1em] text-[#4a5565]">Mission Duration</span>
+              <span className="text-[10px] text-[#8b95a5] font-mono">{maxTurnsDisplay} Cycles</span>
+            </div>
           </div>
 
           {/* Colony Archive */}
           <ArchivePanel />
 
-          <div className="space-y-2">
-            <label className="block">
-              <span className="text-[9px] uppercase tracking-[0.12em] text-[#4a5565]">Call Sign</span>
-              <input
-                className="w-full mt-1 bg-[#0d0f13] border border-[#1a1f28] px-3 py-2.5 text-sm focus:outline-none focus:border-[#0891b2] font-mono"
-                value={founderName}
-                onChange={(e) => setFounderName(e.target.value)}
-                placeholder="Cmdr. Chen"
-              />
-            </label>
+          {/* Dual CTA: Guest vs Sign In */}
+          <div className="space-y-3">
+            {/* Play as Guest - Primary */}
+            <div className="border border-[#1a1f28] bg-[#0a0c10] p-3">
+              <button
+                onClick={handleStart}
+                className="w-full py-3 px-4 bg-[#0891b2] hover:bg-[#0e7490] text-white font-medium uppercase tracking-wider text-sm"
+              >
+                Play as Guest
+              </button>
+              <div className="mt-2 flex items-center justify-center gap-3 text-[9px] text-[#4a5565]">
+                <span>• Anonymous</span>
+                <span>• No saved history</span>
+              </div>
+            </div>
+
+            {/* Sign In with Privy - Secondary */}
+            <div className="border border-[#1a1f28] bg-[#0a0c10] p-3">
+              <button
+                onClick={handleSignInAndStart}
+                disabled={!ready}
+                className="w-full py-3 px-4 bg-[#0d0f13] hover:bg-[#12151c] text-[#c8cdd5] font-medium uppercase tracking-wider text-sm border border-[#1a1f28] disabled:opacity-50"
+              >
+                {authenticated ? 'Continue as Commander' : 'Sign In with Privy'}
+              </button>
+              <div className="mt-2 flex items-center justify-center gap-3 text-[9px] text-[#4a5565]">
+                <span>• Named commander</span>
+                <span>• Career recorded</span>
+              </div>
+            </div>
           </div>
 
-          <div className="flex gap-2">
-            <button
-              onClick={() => setShowHowToPlay(true)}
-              className="py-3 px-4 bg-[#0d0f13] hover:bg-[#12151c] text-[#8b95a5] font-medium border border-[#1a1f28] text-sm"
-            >
-              ? Briefing
-            </button>
-            <button
-              onClick={handleStart}
-              className="flex-1 py-3 px-4 bg-[#0891b2] hover:bg-[#0e7490] text-white font-medium uppercase tracking-wider text-sm"
-            >
-              Begin Mission →
-            </button>
+          {/* Briefing Button */}
+          <button
+            onClick={() => setShowHowToPlay(true)}
+            className="w-full py-2 px-4 bg-[#0a0c10] hover:bg-[#12151c] text-[#5a6475] font-medium border border-[#1a1f28] text-xs"
+          >
+            ? Briefing
+          </button>
+
+          {/* Warning Footer */}
+          <div className="text-[9px] text-[#4a5565] text-center uppercase tracking-wide flex items-center justify-center gap-1.5">
+            <span className="text-[#d97706]">⚠</span>
+            <span>All actions recorded on Movement</span>
           </div>
 
           <HowToPlayModal open={showHowToPlay} onClose={() => setShowHowToPlay(false)} />
           <LeaderboardModal open={showLeaderboard} onClose={() => setShowLeaderboard(false)} />
+          <CommanderNameModal
+            open={showCommanderNameModal}
+            onClose={() => {
+              setShowCommanderNameModal(false);
+              // Start game after setting commander name
+              if (profile?.commander_name) {
+                handleStart();
+              }
+            }}
+          />
         </div>
       </div>
     );
@@ -303,6 +357,9 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen min-h-[100dvh] flex flex-col">
       <div className="flex-1 max-w-2xl w-full mx-auto p-4 pb-8">
+        {/* Guest Banner */}
+        {isGuest && <GuestBanner className="mb-4" />}
+
         <TopPanel state={state} maxTurns={state.maxTurns} showDescription={false} muted={muted} onToggleMute={toggleMute} />
 
         {/* Actions */}

@@ -3,6 +3,7 @@ import { usePrivy } from '@privy-io/react-auth';
 import type { GameState } from '../engine/state';
 import type { EndingDef } from '../engine/endings';
 import { calculateFinalScore, formatScore } from '../engine/scoring';
+import { useGameSession } from '../hooks/useGameSession';
 
 interface RecordMissionModalProps {
     open: boolean;
@@ -22,6 +23,7 @@ export const RecordMissionModal: React.FC<RecordMissionModalProps> = ({
     actionIds,
 }) => {
     const { ready, authenticated, login, user } = usePrivy();
+    const { profile, refreshProfile } = useGameSession();
     const [submitting, setSubmitting] = useState(false);
     const [submitted, setSubmitted] = useState(false);
     const [txHash, setTxHash] = useState<string | null>(null);
@@ -62,6 +64,7 @@ export const RecordMissionModal: React.FC<RecordMissionModalProps> = ({
                     endingId: ending?.id ?? 'unknown',
                     wallet: user.wallet.address,
                     privyUserId: user.id,
+                    commanderName: profile?.commander_name || 'Unknown Commander',
                 }),
             });
 
@@ -72,9 +75,10 @@ export const RecordMissionModal: React.FC<RecordMissionModalProps> = ({
 
             const result = await response.json();
             console.log('[RecordMission] API Response:', result);
-            console.log('[RecordMission] OnChain Debug:', result.onChain?._debug);
             setTxHash(result.onChain?.txHash || null);
             setSubmitted(true);
+            // Refresh profile to update career stats
+            await refreshProfile();
         } catch (err) {
             console.error('Submit failed:', err);
             setError(err instanceof Error ? err.message : 'Failed to record mission');
@@ -94,9 +98,9 @@ export const RecordMissionModal: React.FC<RecordMissionModalProps> = ({
                 {/* Header */}
                 <div className="text-center mb-5">
                     <div className="text-[10px] uppercase tracking-[0.15em] text-[#4a5565] mb-2">Mission Archive</div>
-                    <h2 className="text-base font-semibold uppercase tracking-wide text-[#c8cdd5]">Record Mission</h2>
+                    <h2 className="text-base font-semibold uppercase tracking-wide text-[#c8cdd5]">File Official Report</h2>
                     <p className="text-[10px] text-[#5a6475] mt-1">
-                        Save to the Colony Index
+                        Record this mission permanently.
                     </p>
                 </div>
 
@@ -152,13 +156,13 @@ export const RecordMissionModal: React.FC<RecordMissionModalProps> = ({
                     /* Connect State */
                     <div className="space-y-3">
                         <p className="text-[10px] text-[#5a6475] text-center">
-                            Connect to save your run to the leaderboard and record it on-chain.
+                            Sign in to file your mission report and record it permanently.
                         </p>
                         <button
                             onClick={handleConnect}
                             className="w-full py-3 px-4 bg-[#0891b2] hover:bg-[#0e7490] text-white font-medium uppercase tracking-wider text-sm"
                         >
-                            Connect Wallet
+                            Sign In
                         </button>
                         <button
                             onClick={onClose}

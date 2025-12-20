@@ -2,6 +2,7 @@ import React from "react";
 import type { GameState } from "../engine/state";
 import { ACTIONS, getVisibleActions } from "../engine/actions";
 import type { ActionCategory, ActionId } from "../engine/actions";
+import { SYMBOLS, ACTION_SYMBOLS, FILING_CATEGORIES, CLASSIFICATIONS } from "./symbols";
 
 interface Props {
   state: GameState;
@@ -20,13 +21,13 @@ const CATEGORY_CLASS: Record<ActionCategory, string> = {
   "Crew Relations": "crew-relations",
 };
 
-// Classification stamps for procedural weight
-const CATEGORY_STAMP: Record<ActionCategory, string> = {
-  Ambition: "NON-STANDARD",
-  Command: "AUTHORIZED",
-  Communications: "LOGGED",
-  "Crisis Response": "OVERRIDE",
-  "Crew Relations": "INFORMAL",
+// Map ActionCategory to symbol key
+const CATEGORY_TO_KEY: Record<ActionCategory, string> = {
+  Ambition: "ambition",
+  Command: "command",
+  Communications: "research",
+  "Crisis Response": "operations",
+  "Crew Relations": "informal",
 };
 
 export const ActionPanel: React.FC<Props> = ({ state, onSelect, disabled }) => {
@@ -50,15 +51,22 @@ export const ActionPanel: React.FC<Props> = ({ state, onSelect, disabled }) => {
       {CATEGORY_ORDER.map((cat) => {
         const list = byCategory[cat];
         if (!list.length) return null;
+        const catKey = CATEGORY_TO_KEY[cat];
+        const catSymbol = ACTION_SYMBOLS[catKey] || SYMBOLS.TIME;
         return (
           <div key={cat} className="min-w-0">
             <div className="flex items-center gap-2 mb-1.5">
-              <span className="text-[10px] uppercase tracking-[0.1em] text-[#5a6475] font-semibold">
+              <span className="text-sm">{catSymbol}</span>
+              <span className="text-[9px] uppercase tracking-[0.1em] text-[#4a5565] font-semibold">
                 {cat}
               </span>
             </div>
             <div className="space-y-1.5">
               {list.map((a) => {
+                const categoryKey = CATEGORY_TO_KEY[a.category];
+                const classification = CLASSIFICATIONS[categoryKey] || "LOGGED";
+                const filing = FILING_CATEGORIES[categoryKey] || "GENERAL";
+
                 // Temptation sub-lines for Ambition actions (subtle moral pressure)
                 const temptationLines = [
                   "No one will question this.",
@@ -80,17 +88,21 @@ export const ActionPanel: React.FC<Props> = ({ state, onSelect, disabled }) => {
                   >
                     {/* Classification stamp */}
                     <span className="action-stamp">
-                      {CATEGORY_STAMP[a.category]}
+                      {classification}
                     </span>
 
                     <div className="font-medium text-sm leading-tight text-[#c8cdd5] pr-16">
                       {a.name.replace("[Your Name]", state.founderName)}
                     </div>
-                    <div className="text-[11px] text-[#5a6475] leading-tight mt-0.5">
+                    <div className="text-[10px] text-[#4a5565] leading-tight mt-0.5">
                       {a.description}
                     </div>
+                    {/* Filing annotation */}
+                    <div className="text-[8px] text-[#3a4555] mt-1 uppercase tracking-wide">
+                      Filed under: {filing}
+                    </div>
                     {temptation && (
-                      <div className="text-[9px] text-[#d97706]/60 mt-1">
+                      <div className="text-[9px] text-[#d97706]/50 mt-0.5 italic">
                         {temptation}
                       </div>
                     )}

@@ -173,6 +173,88 @@ interface SubmitRunRequest {
     commanderName?: string;
 }
 
+// Archetype calculation (inline to avoid import issues in Vercel)
+const FAILURE_ENDINGS = ['crew_mutiny', 'earth_recall', 'trust_collapse', 'reserves_depleted'];
+const SUCCESS_ENDINGS = ['legendary_commander', 'successful_mission', 'modest_legacy', 'survived'];
+const OVERSIGHT_ENDINGS = ['earth_recall'];
+const MUTINY_ENDINGS = ['crew_mutiny'];
+
+interface RunForArchetype {
+    score: number;
+    ending_id: string;
+}
+
+const ARCHETYPE_BLURBS: Record<string, string> = {
+    THE_CAREERIST: 'High legacy, frequent oversight failures. Earth knows your name—for better or worse.',
+    THE_ADMINISTRATOR: 'Steady hands, stable colony. Not exciting, but the crew sleeps well.',
+    THE_CHAOS_COMMANDER: 'Mutinies, close calls, wild swings. Your missions make for excellent documentaries.',
+    THE_VISIONARY: 'Big ambitions, mixed results. History will judge whether you were ahead of your time.',
+    THE_SURVIVOR: 'Against all odds, you keep coming back. The colony endures.',
+    THE_GAMBLER: 'High risk, high variance. Some runs legendary, others best forgotten.',
+    THE_ROOKIE: 'New to command. Every mission is a learning experience.',
+    THE_VETERAN: "Many missions under your belt. You've seen it all.",
+};
+
+function calculateArchetype(runs: RunForArchetype[]): { archetype: string; blurb: string } {
+    if (runs.length <= 1) {
+        return { archetype: 'THE_ROOKIE', blurb: ARCHETYPE_BLURBS.THE_ROOKIE };
+    }
+
+    const totalRuns = runs.length;
+    const scores = runs.map(r => r.score);
+    const avgScore = scores.reduce((a, b) => a + b, 0) / totalRuns;
+    const maxScore = Math.max(...scores);
+    const minScore = Math.min(...scores);
+    const scoreVariance = maxScore - minScore;
+
+    const failures = runs.filter(r => FAILURE_ENDINGS.includes(r.ending_id)).length;
+    const successes = runs.filter(r => SUCCESS_ENDINGS.includes(r.ending_id)).length;
+    const oversightFailures = runs.filter(r => OVERSIGHT_ENDINGS.includes(r.ending_id)).length;
+    const mutinies = runs.filter(r => MUTINY_ENDINGS.includes(r.ending_id)).length;
+
+    const failureRate = failures / totalRuns;
+    const successRate = successes / totalRuns;
+
+    if (totalRuns >= 10) {
+        if (avgScore > 100_000_000 && oversightFailures >= totalRuns * 0.3) {
+            return { archetype: 'THE_CAREERIST', blurb: ARCHETYPE_BLURBS.THE_CAREERIST };
+        }
+        if (failureRate < 0.2 && scoreVariance < avgScore * 0.5) {
+            return { archetype: 'THE_ADMINISTRATOR', blurb: ARCHETYPE_BLURBS.THE_ADMINISTRATOR };
+        }
+        if (mutinies >= totalRuns * 0.3 || (failureRate > 0.4 && scoreVariance > avgScore)) {
+            return { archetype: 'THE_CHAOS_COMMANDER', blurb: ARCHETYPE_BLURBS.THE_CHAOS_COMMANDER };
+        }
+        if (maxScore > 200_000_000 && failureRate > 0.3) {
+            return { archetype: 'THE_VISIONARY', blurb: ARCHETYPE_BLURBS.THE_VISIONARY };
+        }
+        if (scoreVariance > avgScore * 1.5) {
+            return { archetype: 'THE_GAMBLER', blurb: ARCHETYPE_BLURBS.THE_GAMBLER };
+        }
+        if (successRate > 0.7) {
+            return { archetype: 'THE_SURVIVOR', blurb: ARCHETYPE_BLURBS.THE_SURVIVOR };
+        }
+        return { archetype: 'THE_VETERAN', blurb: ARCHETYPE_BLURBS.THE_VETERAN };
+    }
+
+    if (totalRuns >= 3) {
+        if (mutinies >= 2) {
+            return { archetype: 'THE_CHAOS_COMMANDER', blurb: ARCHETYPE_BLURBS.THE_CHAOS_COMMANDER };
+        }
+        if (successRate > 0.8) {
+            return { archetype: 'THE_ADMINISTRATOR', blurb: ARCHETYPE_BLURBS.THE_ADMINISTRATOR };
+        }
+        if (avgScore > 150_000_000) {
+            return { archetype: 'THE_CAREERIST', blurb: ARCHETYPE_BLURBS.THE_CAREERIST };
+        }
+        if (oversightFailures >= 2) {
+            return { archetype: 'THE_VISIONARY', blurb: ARCHETYPE_BLURBS.THE_VISIONARY };
+        }
+    }
+
+    return { archetype: 'THE_ROOKIE', blurb: ARCHETYPE_BLURBS.THE_ROOKIE };
+}
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
     // CORS headers
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -326,6 +408,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                     body: JSON.stringify({
                         wallet: body.wallet,
                         privy_user_id: body.privyUserId || null,
+                        commander_name: commanderName,
                         score: finalScore,
                         seed: body.seed,
                         ending_id: verifiedEndingId,
@@ -339,6 +422,46 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                     const errorText = await response.text();
                     supabaseError = `Supabase error: ${errorText}`;
                     console.error(supabaseError);
+                } else if (body.privyUserId) {
+                    // Calculate and update archetype after successful run insert
+                    try {
+                        // Fetch recent runs for archetype calculation
+                        const runsRes = await fetch(
+                            `${supabaseUrl}/rest/v1/runs?privy_user_id=eq.${encodeURIComponent(body.privyUserId)}&select=score,ending_id&order=created_at.desc&limit=20`,
+                            {
+                                headers: {
+                                    'apikey': supabaseKey,
+                                    'Authorization': `Bearer ${supabaseKey}`,
+                                },
+                            }
+                        );
+
+                        if (runsRes.ok) {
+                            const recentRuns = await runsRes.json();
+                            const { archetype, blurb } = calculateArchetype(recentRuns);
+
+                            // Update profile with archetype
+                            await fetch(
+                                `${supabaseUrl}/rest/v1/profiles?privy_user_id=eq.${encodeURIComponent(body.privyUserId)}`,
+                                {
+                                    method: 'PATCH',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'apikey': supabaseKey,
+                                        'Authorization': `Bearer ${supabaseKey}`,
+                                        'Prefer': 'return=minimal',
+                                    },
+                                    body: JSON.stringify({
+                                        archetype,
+                                        archetype_blurb: blurb,
+                                    }),
+                                }
+                            );
+                            console.log(`[Archetype] Updated profile archetype to: ${archetype}`);
+                        }
+                    } catch (archetypeErr) {
+                        console.error('[Archetype] Failed to calculate/update:', archetypeErr);
+                    }
                 }
             } catch (err) {
                 supabaseError = `Supabase connection error: ${err instanceof Error ? err.message : 'Unknown'}`;

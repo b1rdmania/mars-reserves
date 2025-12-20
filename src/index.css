@@ -85,6 +85,25 @@ body {
   overscroll-behavior: none;
   /* Prevent iOS text size adjust */
   -webkit-text-size-adjust: 100%;
+  position: relative;
+}
+
+/* Scanline texture overlay - subtle CRT terminal feel */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 9999;
+  background:
+    repeating-linear-gradient(0deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 0, 0, 0.03) 2px,
+      rgba(0, 0, 0, 0.03) 4px);
 }
 
 /* iOS zoom prevention - inputs must be >= 16px to prevent auto-zoom */

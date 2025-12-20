@@ -31,7 +31,7 @@ export const ShareCard: React.FC<Props> = ({ state, ending, runHash, indexDelta,
   const generateShareText = () => {
     const survived = state.turn >= state.maxTurns;
     const lines = [
-      `🚀 Move: Mars Reserves`,
+      `🚀 Mars Extraction`,
       ``,
       ending ? `${ending.emoji} ${ending.headline}` : (survived ? `✅ Survived ${state.turn} cycles` : `💀 Fell on cycle ${state.turn}`),
       `🏛️ Legacy Score: ${formatScore(finalScore)}`,

@@ -56,7 +56,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onStart }) => {
                 </div>
 
                 {/* Title */}
-                <h1 className="splash-title">MOVE: MARS RESERVES</h1>
+                <h1 className="splash-title">MARS EXTRACTION</h1>
 
                 {/* Tagline */}
                 <p className="splash-tagline">A public mission. A private legacy.</p>
