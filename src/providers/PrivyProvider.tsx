@@ -44,8 +44,8 @@ export function PrivyProvider({ children }: PrivyProviderProps) {
         <BasePrivyProvider
             appId={appId}
             config={{
-                // Login methods - includes wallet for WalletConnect
-                loginMethods: ['email', 'wallet', 'google', 'twitter', 'discord'],
+                // Login methods - wallet and social (no email/Google to avoid OAuth setup)
+                loginMethods: ['wallet', 'twitter', 'discord'],
 
                 // Appearance
                 appearance: {
