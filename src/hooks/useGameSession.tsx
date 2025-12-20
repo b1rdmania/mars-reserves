@@ -160,35 +160,27 @@ export function GameSessionProvider({ children }: Props) {
         }
     }, [user?.id]);
 
-    // Set commander name
+    // Set commander name via API
     const setCommanderName = useCallback(async (name: string): Promise<boolean> => {
         if (!user?.id || !user?.wallet?.address) return false;
 
-        const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-        const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
-        if (!supabaseUrl || !supabaseKey) return false;
-
         try {
-            // Upsert profile with commander name
-            const res = await fetch(`${supabaseUrl}/rest/v1/profiles`, {
+            const res = await fetch('/api/update-profile', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'apikey': supabaseKey,
-                    'Authorization': `Bearer ${supabaseKey}`,
-                    'Prefer': 'resolution=merge-duplicates',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    privy_user_id: user.id,
+                    privyUserId: user.id,
                     wallet: user.wallet.address,
-                    commander_name: name,
+                    commanderName: name,
                 }),
             });
 
             if (res.ok) {
                 await refreshProfile();
                 return true;
+            } else {
+                const error = await res.json();
+                console.error('Failed to set commander name:', error);
             }
         } catch (err) {
             console.error('Failed to set commander name:', err);
