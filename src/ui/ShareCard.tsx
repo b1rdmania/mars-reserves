@@ -86,7 +86,7 @@ export const ShareCard: React.FC<Props> = ({ state, ending, runHash, indexDelta,
   };
 
   const explorerUrl = txHash
-    ? `https://explorer.movementnetwork.xyz/tx/${txHash}`
+    ? `https://explorer.movementnetwork.xyz/tx/${txHash}?network=bardock+testnet`
     : null;
 
   return (

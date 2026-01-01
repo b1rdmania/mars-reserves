@@ -141,7 +141,7 @@ export async function recordMissionOnChain(
         return {
             success: executedTx.success,
             txHash: pendingTx.hash,
-            explorerUrl: `https://explorer.movementnetwork.xyz/tx/${pendingTx.hash}?network=testnet`,
+            explorerUrl: `https://explorer.movementnetwork.xyz/tx/${pendingTx.hash}?network=bardock+testnet`,
         };
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);

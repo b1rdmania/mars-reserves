@@ -509,7 +509,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                 if (result.success && result.txHash) {
                     txHash = result.txHash;
                     onChainStatus = 'submitted';
-                    explorerUrl = result.explorerUrl || `https://explorer.movementnetwork.xyz/tx/${txHash}?network=testnet`;
+                    explorerUrl = result.explorerUrl || `https://explorer.movementnetwork.xyz/tx/${txHash}?network=bardock+testnet`;
                     console.log('On-chain mission recorded:', txHash);
 
                     // Update the database with the tx hash using REST API
