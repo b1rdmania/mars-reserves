@@ -12,7 +12,7 @@ import type { SeasonId } from "./engine/seasons";
 import { TopPanel } from "./ui/TopPanel";
 import { TurnResultModal } from "./ui/TurnResultModal";
 import type { SeverityResult } from "./engine/severity";
-import { playSound, setMuted, initAudio, stopMarsAmbient } from "./engine/audio";
+import { playSound, initAudio } from "./engine/audio";
 import { ACTIONS, sampleActionsForTurn } from "./engine/actions";
 import { LogSection } from "./ui/LogSection";
 import { HowToPlayModal } from "./ui/HowToPlayModal";
@@ -22,6 +22,7 @@ import { SplashScreen } from "./ui/SplashScreen";
 import { GuestBanner } from "./ui/GuestBanner";
 import { CommanderNameModal } from "./ui/CommanderNameModal";
 import { useGameSession } from "./hooks/useGameSession";
+import { useMusic } from "./hooks/useMusic";
 
 const App: React.FC = () => {
   const [seed, setSeed] = useState(() => Math.floor(Math.random() * 1e9));
@@ -35,7 +36,6 @@ const App: React.FC = () => {
   const [state, setState] = useState<GameState | null>(null);
   const [showDebug, setShowDebug] = useState(false);
   const [turnModalOpen, setTurnModalOpen] = useState(false);
-  const [muted, setMutedState] = useState(false);
   const [showHowToPlay, setShowHowToPlay] = useState(false);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [showSplash, setShowSplash] = useState(true);
@@ -86,14 +86,7 @@ const App: React.FC = () => {
     };
   }, []);
 
-  const toggleMute = () => {
-    const newMuted = !muted;
-    setMutedState(newMuted);
-    setMuted(newMuted);
-    if (newMuted) {
-      stopMarsAmbient();
-    }
-  };
+
 
   const handleAction = (id: ActionId) => {
     playSound("click");
@@ -255,9 +248,15 @@ const App: React.FC = () => {
     });
   };
 
+  // Get music starter
+  const { startMusic } = useMusic();
+
   // Splash screen
   if (showSplash) {
-    return <SplashScreen onStart={() => setShowSplash(false)} />;
+    return <SplashScreen onStart={() => {
+      startMusic();
+      setShowSplash(false);
+    }} />;
   }
 
   // Config screen
@@ -360,7 +359,7 @@ const App: React.FC = () => {
         {/* Guest Banner */}
         {isGuest && <GuestBanner className="mb-4" />}
 
-        <TopPanel state={state} maxTurns={state.maxTurns} showDescription={false} muted={muted} onToggleMute={toggleMute} />
+        <TopPanel state={state} maxTurns={state.maxTurns} showDescription={false} />
 
         {/* Actions */}
         <div className={`${state?.pendingCrisis ? "opacity-50 pointer-events-none" : ""}`}>

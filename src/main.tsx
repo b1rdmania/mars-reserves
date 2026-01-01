@@ -4,12 +4,15 @@ import './index.css'
 import App from './App.tsx'
 import { PrivyProvider } from './providers/PrivyProvider.tsx'
 import { GameSessionProvider } from './hooks/useGameSession.tsx'
+import { MusicProvider } from './hooks/useMusic.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <PrivyProvider>
       <GameSessionProvider>
-        <App />
+        <MusicProvider>
+          <App />
+        </MusicProvider>
       </GameSessionProvider>
     </PrivyProvider>
   </StrictMode>,

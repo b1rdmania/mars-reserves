@@ -6,13 +6,12 @@ import { THEME } from "../theme";
 import { SYMBOLS } from "./symbols";
 import { useGameSession } from "../hooks/useGameSession";
 import { CommanderPanel } from "./CommanderPanel";
+import { MusicPlayer } from "./MusicPlayer";
 
 interface Props {
   state: GameState;
   maxTurns: number;
   showDescription?: boolean;
-  muted?: boolean;
-  onToggleMute?: () => void;
 }
 
 // Meter type mapping for CSS classes and symbols
@@ -74,7 +73,7 @@ const MeterBar: React.FC<{
   );
 };
 
-export const TopPanel: React.FC<Props> = ({ state, maxTurns, showDescription = true, muted, onToggleMute }) => {
+export const TopPanel: React.FC<Props> = ({ state, maxTurns, showDescription = true }) => {
   const { colonyReserves, legacy, rage, oversightPressure, cred, techHype } = state;
   const { authenticated } = usePrivy();
   const { profile } = useGameSession();
@@ -110,16 +109,8 @@ export const TopPanel: React.FC<Props> = ({ state, maxTurns, showDescription = t
           )}
         </div>
         <div className="text-right shrink-0 flex items-start gap-3">
-          {/* Mute Button */}
-          {onToggleMute && (
-            <button
-              onClick={onToggleMute}
-              className="text-xs text-slate-500 hover:text-slate-400 transition-colors p-1"
-              title={muted ? "Unmute" : "Mute"}
-            >
-              {muted ? "🔇" : "🔊"}
-            </button>
-          )}
+          {/* Music Player */}
+          <MusicPlayer />
           {/* Commander Panel for authenticated users */}
           {authenticated && <CommanderPanel />}
           {/* Turn Counter */}
