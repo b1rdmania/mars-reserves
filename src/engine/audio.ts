@@ -601,18 +601,20 @@ export function stopMarsAmbient() {
 
   const { oscillators, masterGain, intervals, timeouts } = marsAmbientNodes;
 
+  // Clear all scheduled patterns
   intervals.forEach(clearInterval);
   timeouts.forEach(clearTimeout);
 
+  // Quick fade out (0.3s) so game music can start cleanly
   masterGain.gain.cancelScheduledValues(ctx.currentTime);
-  masterGain.gain.linearRampToValueAtTime(0, ctx.currentTime + 2.5);
+  masterGain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.3);
 
   setTimeout(() => {
     oscillators.forEach(osc => {
       try { osc.stop(); } catch { /* ok */ }
     });
     marsAmbientNodes = null;
-  }, 2600);
+  }, 400);
 }
 
 export function isMarsAmbientPlaying(): boolean {

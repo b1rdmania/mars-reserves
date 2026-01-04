@@ -192,6 +192,13 @@ const App: React.FC = () => {
 
   const handleSignInAndStart = async () => {
     playSound("click");
+
+    // If already authenticated, start the game directly
+    if (authenticated) {
+      handleStart(); // Use same logic as starting game
+      return;
+    }
+
     try {
       await login();
       // Game will start after user sets commander name
@@ -248,8 +255,16 @@ const App: React.FC = () => {
     });
   };
 
-  // Get music starter
-  const { startMusic } = useMusic();
+  // Get music controls
+  const { startMusic, stopMusic } = useMusic();
+
+  // Handle back to home (stops music, returns to splash)
+  const handleBackToHome = () => {
+    playSound("click");
+    stopMusic();
+    setState(null);
+    setShowSplash(true);
+  };
 
   // Splash screen
   if (showSplash) {
@@ -387,6 +402,7 @@ const App: React.FC = () => {
           <EndOfRunCard
             state={state}
             onRestart={handleRestart}
+            onBackToHome={handleBackToHome}
             onChangeNames={() => setState(null)}
             seed={seed}
             actionIds={state.usedActionIds}

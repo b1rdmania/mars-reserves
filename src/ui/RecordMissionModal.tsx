@@ -8,6 +8,7 @@ import { useGameSession } from '../hooks/useGameSession';
 interface RecordMissionModalProps {
     open: boolean;
     onClose: () => void;
+    onBackToHome?: () => void;
     state: GameState;
     ending?: EndingDef;
     seed: number;
@@ -17,6 +18,7 @@ interface RecordMissionModalProps {
 export const RecordMissionModal: React.FC<RecordMissionModalProps> = ({
     open,
     onClose,
+    onBackToHome,
     state,
     ending,
     seed,
@@ -140,17 +142,26 @@ export const RecordMissionModal: React.FC<RecordMissionModalProps> = ({
                                 href={`https://explorer.movementnetwork.xyz/tx/${txHash}?network=bardock+testnet`}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="block w-full py-2.5 px-4 bg-[#0d0f13] hover:bg-[#12151c] text-center text-[11px] text-[#0891b2] font-medium border border-[#1a1f28] uppercase tracking-wide"
+                                className="block w-full py-3 px-4 bg-[#0891b2] hover:bg-[#0e7490] text-center text-sm text-white font-semibold uppercase tracking-wide"
                             >
-                                View on Movement Explorer →
+                                View on Blockchain →
                             </a>
                         )}
-                        <button
-                            onClick={onClose}
-                            className="w-full py-2.5 px-4 bg-[#0d0f13] hover:bg-[#12151c] text-[#8b95a5] font-medium border border-[#1a1f28] text-sm"
-                        >
-                            Close
-                        </button>
+                        {onBackToHome ? (
+                            <button
+                                onClick={onBackToHome}
+                                className="w-full py-2.5 px-4 bg-[#0d0f13] hover:bg-[#12151c] text-[#8b95a5] font-medium border border-[#1a1f28] text-sm uppercase tracking-wide"
+                            >
+                                Back to Home
+                            </button>
+                        ) : (
+                            <button
+                                onClick={onClose}
+                                className="w-full py-2.5 px-4 bg-[#0d0f13] hover:bg-[#12151c] text-[#8b95a5] font-medium border border-[#1a1f28] text-sm"
+                            >
+                                Close
+                            </button>
+                        )}
                     </div>
                 ) : !authenticated ? (
                     /* Connect State */

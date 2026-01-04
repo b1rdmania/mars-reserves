@@ -7,12 +7,13 @@ import { calculateFinalScore, formatScore } from "../engine/scoring";
 interface Props {
   state: GameState;
   onRestart: () => void;
+  onBackToHome?: () => void;
   onChangeNames?: () => void;
   seed?: number;
   actionIds?: string[];
 }
 
-export const EndOfRunCard: React.FC<Props> = ({ state, onRestart, seed = 0, actionIds = [] }) => {
+export const EndOfRunCard: React.FC<Props> = ({ state, onRestart, onBackToHome, seed = 0, actionIds = [] }) => {
   const [showRecordModal, setShowRecordModal] = useState(false);
 
   if (!state.gameOver) return null;
@@ -73,6 +74,7 @@ export const EndOfRunCard: React.FC<Props> = ({ state, onRestart, seed = 0, acti
       <RecordMissionModal
         open={showRecordModal}
         onClose={() => setShowRecordModal(false)}
+        onBackToHome={onBackToHome}
         state={state}
         ending={ending}
         seed={seed}

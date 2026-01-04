@@ -22,6 +22,7 @@ interface MusicContextValue {
     togglePlay: () => void;
     toggleMute: () => void;
     startMusic: () => void;
+    stopMusic: () => void;
 }
 
 const MusicContext = createContext<MusicContextValue | null>(null);
@@ -106,6 +107,15 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         setHasStarted(true);
     }, [hasStarted]);
 
+    const stopMusic = useCallback(() => {
+        if (!audioRef.current) return;
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+        setIsPlaying(false);
+        setHasStarted(false);
+        setCurrentTrack(null);
+    }, []);
+
     return (
         <MusicContext.Provider
             value={{
@@ -116,6 +126,7 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                 togglePlay,
                 toggleMute,
                 startMusic,
+                stopMusic,
             }}
         >
             {children}
