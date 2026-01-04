@@ -39,7 +39,7 @@ export const ShareCard: React.FC<Props> = ({ state, ending, runHash, indexDelta,
       ending?.badge ? `🏷️ ${ending.badge}` : null,
       runHash ? `#${runHash}` : null,
       ``,
-      `Play: mars-reserves.vercel.app`
+      `Play: marsreserves.xyz`
     ].filter(Boolean);
     return lines.join('\n');
   };

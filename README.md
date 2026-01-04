@@ -6,11 +6,11 @@
 
 ## 🎮 Play Now
 
-**[mars-extraction.vercel.app](https://mars-extraction.vercel.app)**
+**[marsreserves.xyz](https://marsreserves.xyz)**
 
 ## 🌌 The Game
 
-You are the commander of Olympus Base. Your mission: guide the colony through 20 cycles while balancing survival against your own ambitions.
+You are the commander of Olympus Base. Your mission: guide the colony through 10 cycles while balancing survival against your own ambitions.
 
 - **One resource, infinite pressure**: Colony Stockpile represents everything — energy, oxygen, materials
 - **Legacy is seductive**: Extract resources for personal glory, but the crew is watching
