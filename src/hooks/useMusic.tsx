@@ -4,13 +4,14 @@ export interface Track {
     id: number;
     name: string;
     file: string;
+    startTime?: number;  // Optional: seconds to skip at start
 }
 
 export const TRACKS: Track[] = [
-    { id: 1, name: 'Rocket Man', file: '/music/track1.mp3' },
-    { id: 2, name: 'Blade Runner', file: '/music/track2.mp3' },
-    { id: 3, name: 'Life on Mars', file: '/music/track3.mp3' },
-    { id: 4, name: 'Space Oddity', file: '/music/track4.mp3' },
+    { id: 1, name: 'Rocket Man', file: '/music/track1.mp3', startTime: 0 },
+    { id: 2, name: 'Starman', file: '/music/track2.mp3', startTime: 0 },
+    { id: 3, name: 'Walking on the Moon', file: '/music/track3.mp3', startTime: 0 },
+    { id: 4, name: 'Space Oddity', file: '/music/track4.mp3', startTime: 22 },
 ];
 
 interface MusicContextValue {
@@ -52,6 +53,11 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
         const audio = audioRef.current;
         audio.src = currentTrack.file;
+
+        // Set start time if specified
+        if (currentTrack.startTime && currentTrack.startTime > 0) {
+            audio.currentTime = currentTrack.startTime;
+        }
 
         if (hasStarted && !isMuted) {
             audio.play().catch(err => {

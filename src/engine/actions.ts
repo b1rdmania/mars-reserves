@@ -280,8 +280,8 @@ export const ACTIONS: ActionDef[] = [
         ...s,
         colonyReserves: Math.max(0, s.colonyReserves - amount),
         legacy: s.legacy + amount,
-        tokenPrice: s.tokenPrice * 0.9,
-        oversightPressure: clamp(s.oversightPressure + 15),
+        oversightPressure: clamp(s.oversightPressure + 12),
+        cred: clamp(s.cred - 4),
         hidden: { ...s.hidden, scrutiny: s.hidden.scrutiny + 0.1 },
         log: [log, ...s.log],
       };
@@ -294,15 +294,14 @@ export const ACTIONS: ActionDef[] = [
     description: "Push milestones. Your name on certificates.",
     tags: ["+Legacy", "+++Unrest", "+Oversight"],
     apply: (s) => {
-      const amount = Math.floor(s.colonyReserves * 0.2);
+      const amount = Math.floor(s.colonyReserves * 0.15);
       const log = `Project acceleration authorized. Crew overtime mandated. Completion credits assigned.`;
       return {
         ...s,
         legacy: s.legacy + amount,
-        rage: clamp(s.rage + 18),
+        rage: clamp(s.rage + 15),
         oversightPressure: clamp(s.oversightPressure + 8),
-        cred: clamp(s.cred - 15),
-        tokenPrice: s.tokenPrice * 0.85,
+        cred: clamp(s.cred - 12),
         log: [log, ...s.log],
       };
     },
@@ -397,6 +396,7 @@ export const ACTIONS: ActionDef[] = [
     name: "Delegate Authority Program",
     description: "Appoint loyal deputies.",
     tags: ["-Reserves", "-Unrest", "+Trust", "+Oversight"],
+    defensive: true,
     apply: (s) => {
       const cost = Math.floor(s.colonyReserves * 0.015);
       const log = `Authority delegation program launched. Deputies are... reliable.`;
@@ -450,15 +450,13 @@ export const ACTIONS: ActionDef[] = [
     category: "Command",
     name: "Late Night Directive",
     description: "Orders during sleep cycle.",
-    tags: ["+Reserves", "++Unrest next cycle", "-Trust"],
+    tags: ["++Unrest", "-Trust"],
     apply: (s) => {
-      const amount = Math.floor(s.colonyReserves * 0.02);
       const log = `Directive issued during sleep cycle. Crew waking up unhappy.`;
       return {
         ...s,
-        colonyReserves: s.colonyReserves + amount,
-        rage: clamp(s.rage + 18),
-        cred: clamp(s.cred - 10),
+        rage: clamp(s.rage + 15),
+        cred: clamp(s.cred - 8),
         hidden: { ...s.hidden, communityMemory: s.hidden.communityMemory + 0.15 },
         log: [log, ...s.log],
       };
@@ -474,12 +472,12 @@ export const ACTIONS: ActionDef[] = [
       const quality = Math.random();
       const log = quality > 0.5
         ? `AI proposal is coherent. Some are impressed.`
-        : `AI proposal is incoherent. The transcript circulates.`;
+        : `AI proposal is confusing. Mixed reactions.`;
       return {
         ...s,
-        cred: clamp(s.cred + (quality > 0.5 ? 5 : -12)),
-        techHype: clamp(s.techHype + (quality > 0.5 ? 8 : -5)),
-        rage: clamp(s.rage + (quality > 0.5 ? -3 : 8)),
+        cred: clamp(s.cred + (quality > 0.5 ? 6 : -6)),  // Balanced: was +5/-12
+        techHype: clamp(s.techHype + (quality > 0.5 ? 8 : -4)),
+        rage: clamp(s.rage + (quality > 0.5 ? -3 : 5)),  // Reduced from +8
         log: [log, ...s.log],
       };
     },
@@ -566,6 +564,7 @@ export const ACTIONS: ActionDef[] = [
     name: "Publish Geological Findings",
     description: "Release the survey data. Academics argue.",
     tags: ["-Unrest", "+Trust", "+Momentum", "+Oversight"],
+    defensive: true,
     apply: (s) => {
       const log = `Geological data published. Earth scientists debate the stratification patterns.`;
       return {
@@ -581,16 +580,16 @@ export const ACTIONS: ActionDef[] = [
   {
     id: "mascot_campaign",
     category: "Communications",
-    name: "Launch Colony Mascot",
-    description: "Endearing or ill-advised?",
+    name: "Mission Branding Initiative",
+    description: "New logo and messaging. Unifying or divisive?",
     tags: ["+Momentum", "+/-Unrest", "+/-Trust"],
     apply: (s) => {
-      const log = `Mascot campaign launched. Memes spread across Earth networks.`;
-      const rageChange = Math.random() < 0.5 ? -8 : 8;
+      const log = `Branding initiative launched. Mixed reactions from crew.`;
+      const rageChange = Math.random() < 0.5 ? -6 : 6;
       const credChange = rageChange < 0 ? 4 : -4;
       return {
         ...s,
-        techHype: clamp(s.techHype + 8),
+        techHype: clamp(s.techHype + 6),
         rage: clamp(s.rage + rageChange),
         cred: clamp(s.cred + credChange),
         log: [log, ...s.log],
@@ -630,8 +629,7 @@ export const ACTIONS: ActionDef[] = [
         ...s,
         techHype: clamp(s.techHype + 25),
         cred: clamp(s.cred + 10),
-        oversightPressure: clamp(s.oversightPressure + 5),
-        tokenPrice: s.tokenPrice * 1.08,
+        oversightPressure: clamp(s.oversightPressure + 8),
         log: [log, ...s.log],
       };
     },
@@ -658,15 +656,14 @@ export const ACTIONS: ActionDef[] = [
     category: "Communications",
     name: "Terraforming Preview",
     description: "Announce first, feasibility later.",
-    tags: ["+Momentum", "+++Oversight", "Reserves stable"],
+    tags: ["+Momentum", "+++Oversight"],
     apply: (s) => {
       const log = `Terraforming preview released. Lawyers seek clarification. Sponsors are requesting private briefings.`;
       return {
         ...s,
         techHype: clamp(s.techHype + 15),
-        oversightPressure: clamp(s.oversightPressure + 20),
-        cred: clamp(s.cred + 5),
-        tokenPrice: s.tokenPrice * 1.05,
+        oversightPressure: clamp(s.oversightPressure + 18),
+        cred: clamp(s.cred + 4),
         hidden: { ...s.hidden, scrutiny: s.hidden.scrutiny + 0.1 },
         log: [log, ...s.log],
       };
@@ -677,14 +674,14 @@ export const ACTIONS: ActionDef[] = [
     category: "Communications",
     name: "'Major Progress' Briefing",
     description: "'Big things soon.' Classic.",
-    tags: ["+Confidence", "-Unrest", "follow-up scrutiny"],
+    tags: ["-Unrest", "-Trust"],
     apply: (s) => {
-      const log = `'Major milestones imminent.' Earth confidence surges. The briefing is archived for future reference.`;
+      const log = `'Major milestones imminent.' Earth is impressed. Expectation debt grows.`;
       return {
         ...s,
-        tokenPrice: s.tokenPrice * 1.06,
         rage: clamp(s.rage - 5),
         cred: clamp(s.cred - 3),
+        techHype: clamp(s.techHype + 8),
         hidden: { ...s.hidden, communityMemory: s.hidden.communityMemory + 0.1 },
         log: [log, ...s.log],
       };
@@ -917,14 +914,14 @@ export const ACTIONS: ActionDef[] = [
     description: "Wing it.",
     tags: ["+/-Trust", "+/-Unrest", "+/-Momentum"],
     apply: (s) => {
-      const success = Math.random() < s.cred / 120;
-      const log = success ? `Meeting went well. Leadership is confident.` : `Meeting was a disaster. Clips are circulating.`;
+      const success = Math.random() < (s.cred / 100); // Better odds based on trust
+      const log = success ? `Meeting went well. Leadership is confident.` : `Meeting was awkward. Some uncomfortable silences.`;
       return {
         ...s,
-        cred: clamp(s.cred + (success ? 12 : -18)),
-        rage: clamp(s.rage + (success ? -8 : 12)),
-        techHype: clamp(s.techHype + (success ? 10 : -4)),
-        hidden: { ...s.hidden, founderStability: s.hidden.founderStability - 0.1 },
+        cred: clamp(s.cred + (success ? 10 : -8)), // Reduced penalty from -18 to -8
+        rage: clamp(s.rage + (success ? -6 : 6)),   // Reduced penalty from 12 to 6
+        techHype: clamp(s.techHype + (success ? 8 : -2)),
+        hidden: { ...s.hidden, founderStability: s.hidden.founderStability - 0.05 },
         log: [log, ...s.log],
       };
     },
@@ -934,17 +931,16 @@ export const ACTIONS: ActionDef[] = [
     category: "Crew Relations",
     name: "Private Reassurance",
     description: "Quiet reassurances.",
-    tags: ["-Unrest", "+/-Trust", "+/-Momentum", "+Oversight?"],
+    tags: ["-Unrest", "+/-Trust"],
     apply: (s) => {
-      const leak = Math.random() < 0.25;
-      const log = leak ? `Reassurances leaked. Embarrassing.` : `Key personnel calmed down (for now).`;
+      const leak = Math.random() < 0.2;  // Reduced leak chance from 25% to 20%
+      const log = leak ? `Reassurances leaked. Uncomfortable.` : `Key personnel calmed down (for now).`;
       return {
         ...s,
-        rage: clamp(s.rage + (leak ? 20 : -10)),
-        oversightPressure: clamp(s.oversightPressure + (leak ? 10 : 0)),
-        cred: clamp(s.cred + (leak ? -6 : 5)),
-        techHype: clamp(s.techHype + (leak ? -2 : 8)),
-        hidden: { ...s.hidden, communityMemory: s.hidden.communityMemory + (leak ? 0.1 : 0) },
+        rage: clamp(s.rage + (leak ? 10 : -10)),  // Reduced from +20
+        oversightPressure: clamp(s.oversightPressure + (leak ? 5 : 0)),  // Reduced from +10
+        cred: clamp(s.cred + (leak ? -4 : 5)),  // Reduced from -6
+        techHype: clamp(s.techHype + (leak ? 0 : 6)),
         log: [log, ...s.log],
       };
     },
@@ -953,16 +949,17 @@ export const ACTIONS: ActionDef[] = [
     id: "recreation_event",
     category: "Crew Relations",
     name: "Recreation Event",
-    description: "Morale boost. Visibility cost.",
-    tags: ["+Momentum", "-Trust", "+Oversight", "-Stability"],
+    description: "Morale boost. Crew loves it.",
+    tags: ["+Momentum", "+Trust", "-Unrest", "+Oversight"],
+    defensive: true,
     apply: (s) => {
-      const log = `Recreation event held. Cameras were definitely on.`;
+      const log = `Recreation event held. Crew spirits lifted.`;
       return {
         ...s,
-        techHype: clamp(s.techHype + 6),
-        cred: clamp(s.cred - 10),
-        oversightPressure: clamp(s.oversightPressure + 15),
-        hidden: { ...s.hidden, founderStability: s.hidden.founderStability - 0.2 },
+        techHype: clamp(s.techHype + 5),
+        cred: clamp(s.cred + 5),      // Changed from -10 to +5
+        rage: clamp(s.rage - 8),       // Now reduces unrest
+        oversightPressure: clamp(s.oversightPressure + 3), // Reduced from 15 to 3
         log: [log, ...s.log],
       };
     },
@@ -989,18 +986,18 @@ export const ACTIONS: ActionDef[] = [
     id: "morale_event",
     category: "Crew Relations",
     name: "Launch Morale Event",
-    description: "Distraction celebration.",
-    tags: ["+Reserves", "-Unrest", "+Oversight", "-Trust", "+Momentum"],
+    description: "Organized celebration. Costs resources but builds morale.",
+    tags: ["-Reserves", "-Unrest", "+Trust", "+Momentum"],
+    defensive: true,
     apply: (s) => {
-      const inflow = 80;
-      const log = `Morale event launched. Excitement spreads.`;
+      const cost = Math.floor(s.colonyReserves * 0.02);  // Costs 2% of reserves
+      const log = `Morale event held. Crew spirits high, resources well spent.`;
       return {
         ...s,
-        colonyReserves: s.colonyReserves + inflow,
-        rage: clamp(s.rage - 10),
-        oversightPressure: clamp(s.oversightPressure + 10),
-        cred: clamp(s.cred - 5),
-        techHype: clamp(s.techHype + 15),
+        colonyReserves: Math.max(0, s.colonyReserves - cost),  // Now COSTS
+        rage: clamp(s.rage - 12),
+        cred: clamp(s.cred + 8),  // Now BUILDS trust (was -5)
+        techHype: clamp(s.techHype + 10),
         log: [log, ...s.log],
       };
     },
@@ -1010,17 +1007,17 @@ export const ACTIONS: ActionDef[] = [
     category: "Crew Relations",
     name: "Challenge Rival Commander",
     description: "Public dispute with rival leadership.",
-    tags: ["±Trust big swing", "++Unrest", "+Momentum"],
+    tags: ["±Trust", "+Unrest", "+Momentum"],
     apply: (s) => {
       const won = Math.random() < 0.5;
       const log = won
-        ? `You won the public dispute. Rival is humiliated.`
-        : `You lost the argument. The transcript circulates.`;
+        ? `You won the public dispute. Rival concedes.`
+        : `You lost the argument. Room gets awkward.`;
       return {
         ...s,
-        cred: clamp(s.cred + (won ? 15 : -20)),
-        rage: clamp(s.rage + 12),
-        techHype: clamp(s.techHype + 8),
+        cred: clamp(s.cred + (won ? 12 : -12)),  // Balanced: was +15/-20
+        rage: clamp(s.rage + 8),  // Reduced from +12
+        techHype: clamp(s.techHype + 6),
         log: [log, ...s.log],
       };
     },
@@ -1045,16 +1042,16 @@ export const ACTIONS: ActionDef[] = [
   {
     id: "influencer_visit",
     category: "Crew Relations",
-    name: "Host Influencer Visit",
-    description: "Their audience becomes yours.",
+    name: "Earth Media Partnership",
+    description: "Remote collaboration with Earth content creator.",
     tags: ["-Trust", "+Momentum", "+Unrest"],
     apply: (s) => {
-      const log = `Influencer visit complete. New followers, old crew furious.`;
+      const log = `Media partnership announced. New followers, crew questions priorities.`;
       return {
         ...s,
-        cred: clamp(s.cred - 12),
-        techHype: clamp(s.techHype + 15),
-        rage: clamp(s.rage + 8),
+        cred: clamp(s.cred - 8),
+        techHype: clamp(s.techHype + 12),
+        rage: clamp(s.rage + 6),
         log: [log, ...s.log],
       };
     },
@@ -1065,14 +1062,14 @@ export const ACTIONS: ActionDef[] = [
     name: "Documentary Interview",
     description: "The establishment media route.",
     tags: ["++Trust", "+Oversight", "-Unrest"],
+    defensive: true,
     apply: (s) => {
       const log = `Documentary interview aired. You almost sounded legitimate.`;
       return {
         ...s,
-        cred: clamp(s.cred + 18),
-        oversightPressure: clamp(s.oversightPressure + 8),
-        rage: clamp(s.rage - 10),
-        tokenPrice: s.tokenPrice * 1.03,
+        cred: clamp(s.cred + 15),
+        oversightPressure: clamp(s.oversightPressure + 6),
+        rage: clamp(s.rage - 8),
         log: [log, ...s.log],
       };
     },
@@ -1082,7 +1079,7 @@ export const ACTIONS: ActionDef[] = [
     category: "Crew Relations",
     name: "Podcast Interview",
     description: "Popular show. Host might mock you.",
-    tags: ["+Momentum", "-Unrest", "+Earth Confidence"],
+    tags: ["+Momentum", "-Unrest", "+/-Trust"],
     apply: (s) => {
       const mocked = Math.random() < 0.3;
       const log = mocked
@@ -1090,10 +1087,9 @@ export const ACTIONS: ActionDef[] = [
         : `Podcast went well. Credibility established.`;
       return {
         ...s,
-        techHype: clamp(s.techHype + (mocked ? -5 : 12)),
-        rage: clamp(s.rage + (mocked ? 10 : -8)),
-        cred: clamp(s.cred + (mocked ? -10 : 8)),
-        tokenPrice: s.tokenPrice * (mocked ? 0.97 : 1.05),
+        techHype: clamp(s.techHype + (mocked ? -4 : 10)),
+        rage: clamp(s.rage + (mocked ? 8 : -6)),
+        cred: clamp(s.cred + (mocked ? -8 : 6)),
         log: [log, ...s.log],
       };
     },
@@ -1144,9 +1140,10 @@ export function sampleActionsForTurn(state: GameState, rng: () => number): Actio
     return res;
   };
 
+  // More balanced: 1 Ambition (high-risk) instead of 2, 2 Command (medium-risk) instead of 1
   return [
-    ...pick(byCategory.Ambition, 2),
-    ...pick(byCategory.Command, 1),
+    ...pick(byCategory.Ambition, 1),
+    ...pick(byCategory.Command, 2),
     ...pick(byCategory.Communications, 1),
     ...pick(byCategory["Crisis Response"], 1),
     ...pick(byCategory["Crew Relations"], 1),

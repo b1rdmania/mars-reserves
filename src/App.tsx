@@ -48,7 +48,7 @@ const App: React.FC = () => {
   } | null>(null);
 
   const started = !!state;
-  const maxTurnsDisplay = state?.maxTurns ?? 20;
+  const maxTurnsDisplay = state?.maxTurns ?? 10;
 
   // Determine display name based on auth state
   const displayName = authenticated && profile?.commander_name

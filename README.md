@@ -1,73 +1,83 @@
-# React + TypeScript + Vite
+# Mars Extraction
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+> A public mission. A private legacy.
 
-Currently, two official plugins are available:
+**Mars Extraction** is a short-session strategy game about leading humanity's first permanent Mars colony. Every decision carries weight — and every run becomes part of a permanent historical record on the Movement blockchain.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🎮 Play Now
 
-## React Compiler
+**[mars-extraction.vercel.app](https://mars-extraction.vercel.app)**
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 🌌 The Game
 
-## Expanding the ESLint configuration
+You are the commander of Olympus Base. Your mission: guide the colony through 20 cycles while balancing survival against your own ambitions.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- **One resource, infinite pressure**: Colony Stockpile represents everything — energy, oxygen, materials
+- **Legacy is seductive**: Extract resources for personal glory, but the crew is watching
+- **Delayed consequences**: Bad decisions don't hurt immediately... until they do
+- **Permanent records**: Every completed mission can be recorded on-chain via Movement
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## 🏗️ Built With
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+- **Frontend**: React + Vite + TypeScript
+- **Auth**: Privy (email, social, or wallet login)
+- **Backend**: Supabase (profiles, runs, leaderboards)
+- **Blockchain**: Movement Network (Bardock Testnet)
+- **Gas Sponsorship**: Shinami Gas Station (free on-chain recording)
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## 🚀 Quick Start
+
+```bash
+# Install dependencies
+npm install
+
+# Copy environment variables
+cp .env.example .env
+
+# Start development server
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 📋 Environment Variables
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+| Variable | Description | Required |
+|----------|-------------|----------|
+| `VITE_PRIVY_APP_ID` | Privy application ID | Yes |
+| `VITE_SUPABASE_URL` | Supabase project URL | Yes |
+| `VITE_SUPABASE_ANON_KEY` | Supabase anon key | Yes |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase service key (API) | Yes |
+| `SHINAMI_API_KEY` | Shinami Gas Station key | For on-chain |
+| `MISSION_INDEX_ADDRESS` | Deployed contract address | For on-chain |
+| `ENABLE_ONCHAIN` | Enable blockchain recording | Optional |
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## 🎯 Design Philosophy
+
+This game is intentionally restrained:
+- **Fewer buttons** over more options
+- **Silence is allowed** — not every moment needs feedback  
+- **Danger should be felt** before it's explained
+- **History matters** more than optimisation
+
+Read the full [DESIGN.md](./DESIGN.md) for the complete design manifesto.
+
+## 📜 Smart Contract
+
+The `mission_index` Move contract records verified game runs on Movement:
+
+```move
+public entry fun record_mission(
+    run_hash: vector<u8>,
+    score: u64,
+    ending_id: vector<u8>,
+)
 ```
+
+All on-chain transactions are sponsored via Shinami — players never pay gas.
+
+## 🏆 Hackathon
+
+Built for **Movement Network Hackathon 2026**.
+
+---
+
+*A game about big mistakes in a small colony.*
