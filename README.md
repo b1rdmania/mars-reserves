@@ -2,67 +2,55 @@
 
 > A public mission. A private legacy.
 
-**Mars Extraction** is a short-session strategy game about leading humanity's first permanent Mars colony. Every decision carries weight — and every run becomes part of a permanent historical record on the Movement blockchain.
+**Mars Extraction** is a Web 2.5 strategy game built on Movement blockchain. Every decision you make — every compromise, every shortcut — is recorded permanently on-chain. Your choices don't just affect your score. They become data that shapes how the game evolves.
 
 ## 🎮 Play Now
 
 **[marsreserves.xyz](https://marsreserves.xyz)**
 
+---
+
+## ⛓️ Why Movement?
+
+Most blockchain games are either Unity ports with a wallet bolted on, or they're slow and clunky with endless transaction approvals.
+
+Mars Extraction is different:
+
+- **Fully abstracted**: Privy handles auth, Shinami sponsors gas — players never see a wallet prompt
+- **On-chain decisions**: Every completed run is recorded to Movement with a verifiable hash
+- **Speed matters**: Movement's performance makes real-time recording viable
+- **Data with purpose**: On-chain decision data will shape future game mechanics
+
+**Your choices become permanent. The archive is alive.**
+
+---
+
 ## 🌌 The Game
 
-You are the commander of Olympus Base. Your mission: guide the colony through 10 cycles while balancing survival against your own ambitions.
+You are the commander of Olympus Base. Guide the colony through 10 cycles while balancing survival against your own ambitions.
 
 - **One resource, infinite pressure**: Colony Stockpile represents everything — energy, oxygen, materials
 - **Legacy is seductive**: Extract resources for personal glory, but the crew is watching
 - **Delayed consequences**: Bad decisions don't hurt immediately... until they do
-- **Permanent records**: Every completed mission can be recorded on-chain via Movement
+- **30 unique endings**: From legendary triumph to catastrophic failure
+
+---
 
 ## 🏗️ Built With
 
-- **Frontend**: React + Vite + TypeScript
-- **Auth**: Privy (email, social, or wallet login)
-- **Backend**: Supabase (profiles, runs, leaderboards)
-- **Blockchain**: Movement Network (Bardock Testnet)
-- **Gas Sponsorship**: Shinami Gas Station (free on-chain recording)
+| Layer | Technology |
+|-------|------------|
+| **Frontend** | React + Vite + TypeScript |
+| **Auth** | Privy (wallet login, embedded wallets) |
+| **Backend** | Supabase (profiles, runs, leaderboards) |
+| **Blockchain** | Movement Network (Bardock Testnet) |
+| **Gas Sponsorship** | Shinami Gas Station |
 
-## 🚀 Quick Start
+---
 
-```bash
-# Install dependencies
-npm install
+## 📜 On-Chain Recording
 
-# Copy environment variables
-cp .env.example .env
-
-# Start development server
-npm run dev
-```
-
-## 📋 Environment Variables
-
-| Variable | Description | Required |
-|----------|-------------|----------|
-| `VITE_PRIVY_APP_ID` | Privy application ID | Yes |
-| `VITE_SUPABASE_URL` | Supabase project URL | Yes |
-| `VITE_SUPABASE_ANON_KEY` | Supabase anon key | Yes |
-| `SUPABASE_SERVICE_ROLE_KEY` | Supabase service key (API) | Yes |
-| `SHINAMI_API_KEY` | Shinami Gas Station key | For on-chain |
-| `MISSION_INDEX_ADDRESS` | Deployed contract address | For on-chain |
-| `ENABLE_ONCHAIN` | Enable blockchain recording | Optional |
-
-## 🎯 Design Philosophy
-
-This game is intentionally restrained:
-- **Fewer buttons** over more options
-- **Silence is allowed** — not every moment needs feedback  
-- **Danger should be felt** before it's explained
-- **History matters** more than optimisation
-
-Read the full [DESIGN.md](./DESIGN.md) for the complete design manifesto.
-
-## 📜 Smart Contract
-
-The `mission_index` Move contract records verified game runs on Movement:
+The `mission_index` Move contract records verified game runs:
 
 ```move
 public entry fun record_mission(
@@ -72,11 +60,37 @@ public entry fun record_mission(
 )
 ```
 
-All on-chain transactions are sponsored via Shinami — players never pay gas.
+Each run is verified server-side before recording. All transactions are sponsored — **players never pay gas**.
 
-## 🏆 Hackathon
+---
 
-Built for **Movement Network Hackathon 2026**.
+## 🚀 Quick Start
+
+```bash
+npm install
+cp .env.example .env
+npm run dev
+```
+
+## 📋 Environment Variables
+
+| Variable | Description |
+|----------|-------------|
+| `VITE_PRIVY_APP_ID` | Privy application ID |
+| `VITE_SUPABASE_URL` | Supabase project URL |
+| `VITE_SUPABASE_ANON_KEY` | Supabase anon key |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase service key |
+| `SHINAMI_API_KEY` | Shinami Gas Station key |
+| `MISSION_INDEX_ADDRESS` | Deployed contract address |
+
+---
+
+## 🏆 Movement Hackathon 2026
+
+Built for the Movement Network Hackathon. Categories:
+- **Best Gaming App on Movement**
+- **Best App Using Privy Wallets**
+- **The People's Choice**
 
 ---
 
