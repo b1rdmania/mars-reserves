@@ -151,7 +151,7 @@ export const ArchivePanel: React.FC = () => {
                                         {formatScore(notableRecord.score)}
                                     </div>
                                     <a
-                                        href={`https://explorer.movementnetwork.xyz/tx/${notableRecord.on_chain_tx}?network=bardock+testnet`}
+                                        href={`https://explorer.movementnetwork.xyz/txn/${notableRecord.on_chain_tx}?network=bardock+testnet`}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="text-[8px] text-[#0891b2] hover:text-[#06b6d4] uppercase tracking-wide"
@@ -184,7 +184,7 @@ export const ArchivePanel: React.FC = () => {
                                             {formatScore(entry.score)}
                                         </div>
                                         <a
-                                            href={`https://explorer.movementnetwork.xyz/tx/${entry.on_chain_tx}?network=bardock+testnet`}
+                                            href={`https://explorer.movementnetwork.xyz/txn/${entry.on_chain_tx}?network=bardock+testnet`}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             className="text-[8px] text-[#0891b2]"

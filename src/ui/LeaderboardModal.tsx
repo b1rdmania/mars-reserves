@@ -127,7 +127,7 @@ export const LeaderboardModal: React.FC<LeaderboardModalProps> = ({ open, onClos
                                         <div className="text-sm font-semibold text-[#16a34a] font-mono">{formatScore(entry.score)}</div>
                                         {entry.on_chain_tx && (
                                             <a
-                                                href={`https://explorer.movementnetwork.xyz/tx/${entry.on_chain_tx}?network=bardock+testnet`}
+                                                href={`https://explorer.movementnetwork.xyz/txn/${entry.on_chain_tx}?network=bardock+testnet`}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
                                                 className="text-[8px] text-[#0891b2] hover:text-[#06b6d4] uppercase tracking-wide"

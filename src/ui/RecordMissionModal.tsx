@@ -139,7 +139,7 @@ export const RecordMissionModal: React.FC<RecordMissionModalProps> = ({
                         </div>
                         {txHash && (
                             <a
-                                href={`https://explorer.movementnetwork.xyz/tx/${txHash}?network=bardock+testnet`}
+                                href={`https://explorer.movementnetwork.xyz/txn/${txHash}?network=bardock+testnet`}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="block w-full py-3 px-4 bg-[#0891b2] hover:bg-[#0e7490] text-center text-sm text-white font-semibold uppercase tracking-wide"

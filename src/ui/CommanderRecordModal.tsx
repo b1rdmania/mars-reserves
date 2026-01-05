@@ -143,7 +143,7 @@ export const CommanderRecordModal: React.FC<Props> = ({
                                         </span>
                                         {run.on_chain_tx && (
                                             <a
-                                                href={`https://explorer.movementnetwork.xyz/tx/${run.on_chain_tx}?network=bardock+testnet`}
+                                                href={`https://explorer.movementnetwork.xyz/txn/${run.on_chain_tx}?network=bardock+testnet`}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
                                                 className="text-[8px] text-[#0891b2] hover:text-[#38bdf8] uppercase"
