@@ -38,7 +38,11 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onStart }) => {
 
     useEffect(() => {
         window.addEventListener("keydown", handleKeyDown);
-        return () => window.removeEventListener("keydown", handleKeyDown);
+        return () => {
+            window.removeEventListener("keydown", handleKeyDown);
+            // Also stop ambient music on unmount as backup
+            stopMarsAmbient();
+        };
     }, [handleKeyDown]);
 
     return (
