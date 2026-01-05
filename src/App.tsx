@@ -50,6 +50,9 @@ const App: React.FC = () => {
   const started = !!state;
   const maxTurnsDisplay = state?.maxTurns ?? 10;
 
+  // Get music controls (must be at top with other hooks)
+  const { startMusic, stopMusic } = useMusic();
+
   // Determine display name based on auth state
   const displayName = authenticated && profile?.commander_name
     ? profile.commander_name
@@ -172,6 +175,7 @@ const App: React.FC = () => {
       // Check for game over
       if (after.gameOver && !before.gameOver) {
         setTimeout(() => playSound("gameover"), 100);
+        stopMusic(); // Stop game music on game over
       }
 
       return after;
@@ -180,6 +184,7 @@ const App: React.FC = () => {
 
   const handleStart = () => {
     playSound("click");
+    startMusic(); // Start game music when actually playing
     const base = initialState({
       chainName: "Olympus Base",
       founderName: displayName || "Commander",
@@ -255,10 +260,7 @@ const App: React.FC = () => {
     });
   };
 
-  // Get music controls
-  const { startMusic, stopMusic } = useMusic();
 
-  // Handle back to home (stops music, returns to splash)
   const handleBackToHome = () => {
     playSound("click");
     stopMusic();
@@ -269,7 +271,7 @@ const App: React.FC = () => {
   // Splash screen
   if (showSplash) {
     return <SplashScreen onStart={() => {
-      startMusic();
+      // Don't start game music here - it starts when actually playing
       setShowSplash(false);
     }} />;
   }
