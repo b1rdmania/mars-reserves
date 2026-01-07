@@ -537,24 +537,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                     console.error('Shinami sponsorship failed:', result.error);
                 }
             } catch (err) {
-                console.error('On-chain submission blocked (likely testnet downtime):', err);
-
-                // FALLBACK SIMULATION FOR DEMO/VIDEO
-                // If the testnet is down/reset, we still want to show the UI flow
-                console.log('[OnChain] Enabling demo simulation mode');
-                txHash = '0x' + createHash('sha256').update(runHash + Date.now().toString()).digest('hex');
-                onChainStatus = 'submitted';
-                explorerUrl = `https://explorer.movementnetwork.xyz/txn/${txHash}?network=bardock+testnet`;
-                onChainError = 'Simulated (Network Unavailable)';
+                onChainStatus = 'error';
+                onChainError = err instanceof Error ? err.message : String(err);
+                console.error('On-chain submission error:', err);
             }
         } else if (onChainEnabled) {
             console.warn('On-chain enabled but missing config:', { missionIndexAddress: !!missionIndexAddress, shinamiApiKey: !!shinamiApiKey });
-
-            // Sim fallback also for missing config
-            console.log('[OnChain] Enabling demo simulation mode (missing config)');
-            txHash = '0x' + createHash('sha256').update(runHash + Date.now().toString()).digest('hex');
-            onChainStatus = 'submitted';
-            explorerUrl = `https://explorer.movementnetwork.xyz/txn/${txHash}?network=bardock+testnet`;
         }
 
         // Always return stable response structure
