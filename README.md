@@ -31,6 +31,19 @@ Mars Extraction leverages the speed and security of the **Movement Network (Bard
 
 ---
 
+## 🎵 Bonus: Wario Synth Sound Engine
+
+As part of this hackathon, I also built **[Wario Synth](https://www.wario.style/)** — a browser-based MIDI-to-Web Audio synthesizer that powers the game's background music. While not directly submitted as part of the Mars Extraction project, it was created during this hackathon to solve the challenge of dynamic, retro-styled game audio.
+
+![Wario Synth Screenshot](./public/wario-synth-screenshot.png)
+
+- **Live Demo**: [wario.style](https://www.wario.style/)
+- **Source Code**: [github.com/b1rdmania/motif](https://github.com/b1rdmania/motif)
+
+The engine converts MIDI files into Web Audio API oscillators, creating a nostalgic, Game Boy-inspired soundscape perfect for Mars Extraction's terminal aesthetic.
+
+---
+
 ## 🛠️ Technical Stack
 
 - **Frontend**: React + Vite + TypeScript
