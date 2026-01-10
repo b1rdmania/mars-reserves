@@ -7,8 +7,8 @@ export const MusicPlayer: React.FC = () => {
     return (
         <div className="flex items-center gap-2">
             {/* Track label */}
-            <span className="text-[8px] uppercase tracking-[0.08em] text-[#4a5565] hidden sm:inline">
-                Music
+            <span className="text-[8px] uppercase tracking-[0.12em] text-[#8b95a5] hidden sm:inline">
+                MUSIC
             </span>
 
             {/* Track selector buttons */}
@@ -20,8 +20,8 @@ export const MusicPlayer: React.FC = () => {
                         className={`
               w-5 h-5 text-[10px] font-mono border transition-colors
               ${currentTrack?.id === track.id
-                                ? 'bg-[#0891b2] border-[#0891b2] text-white'
-                                : 'bg-[#0d0f13] border-[#1a1f28] text-[#5a6475] hover:border-[#2d3544] hover:text-[#8b95a5]'
+                                ? 'bg-[#06b6d4] border-[#06b6d4] text-white shadow-[0_0_8px_rgba(6,182,212,0.4)]'
+                                : 'bg-[#111827] border-[#1f2937] text-[#9ca3af] hover:border-[#374151] hover:text-white'
                             }
             `}
                         title={track.name}
@@ -37,8 +37,8 @@ export const MusicPlayer: React.FC = () => {
                 className={`
           px-1.5 py-0.5 text-xs border transition-colors
           ${isMuted
-                        ? 'bg-[#dc2626] border-[#dc2626] text-white'
-                        : 'bg-[#0d0f13] border-[#1a1f28] text-[#5a6475] hover:border-[#2d3544] hover:text-[#8b95a5]'
+                        ? 'bg-[#ef4444] border-[#ef4444] text-white shadow-[0_0_8px_rgba(239,68,68,0.4)]'
+                        : 'bg-[#111827] border-[#1f2937] text-[#9ca3af] hover:border-[#374151] hover:text-white'
                     }
         `}
                 title={isMuted ? 'Unmute' : 'Mute'}

@@ -60,14 +60,20 @@ export const CommanderPanel: React.FC<Props> = ({ className = '' }) => {
                 </div>
 
                 {/* View Record Button */}
-                {missionsCount > 0 && (
-                    <button
-                        onClick={() => setShowRecordModal(true)}
-                        className="mt-2 text-[8px] text-[#4a5565] hover:text-[#0891b2] uppercase tracking-[0.1em] transition-colors"
-                    >
-                        [ VIEW RECORD ]
-                    </button>
-                )}
+                <div className="mt-3 flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-1.5 opacity-50 grayscale hover:grayscale-0 hover:opacity-100 transition-all">
+                        <span className="text-[7px] uppercase tracking-tighter text-[#4a5565]">Powered by</span>
+                        <img src="/Privy_Wordmark_White.svg" alt="Privy" className="h-2.5 w-auto" />
+                    </div>
+                    {missionsCount > 0 && (
+                        <button
+                            onClick={() => setShowRecordModal(true)}
+                            className="text-[8px] text-[#5a6475] hover:text-[#06b6d4] uppercase tracking-[0.1em] transition-colors"
+                        >
+                            [ VIEW RECORD ]
+                        </button>
+                    )}
+                </div>
             </div>
 
             <CommanderRecordModal

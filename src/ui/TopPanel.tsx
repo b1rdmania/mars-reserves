@@ -91,7 +91,6 @@ export const TopPanel: React.FC<Props> = ({ state, maxTurns, showDescription = t
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-lg sm:text-xl font-semibold tracking-wide uppercase">{THEME.gameName}</h1>
-            <span className="text-[8px] uppercase tracking-[0.12em] border border-[#2d3544] text-[#5a6475] px-2 py-0.5">BETA</span>
           </div>
           {/* Commander Name */}
           <div className="flex items-center gap-2 mt-1">
