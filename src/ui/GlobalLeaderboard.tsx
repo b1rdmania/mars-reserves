@@ -41,9 +41,9 @@ export const GlobalLeaderboard: React.FC<Props> = ({ onBack }) => {
                 <div className="lg:w-80 shrink-0 space-y-4">
                     <button
                         onClick={onBack}
-                        className="text-[10px] uppercase tracking-widest text-[#5a6475] hover:text-[#0891b2] mb-4 flex items-center gap-2 transition-colors"
+                        className="text-[10px] uppercase tracking-[0.2em] text-[#5a6475] hover:text-[#0891b2] mb-4 flex items-center gap-2 transition-colors font-bold"
                     >
-                        ← Return to Command
+                        ← CLOSE ARCHIVE
                     </button>
 
                     <div className="terminal-frame p-4 space-y-4">

@@ -271,6 +271,11 @@ const App: React.FC = () => {
     setShowSplash(false);
   };
 
+  // Global Archive View (Special Judge Trace)
+  if (showGlobalArchive) {
+    return <GlobalLeaderboard onBack={() => setShowGlobalArchive(false)} />;
+  }
+
   // Splash screen
   if (showSplash) {
     return <SplashScreen onStart={() => {
@@ -310,18 +315,18 @@ const App: React.FC = () => {
           <ArchivePanel />
 
           {/* Navigation & Info */}
-          <div className="space-y-2 mb-4">
+          <div className="space-y-3 mb-6">
             <button
               onClick={() => setShowHowToPlay(true)}
-              className="w-full py-2 px-4 bg-emerald-500/5 hover:bg-emerald-500/10 text-emerald-500/70 hover:text-emerald-500 font-medium border border-emerald-500/20 hover:border-emerald-500/40 text-xs transition-colors"
+              className="w-full py-2.5 px-4 bg-emerald-500/5 hover:bg-emerald-500/10 text-emerald-500/70 hover:text-emerald-500 font-bold border border-emerald-500/20 hover:border-emerald-500/40 text-[9px] uppercase tracking-[0.2em] transition-colors"
             >
-              ? How To Play?
+              ? HOW TO PLAY ?
             </button>
             <button
               onClick={() => setShowGlobalArchive(true)}
-              className="w-full py-1.5 px-4 bg-[#0d0f13] hover:bg-[#12151c] text-[#4a5565] hover:text-[#0891b2] font-medium border border-[#1a1f28] text-[9px] uppercase tracking-[0.2em] transition-all"
+              className="w-full py-2.5 px-4 bg-[#0d0f13] hover:bg-[#12151c] text-[#4a5565] hover:text-[#0891b2] font-medium border border-[#1a1f28] text-[9px] uppercase tracking-[0.2em] transition-all"
             >
-              [ Open Global Archive ]
+              [ OPEN GLOBAL ARCHIVE ]
             </button>
           </div>
 
@@ -331,9 +336,9 @@ const App: React.FC = () => {
             <div className="border border-[#1a1f28] bg-[#0a0c10] p-3">
               <button
                 onClick={handleStart}
-                className="w-full py-3 px-4 bg-[#0891b2] hover:bg-[#0e7490] text-white font-medium uppercase tracking-wider text-sm"
+                className="w-full py-3 px-4 bg-[#0891b2] hover:bg-[#0e7490] text-white font-bold uppercase tracking-[0.2em] text-xs transition-colors"
               >
-                Play as Guest
+                PLAY AS GUEST
               </button>
             </div>
 
@@ -342,11 +347,11 @@ const App: React.FC = () => {
               <button
                 onClick={handleSignInAndStart}
                 disabled={!ready}
-                className="w-full py-3 px-4 bg-[#0d0f13] hover:bg-[#12151c] text-[#c8cdd5] font-medium uppercase tracking-wider text-sm border border-[#1a1f28] disabled:opacity-50"
+                className="w-full py-3 px-4 bg-[#0d0f13] hover:bg-[#12151c] text-[#c8cdd5] font-bold uppercase tracking-[0.2em] text-xs border border-[#1a1f28] disabled:opacity-50 transition-colors"
               >
-                {authenticated ? 'Continue as Commander' : 'Sign In with Privy'}
+                {authenticated ? 'CONTINUE AS COMMANDER' : 'SIGN IN WITH PRIVY'}
               </button>
-              <div className="mt-2 flex items-center justify-center gap-3 text-[9px] text-[#4a5565]">
+              <div className="mt-2 flex items-center justify-center gap-3 text-[9px] text-[#4a5565] uppercase tracking-wider font-medium">
                 <span>• Secure Privy Login</span>
                 <span>• Persistent Career</span>
               </div>
@@ -375,11 +380,6 @@ const App: React.FC = () => {
         <Footer />
       </div>
     );
-  }
-
-  // Global Archive View
-  if (showGlobalArchive) {
-    return <GlobalLeaderboard onBack={() => setShowGlobalArchive(false)} />;
   }
 
   // Main game

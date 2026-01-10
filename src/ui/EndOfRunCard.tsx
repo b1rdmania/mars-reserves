@@ -53,18 +53,18 @@ export const EndOfRunCard: React.FC<Props> = ({ state, onRestart, onBackToHome, 
           {/* SECTION 3: RECORD MISSION */}
           <button
             onClick={() => setShowRecordModal(true)}
-            className="w-full py-3 px-4 bg-[#16a34a] hover:bg-[#15803d] text-white font-medium uppercase tracking-wider text-sm"
+            className="w-full py-3 px-4 bg-[#16a34a] hover:bg-[#15803d] text-white font-bold uppercase tracking-[0.2em] text-xs transition-colors"
           >
-            Record Mission
-            <span className="block text-[9px] font-normal text-[#16a34a]/50 mt-0.5 tracking-normal normal-case">Permanent. Verified.</span>
+            RECORD MISSION
+            <span className="block text-[8px] font-normal text-[#16a34a]/30 mt-0.5 tracking-widest uppercase">Permanent • Verified</span>
           </button>
 
           {/* SECTION 4: TRY AGAIN */}
           <button
             onClick={onRestart}
-            className="mt-4 text-[11px] text-[#4a5565] hover:text-[#5a6475] uppercase tracking-wide"
+            className="mt-6 text-[10px] text-[#4a5565] hover:text-[#5a6475] font-bold uppercase tracking-[0.2em] transition-colors"
           >
-            New Mission
+            [ REPLAY INITIAL_MISSION ]
           </button>
 
         </div>
