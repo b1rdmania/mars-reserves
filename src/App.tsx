@@ -23,6 +23,7 @@ import { GuestBanner } from "./ui/GuestBanner";
 import { CommanderNameModal } from "./ui/CommanderNameModal";
 import { useGameSession } from "./hooks/useGameSession";
 import { useMusic } from "./hooks/useMusic";
+import { Footer } from "./ui/Footer";
 
 const App: React.FC = () => {
   const [seed, setSeed] = useState(() => Math.floor(Math.random() * 1e9));
@@ -324,10 +325,6 @@ const App: React.FC = () => {
               >
                 Play as Guest
               </button>
-              <div className="mt-2 flex items-center justify-center gap-3 text-[9px] text-[#4a5565]">
-                <span>• Anonymous</span>
-                <span>• No saved history</span>
-              </div>
             </div>
 
             {/* Sign In with Privy - Secondary */}
@@ -340,8 +337,8 @@ const App: React.FC = () => {
                 {authenticated ? 'Continue as Commander' : 'Sign In with Privy'}
               </button>
               <div className="mt-2 flex items-center justify-center gap-3 text-[9px] text-[#4a5565]">
-                <span>• Named commander</span>
-                <span>• Career recorded</span>
+                <span>• Secure Privy Login</span>
+                <span>• Persistent Career</span>
               </div>
             </div>
           </div>
@@ -365,6 +362,7 @@ const App: React.FC = () => {
             }}
           />
         </div>
+        <Footer />
       </div>
     );
   }
@@ -428,6 +426,7 @@ const App: React.FC = () => {
         {/* Leaderboard Modal */}
         <LeaderboardModal open={showLeaderboard} onClose={() => setShowLeaderboard(false)} />
       </div>
+      <Footer className="max-w-2xl mx-auto w-full px-4" />
     </div>
   );
 };
