@@ -309,7 +309,7 @@ const App: React.FC = () => {
           {/* Briefing Button */}
           <button
             onClick={() => setShowHowToPlay(true)}
-            className="w-full py-2 px-4 bg-[#0a0c10] hover:bg-[#12151c] text-[#5a6475] font-medium border border-[#1a1f28] text-xs"
+            className="w-full py-2 px-4 bg-emerald-500/5 hover:bg-emerald-500/10 text-emerald-500/70 hover:text-emerald-500 font-medium border border-emerald-500/20 hover:border-emerald-500/40 text-xs transition-colors"
           >
             ? How To Play?
           </button>
