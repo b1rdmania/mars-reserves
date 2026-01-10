@@ -376,7 +376,9 @@ const App: React.FC = () => {
         {/* Guest Banner */}
         {isGuest && <GuestBanner className="mb-4" />}
 
-        <TopPanel state={state} maxTurns={state.maxTurns} showDescription={false} />
+        <TopPanel state={state} maxTurns={state.maxTurns} showDescription={false} onTitleClick={handleBackToHome} />
+
+        <LogSection log={state?.log ?? []} />
 
         {/* Actions */}
         <div className={`${state?.pendingCrisis ? "opacity-50 pointer-events-none" : ""}`}>
@@ -385,8 +387,6 @@ const App: React.FC = () => {
           </div>
           {state && <ActionPanel state={state} onSelect={handleAction} disabled={!!state.pendingCrisis} />}
         </div>
-
-        <LogSection log={state?.log ?? []} />
 
         {/* Modals */}
         {state && <CrisisModal crisis={state.pendingCrisis ?? null} onResolve={handleResolveCrisis} />}

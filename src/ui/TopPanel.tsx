@@ -12,6 +12,7 @@ interface Props {
   state: GameState;
   maxTurns: number;
   showDescription?: boolean;
+  onTitleClick?: () => void;
 }
 
 // Meter type mapping for CSS classes and symbols
@@ -73,7 +74,7 @@ const MeterBar: React.FC<{
   );
 };
 
-export const TopPanel: React.FC<Props> = ({ state, maxTurns, showDescription = true }) => {
+export const TopPanel: React.FC<Props> = ({ state, maxTurns, showDescription = true, onTitleClick }) => {
   const { colonyReserves, legacy, rage, oversightPressure, cred, techHype } = state;
   const { authenticated } = usePrivy();
   const { profile } = useGameSession();
@@ -90,7 +91,12 @@ export const TopPanel: React.FC<Props> = ({ state, maxTurns, showDescription = t
       <div className="flex items-start justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-lg sm:text-xl font-semibold tracking-wide uppercase">{THEME.gameName}</h1>
+            <h1
+              className="text-lg sm:text-xl font-semibold tracking-wide uppercase cursor-pointer hover:text-[#0891b2] transition-colors"
+              onClick={onTitleClick}
+            >
+              {THEME.gameName}
+            </h1>
           </div>
           {/* Commander Name */}
           <div className="flex items-center gap-2 mt-1">
