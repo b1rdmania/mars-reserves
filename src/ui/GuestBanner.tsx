@@ -17,7 +17,7 @@ export const GuestBanner: React.FC<Props> = ({ className = '' }) => {
     };
 
     return (
-        <div className={`bg-[#0a0c10] border border-[#1a1f28] px-3 py-2 flex items-center justify-between ${className}`}>
+        <div className={`hidden md:flex bg-[#0a0c10] border border-[#1a1f28] px-3 py-2 items-center justify-between ${className}`}>
             <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2 opacity-80">
                     <span className="text-[8px] uppercase tracking-tighter text-[#707d91]">Protected by</span>
