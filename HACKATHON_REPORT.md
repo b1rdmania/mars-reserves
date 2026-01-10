@@ -11,6 +11,8 @@
 ### 1. The Core Experience
 - **Rebalanced Game Loop:** 49 unique actions meticulously tuned for fairness and tension.
 - **Cinematic Endings:** 5 distinct procedural outcomes based on resource management and trust metrics.
+- **Movement Integration**: Custom Movement logo implementation with pulsing animations on the splash screen.
+- **Privy Authentication**: Secure, gasless login and account management, branded with "Powered by Privy" lockups across the guest and commander interfaces.
 - **Dynamic Action Sampling:** Smart category-based sampling (Ambition, Command, Response, Relations) ensures every run is a strategic puzzle.
 
 ### 2. Infrastructure & Auth
@@ -23,6 +25,13 @@
 - **Custom Aesthetic:** Premium dark-mode UI with Mars-thematic glassmorphism.
 - **Social Tags:** Fully optimized OG tags and Twitter Cards for viral sharing.
 - **Mobile Responsive:** Optimized for both desktop command centers and mobile field reports.
+
+### 6. Branding & UX Polish
+- **Movement Logo**: Integrated the Movement brand identity into the landing sequence for ecosystem alignment.
+- **Privy Branding**: Placed "Powered by Privy" badges in high-visibility areas (Guest Banner, Footer) and integrated a subtle Privy symbol in the commander UI to reinforce the security of the auth layer.
+- **Visual Feedback**: Added pulsing animations and transition states for brand elements to ensure a premium feel.
+
+Status: [READY FOR SUBMISSION]
 
 ---
 

@@ -99,7 +99,10 @@ export const TopPanel: React.FC<Props> = ({ state, maxTurns, showDescription = t
               {displayName}
             </span>
             {authenticated && (
-              <div className="h-1 w-1 bg-[#16a34a]" title="Online" />
+              <div className="flex items-center gap-1.5 ml-1">
+                <img src="/Privy_Symbol_White.svg" alt="" className="h-3 w-3 opacity-60" />
+                <div className="h-1 w-1 bg-[#16a34a]" title="Online" />
+              </div>
             )}
           </div>
           {showDescription && (
