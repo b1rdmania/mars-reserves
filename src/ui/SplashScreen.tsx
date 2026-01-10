@@ -73,11 +73,11 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onStart }) => {
                 {/* Footer */}
                 <div className="splash-footer flex flex-col items-center gap-4">
                     <div className="flex items-center gap-2 opacity-80 hover:opacity-100 transition-opacity">
-                        <span className="text-[10px] uppercase tracking-widest text-[#5a6475]">Recorded on</span>
+                        <span className="text-[10px] uppercase tracking-widest text-[#707d91]">Recorded on</span>
                         <img src="/Movement_idDEfxpCuG_1.svg" alt="Movement" className="h-4 w-auto" />
                     </div>
                     <div className="flex items-center gap-2 opacity-80 hover:opacity-100 transition-opacity">
-                        <span className="text-[10px] uppercase tracking-widest text-[#5a6475]">Powered by</span>
+                        <span className="text-[10px] uppercase tracking-widest text-[#707d91]">Powered by</span>
                         <img src="/Privy_Wordmark_White.svg" alt="Privy" className="h-4 w-auto" />
                     </div>
                 </div>

@@ -59,13 +59,13 @@ export const CommanderRecordModal: React.FC<Props> = ({
             >
                 {/* Header */}
                 <div className="text-center mb-5">
-                    <div className="text-[10px] uppercase tracking-[0.15em] text-[#4a5565] mb-2">
+                    <div className="text-[10px] uppercase tracking-[0.15em] text-[#64748b] mb-2">
                         Commander Record
                     </div>
                     <h2 className="text-lg font-semibold uppercase tracking-wide text-[#c8cdd5]">
                         {commanderName}
                     </h2>
-                    <div className="text-[10px] font-mono text-[#4a5565]">
+                    <div className="text-[10px] font-mono text-[#64748b]">
                         {commanderId}
                     </div>
                 </div>
@@ -74,7 +74,7 @@ export const CommanderRecordModal: React.FC<Props> = ({
                 <div className="border border-[#1a1f28] bg-[#0a0c10] p-3 mb-4">
                     <div className="grid grid-cols-3 gap-3 text-center">
                         <div>
-                            <div className="text-[8px] uppercase tracking-[0.1em] text-[#4a5565] mb-1">
+                            <div className="text-[8px] uppercase tracking-[0.1em] text-[#64748b] mb-1">
                                 Missions
                             </div>
                             <div className="text-lg font-semibold text-[#16a34a]">
@@ -82,7 +82,7 @@ export const CommanderRecordModal: React.FC<Props> = ({
                             </div>
                         </div>
                         <div>
-                            <div className="text-[8px] uppercase tracking-[0.1em] text-[#4a5565] mb-1">
+                            <div className="text-[8px] uppercase tracking-[0.1em] text-[#64748b] mb-1">
                                 Best Legacy
                             </div>
                             <div className="text-lg font-semibold text-[#0891b2] font-mono">
@@ -90,10 +90,10 @@ export const CommanderRecordModal: React.FC<Props> = ({
                             </div>
                         </div>
                         <div>
-                            <div className="text-[8px] uppercase tracking-[0.1em] text-[#4a5565] mb-1">
+                            <div className="text-[8px] uppercase tracking-[0.1em] text-[#64748b] mb-1">
                                 Last Result
                             </div>
-                            <div className="text-sm font-semibold text-[#8b95a5]">
+                            <div className="text-sm font-semibold text-[#94a3b8]">
                                 {lastEnding ? getEndingDisplay(lastEnding) : '—'}
                             </div>
                         </div>
@@ -103,14 +103,14 @@ export const CommanderRecordModal: React.FC<Props> = ({
                 {/* Archetype */}
                 {archetype && (
                     <div className="border-l-2 border-l-[#0891b2] bg-[#0a0c10] p-3 mb-4">
-                        <div className="text-[9px] uppercase tracking-[0.12em] text-[#4a5565] mb-1">
+                        <div className="text-[9px] uppercase tracking-[0.12em] text-[#64748b] mb-1">
                             Archetype
                         </div>
                         <div className="text-sm font-semibold text-[#0891b2] uppercase tracking-wide mb-1">
                             {archetype.replace(/_/g, ' ')}
                         </div>
                         {archetypeBlurb && (
-                            <p className="text-[10px] text-[#5a6475] leading-relaxed">
+                            <p className="text-[10px] text-[#707d91] leading-relaxed">
                                 {archetypeBlurb}
                             </p>
                         )}
@@ -120,7 +120,7 @@ export const CommanderRecordModal: React.FC<Props> = ({
                 {/* Recent Runs */}
                 {runs.length > 0 && (
                     <div className="mb-4">
-                        <div className="text-[9px] uppercase tracking-[0.12em] text-[#4a5565] mb-2">
+                        <div className="text-[9px] uppercase tracking-[0.12em] text-[#64748b] mb-2">
                             Recent Missions
                         </div>
                         <div className="space-y-1">
@@ -130,7 +130,7 @@ export const CommanderRecordModal: React.FC<Props> = ({
                                     className="flex items-center justify-between bg-[#0a0c10] border border-[#1a1f28] p-2"
                                 >
                                     <div className="flex items-center gap-3">
-                                        <span className="text-[10px] font-semibold text-[#8b95a5] uppercase">
+                                        <span className="text-[10px] font-semibold text-[#94a3b8] uppercase">
                                             {getEndingDisplay(run.ending_id)}
                                         </span>
                                         <span className="text-[10px] text-[#16a34a] font-mono">
@@ -138,7 +138,7 @@ export const CommanderRecordModal: React.FC<Props> = ({
                                         </span>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <span className="text-[8px] text-[#4a5565]">
+                                        <span className="text-[8px] text-[#64748b]">
                                             {formatDate(run.created_at)}
                                         </span>
                                         {run.on_chain_tx && (
@@ -161,7 +161,7 @@ export const CommanderRecordModal: React.FC<Props> = ({
                 {/* Close Button */}
                 <button
                     onClick={onClose}
-                    className="w-full py-2.5 px-4 bg-[#0d0f13] hover:bg-[#12151c] text-[#8b95a5] font-medium border border-[#1a1f28] text-sm"
+                    className="w-full py-2.5 px-4 bg-[#0d0f13] hover:bg-[#12151c] text-[#94a3b8] font-medium border border-[#1a1f28] text-sm"
                 >
                     Close
                 </button>

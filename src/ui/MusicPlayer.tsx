@@ -8,7 +8,7 @@ export const MusicPlayer: React.FC = () => {
         <div className="flex flex-col items-end gap-1">
             <div className="flex items-center gap-2">
                 {/* Track label */}
-                <span className="text-[8px] uppercase tracking-[0.12em] text-[#8b95a5] hidden sm:inline">
+                <span className="text-[8px] uppercase tracking-[0.12em] text-[#94a3b8] hidden sm:inline">
                     MUSIC
                 </span>
 
@@ -51,7 +51,7 @@ export const MusicPlayer: React.FC = () => {
                 href="https://wario.style"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-[8px] uppercase tracking-[0.15em] text-[#4a5565] hover:text-[#06b6d4] transition-colors"
+                className="text-[8px] uppercase tracking-[0.15em] text-[#64748b] hover:text-[#06b6d4] transition-colors"
             >
                 created with wario.style
             </a>

@@ -14,7 +14,7 @@ export const CommanderPanel: React.FC<Props> = ({ className = '' }) => {
     if (profileLoading) {
         return (
             <div className={`bg-[#0a0c10] border border-[#1a1f28] p-2 ${className}`}>
-                <div className="text-[9px] text-[#4a5565] uppercase tracking-wide animate-pulse">
+                <div className="text-[9px] text-[#64748b] uppercase tracking-wide animate-pulse">
                     Loading...
                 </div>
             </div>
@@ -39,12 +39,12 @@ export const CommanderPanel: React.FC<Props> = ({ className = '' }) => {
                 </div>
 
                 {/* Commander ID */}
-                <div className="text-[8px] font-mono text-[#4a5565] mb-2">
+                <div className="text-[8px] font-mono text-[#64748b] mb-2">
                     {commanderId}
                 </div>
 
                 {/* Stats */}
-                <div className="text-[9px] text-[#5a6475] space-y-0.5">
+                <div className="text-[9px] text-[#707d91] space-y-0.5">
                     <div>
                         <span className="text-[#16a34a]">{missionsCount}</span> MISSIONS
                         {bestScore > 0 && (
@@ -62,13 +62,13 @@ export const CommanderPanel: React.FC<Props> = ({ className = '' }) => {
                 {/* View Record Button */}
                 <div className="mt-3 flex items-center justify-between gap-4">
                     <div className="flex items-center gap-1.5 opacity-50 grayscale hover:grayscale-0 hover:opacity-100 transition-all">
-                        <span className="text-[7px] uppercase tracking-tighter text-[#4a5565]">Powered by</span>
+                        <span className="text-[7px] uppercase tracking-tighter text-[#64748b]">Powered by</span>
                         <img src="/Privy_Wordmark_White.svg" alt="Privy" className="h-2.5 w-auto" />
                     </div>
                     {missionsCount > 0 && (
                         <button
                             onClick={() => setShowRecordModal(true)}
-                            className="text-[8px] text-[#5a6475] hover:text-[#06b6d4] uppercase tracking-[0.1em] transition-colors"
+                            className="text-[8px] text-[#707d91] hover:text-[#06b6d4] uppercase tracking-[0.1em] transition-colors"
                         >
                             [ VIEW RECORD ]
                         </button>

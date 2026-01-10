@@ -105,23 +105,23 @@ export const RecordMissionModal: React.FC<RecordMissionModalProps> = ({
             >
                 {/* Header */}
                 <div className="text-center mb-5">
-                    <div className="text-[10px] uppercase tracking-[0.15em] text-[#4a5565] mb-2">Mission Archive</div>
+                    <div className="text-[10px] uppercase tracking-[0.15em] text-[#64748b] mb-2">Mission Archive</div>
                     <h2 className="text-base font-semibold uppercase tracking-wide text-[#c8cdd5]">File Official Report</h2>
-                    <p className="text-[10px] text-[#5a6475] mt-1">
+                    <p className="text-[10px] text-[#707d91] mt-1">
                         Record this mission permanently.
                     </p>
                 </div>
 
                 {/* Score Summary */}
                 <div className="border-l-2 border-l-[#16a34a] bg-[#0a0c10] p-3 mb-4 text-center">
-                    <div className="text-[9px] uppercase tracking-[0.12em] text-[#4a5565] mb-1">
+                    <div className="text-[9px] uppercase tracking-[0.12em] text-[#64748b] mb-1">
                         Legacy Score
                     </div>
                     <div className="text-xl font-semibold text-[#16a34a] font-mono">
                         {formatScore(finalScore)}
                     </div>
                     {ending && (
-                        <div className="text-[10px] text-[#5a6475] mt-1">
+                        <div className="text-[10px] text-[#707d91] mt-1">
                             {ending.headline}
                         </div>
                     )}
@@ -130,7 +130,7 @@ export const RecordMissionModal: React.FC<RecordMissionModalProps> = ({
                 {/* Connection State */}
                 {!ready ? (
                     <div className="text-center py-4">
-                        <div className="text-[#4a5565] text-[10px] uppercase tracking-wide">Loading...</div>
+                        <div className="text-[#64748b] text-[10px] uppercase tracking-wide">Loading...</div>
                     </div>
                 ) : submitted ? (
                     /* Success State */
@@ -139,7 +139,7 @@ export const RecordMissionModal: React.FC<RecordMissionModalProps> = ({
                             <div className="text-[#16a34a] font-medium text-sm uppercase tracking-wide">
                                 Recorded to Archive
                             </div>
-                            <p className="text-[10px] text-[#5a6475] mt-1">
+                            <p className="text-[10px] text-[#707d91] mt-1">
                                 Your mission has been verified and saved.
                             </p>
                         </div>
@@ -157,7 +157,7 @@ export const RecordMissionModal: React.FC<RecordMissionModalProps> = ({
                                 <div className="text-[#ea580c] font-medium text-[10px] uppercase tracking-wide">
                                     Archive Proof Bypassed
                                 </div>
-                                <p className="text-[9px] text-[#5a6475] mt-1">
+                                <p className="text-[9px] text-[#707d91] mt-1">
                                     Reason: {error}
                                 </p>
                             </div>
@@ -165,14 +165,14 @@ export const RecordMissionModal: React.FC<RecordMissionModalProps> = ({
                         {onBackToHome ? (
                             <button
                                 onClick={onBackToHome}
-                                className="w-full py-2.5 px-4 bg-[#0d0f13] hover:bg-[#12151c] text-[#8b95a5] font-medium border border-[#1a1f28] text-sm uppercase tracking-wide"
+                                className="w-full py-2.5 px-4 bg-[#0d0f13] hover:bg-[#12151c] text-[#94a3b8] font-medium border border-[#1a1f28] text-sm uppercase tracking-wide"
                             >
                                 Back to Home
                             </button>
                         ) : (
                             <button
                                 onClick={onClose}
-                                className="w-full py-2.5 px-4 bg-[#0d0f13] hover:bg-[#12151c] text-[#8b95a5] font-medium border border-[#1a1f28] text-sm"
+                                className="w-full py-2.5 px-4 bg-[#0d0f13] hover:bg-[#12151c] text-[#94a3b8] font-medium border border-[#1a1f28] text-sm"
                             >
                                 Close
                             </button>
@@ -181,7 +181,7 @@ export const RecordMissionModal: React.FC<RecordMissionModalProps> = ({
                 ) : !authenticated ? (
                     /* Connect State */
                     <div className="space-y-3">
-                        <p className="text-[10px] text-[#5a6475] text-center">
+                        <p className="text-[10px] text-[#707d91] text-center">
                             Sign in to file your mission report and record it permanently.
                         </p>
                         <button
@@ -192,7 +192,7 @@ export const RecordMissionModal: React.FC<RecordMissionModalProps> = ({
                         </button>
                         <button
                             onClick={onClose}
-                            className="w-full py-2.5 px-4 bg-[#0d0f13] hover:bg-[#12151c] text-[#5a6475] font-medium border border-[#1a1f28] text-xs"
+                            className="w-full py-2.5 px-4 bg-[#0d0f13] hover:bg-[#12151c] text-[#707d91] font-medium border border-[#1a1f28] text-xs"
                         >
                             Maybe Later
                         </button>
@@ -202,10 +202,10 @@ export const RecordMissionModal: React.FC<RecordMissionModalProps> = ({
                     <div className="space-y-3">
                         {walletAddress && (
                             <div className="bg-[#0a0c10] border border-[#1a1f28] p-2.5 text-center">
-                                <div className="text-[8px] text-[#4a5565] uppercase tracking-[0.12em]">
+                                <div className="text-[8px] text-[#64748b] uppercase tracking-[0.12em]">
                                     Connected as
                                 </div>
-                                <div className="text-[11px] text-[#8b95a5] font-mono mt-0.5">
+                                <div className="text-[11px] text-[#94a3b8] font-mono mt-0.5">
                                     {walletAddress.slice(0, 6)}...{walletAddress.slice(-4)}
                                 </div>
                             </div>
@@ -225,7 +225,7 @@ export const RecordMissionModal: React.FC<RecordMissionModalProps> = ({
                         <button
                             onClick={onClose}
                             disabled={submitting}
-                            className="w-full py-2.5 px-4 bg-[#0d0f13] hover:bg-[#12151c] disabled:opacity-50 text-[#5a6475] font-medium border border-[#1a1f28] text-xs"
+                            className="w-full py-2.5 px-4 bg-[#0d0f13] hover:bg-[#12151c] disabled:opacity-50 text-[#707d91] font-medium border border-[#1a1f28] text-xs"
                         >
                             Cancel
                         </button>

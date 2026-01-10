@@ -65,9 +65,9 @@ export const LeaderboardModal: React.FC<LeaderboardModalProps> = ({ open, onClos
             >
                 {/* Header */}
                 <div className="text-center pb-3 border-b border-[#1a1f28]">
-                    <div className="text-[9px] uppercase tracking-[0.15em] text-[#4a5565] mb-1">Leaderboard</div>
+                    <div className="text-[9px] uppercase tracking-[0.15em] text-[#64748b] mb-1">Leaderboard</div>
                     <h2 className="text-base font-semibold uppercase tracking-wide text-[#c8cdd5]">Colony Index</h2>
-                    <p className="text-[10px] text-[#5a6475] mt-1">Top Commanders</p>
+                    <p className="text-[10px] text-[#707d91] mt-1">Top Commanders</p>
                 </div>
 
                 {/* Personal Best */}
@@ -75,12 +75,12 @@ export const LeaderboardModal: React.FC<LeaderboardModalProps> = ({ open, onClos
                     <div className="border-l-2 border-l-[#16a34a] bg-[#0a0c10] p-3 my-3">
                         <div className="flex items-center justify-between">
                             <div>
-                                <div className="text-[9px] text-[#4a5565] uppercase tracking-[0.12em]">Your Best</div>
+                                <div className="text-[9px] text-[#64748b] uppercase tracking-[0.12em]">Your Best</div>
                                 <div className="text-lg font-semibold text-[#16a34a] font-mono">{formatScore(personalBest.score)}</div>
                             </div>
                             <div className="text-right">
-                                <div className="text-[9px] text-[#4a5565] uppercase tracking-[0.12em]">Rank</div>
-                                <div className="text-base font-medium text-[#8b95a5]">#{personalBest.rank}</div>
+                                <div className="text-[9px] text-[#64748b] uppercase tracking-[0.12em]">Rank</div>
+                                <div className="text-base font-medium text-[#94a3b8]">#{personalBest.rank}</div>
                             </div>
                         </div>
                     </div>
@@ -89,11 +89,11 @@ export const LeaderboardModal: React.FC<LeaderboardModalProps> = ({ open, onClos
                 {/* Leaderboard */}
                 <div className="flex-1 overflow-y-auto -mx-6 px-6">
                     {loading ? (
-                        <div className="text-center py-8 text-[#4a5565] text-[10px] uppercase tracking-wide">Loading...</div>
+                        <div className="text-center py-8 text-[#64748b] text-[10px] uppercase tracking-wide">Loading...</div>
                     ) : error ? (
                         <div className="text-center py-8 text-[#f87171] text-[10px]">{error}</div>
                     ) : entries.length === 0 ? (
-                        <div className="text-center py-8 text-[#5a6475] text-[11px]">
+                        <div className="text-center py-8 text-[#707d91] text-[11px]">
                             No runs recorded yet. Be the first!
                         </div>
                     ) : (
@@ -105,19 +105,19 @@ export const LeaderboardModal: React.FC<LeaderboardModalProps> = ({ open, onClos
                                 >
                                     {/* Rank */}
                                     <div className={`w-8 text-center font-semibold text-xs ${index === 0 ? 'text-[#fbbf24]' :
-                                        index === 1 ? 'text-[#8b95a5]' :
+                                        index === 1 ? 'text-[#94a3b8]' :
                                             index === 2 ? 'text-[#d97706]' :
-                                                'text-[#4a5565]'
+                                                'text-[#64748b]'
                                         }`}>
                                         #{index + 1}
                                     </div>
 
                                     {/* Info */}
                                     <div className="flex-1 min-w-0">
-                                        <div className="text-[11px] font-mono text-[#8b95a5] truncate">
+                                        <div className="text-[11px] font-mono text-[#94a3b8] truncate">
                                             {formatWallet(entry.wallet)}
                                         </div>
-                                        <div className="text-[9px] text-[#4a5565]">
+                                        <div className="text-[9px] text-[#64748b]">
                                             {formatDate(entry.created_at)} • {entry.action_count} actions
                                         </div>
                                     </div>
@@ -147,7 +147,7 @@ export const LeaderboardModal: React.FC<LeaderboardModalProps> = ({ open, onClos
                 <div className="pt-3 mt-3 border-t border-[#1a1f28]">
                     <button
                         onClick={onClose}
-                        className="w-full py-2.5 px-4 bg-[#0d0f13] hover:bg-[#12151c] text-[#8b95a5] font-medium border border-[#1a1f28] text-sm"
+                        className="w-full py-2.5 px-4 bg-[#0d0f13] hover:bg-[#12151c] text-[#94a3b8] font-medium border border-[#1a1f28] text-sm"
                     >
                         Close
                     </button>

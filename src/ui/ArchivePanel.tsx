@@ -88,7 +88,7 @@ export const ArchivePanel: React.FC = () => {
     if (loading) {
         return (
             <div className="border border-[#1a1f28] bg-[#0d0f13] px-3 py-2">
-                <div className="text-center text-[#4a5565] text-[10px] uppercase tracking-wide">Loading Registry...</div>
+                <div className="text-center text-[#64748b] text-[10px] uppercase tracking-wide">Loading Registry...</div>
             </div>
         );
     }
@@ -96,7 +96,7 @@ export const ArchivePanel: React.FC = () => {
     if (error || !data) {
         return (
             <div className="border border-[#1a1f28] bg-[#0d0f13] px-3 py-2">
-                <div className="text-center text-[#4a5565] text-[10px] uppercase tracking-wide">Registry Offline</div>
+                <div className="text-center text-[#64748b] text-[10px] uppercase tracking-wide">Registry Offline</div>
             </div>
         );
     }
@@ -110,12 +110,12 @@ export const ArchivePanel: React.FC = () => {
                 className="w-full px-3 py-2 flex items-center justify-between hover:bg-[#12151c] text-left"
             >
                 <div className="flex items-center gap-2">
-                    <span className="font-medium text-[#8b95a5] text-xs uppercase tracking-[0.1em]">Mission Registry</span>
-                    <span className="text-[9px] text-[#4a5565]">
+                    <span className="font-medium text-[#94a3b8] text-xs uppercase tracking-[0.1em]">Mission Registry</span>
+                    <span className="text-[9px] text-[#64748b]">
                         {data.recent.filter(e => e.on_chain_tx).length} verified
                     </span>
                 </div>
-                <span className={`text-[#4a5565] text-[10px] ${expanded ? 'rotate-180' : ''}`}>
+                <span className={`text-[#64748b] text-[10px] ${expanded ? 'rotate-180' : ''}`}>
                     ▼
                 </span>
             </button>
@@ -133,21 +133,21 @@ export const ArchivePanel: React.FC = () => {
                                 >
                                     <div className="flex-1 min-w-0">
                                         <div className="flex items-center gap-2">
-                                            <span className="text-[11px] text-[#8b95a5] truncate">
+                                            <span className="text-[11px] text-[#94a3b8] truncate">
                                                 {entry.commander_name || 'Unknown'}
                                             </span>
                                             {entry.on_chain_tx ? (
                                                 <span className="text-[7px] bg-[#16a34a]/20 text-[#16a34a] px-1 rounded-sm border border-[#16a34a]/30 uppercase font-bold">Verified</span>
                                             ) : (
-                                                <span className="text-[7px] bg-[#4a5565]/20 text-[#4a5565] px-1 rounded-sm border border-[#4a5565]/30 uppercase font-bold">Saved</span>
+                                                <span className="text-[7px] bg-[#64748b]/20 text-[#64748b] px-1 rounded-sm border border-[#64748b]/30 uppercase font-bold">Saved</span>
                                             )}
                                         </div>
-                                        <div className="text-[9px] text-[#4a5565]">
+                                        <div className="text-[9px] text-[#64748b]">
                                             {ENDING_NAMES[entry.ending_id] || 'Complete'} · {formatTimeAgo(entry.created_at)}
                                         </div>
                                     </div>
                                     <div className="text-right ml-2">
-                                        <div className="text-[11px] font-mono text-[#5a6475]">
+                                        <div className="text-[11px] font-mono text-[#707d91]">
                                             {formatScore(entry.score)}
                                         </div>
                                         {entry.on_chain_tx && (
@@ -165,7 +165,7 @@ export const ArchivePanel: React.FC = () => {
                             ))}
                         </div>
                     ) : (
-                        <div className="text-center py-3 text-[#4a5565] text-[10px]">
+                        <div className="text-center py-3 text-[#64748b] text-[10px]">
                             No missions in registry.
                         </div>
                     )}

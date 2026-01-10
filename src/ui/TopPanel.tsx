@@ -47,7 +47,7 @@ const MeterBar: React.FC<{
       ? "text-amber-500"
       : isLow
         ? "text-amber-400"
-        : "text-[#4a5565]";
+        : "text-[#64748b]";
 
   const meterConfig = METER_TYPE_MAP[type];
   const meterCssType = meterConfig?.cssType || type;
@@ -60,7 +60,7 @@ const MeterBar: React.FC<{
           <span className="text-xs">{meterSymbol}</span>
           {label}
         </span>
-        <span className={`text-[10px] font-semibold tabular-nums font-mono ${isCritical || isVeryLow ? "text-red-400" : isDanger || isLow ? "text-amber-500" : "text-[#5a6475]"}`}>
+        <span className={`text-[10px] font-semibold tabular-nums font-mono ${isCritical || isVeryLow ? "text-red-400" : isDanger || isLow ? "text-amber-500" : "text-[#707d91]"}`}>
           {displayValue}
         </span>
       </div>
@@ -100,7 +100,7 @@ export const TopPanel: React.FC<Props> = ({ state, maxTurns, showDescription = t
           </div>
           {/* Commander Name */}
           <div className="flex items-center gap-2 mt-1">
-            <span className={`text-[10px] font-mono uppercase tracking-[0.1em] ${isCommander ? 'text-[#0891b2]' : 'text-[#5a6475]'}`}>
+            <span className={`text-[10px] font-mono uppercase tracking-[0.1em] ${isCommander ? 'text-[#0891b2]' : 'text-[#707d91]'}`}>
               {displayName}
             </span>
             {authenticated && (
@@ -111,7 +111,7 @@ export const TopPanel: React.FC<Props> = ({ state, maxTurns, showDescription = t
             )}
           </div>
           {showDescription && (
-            <p className="text-[10px] text-[#5a6475] leading-snug mt-1 max-w-md">
+            <p className="text-[10px] text-[#707d91] leading-snug mt-1 max-w-md">
               Survive {maxTurns} cycles. Maintain operational margin.
             </p>
           )}
@@ -141,7 +141,7 @@ export const TopPanel: React.FC<Props> = ({ state, maxTurns, showDescription = t
       {/* Legacy Score - institutional, rare green */}
       <div className="terminal-frame border-l-2 border-l-[#16a34a] flex items-center gap-3 py-3">
         <div>
-          <div className="text-[10px] uppercase tracking-[0.12em] text-[#4a5565] mb-0.5">{THEME.ui.score}</div>
+          <div className="text-[10px] uppercase tracking-[0.12em] text-[#64748b] mb-0.5">{THEME.ui.score}</div>
           <div className="text-[#16a34a] text-xl font-semibold tabular-nums">{formatMoney(legacy)}</div>
         </div>
       </div>
@@ -190,7 +190,7 @@ export const TopPanel: React.FC<Props> = ({ state, maxTurns, showDescription = t
             {/* Header - hero element */}
             <div className="flex items-center gap-2 mb-3">
               <span className="text-lg">{SYMBOLS.TIME}</span>
-              <div className="text-[11px] uppercase tracking-[0.12em] text-[#5a6475]">
+              <div className="text-[11px] uppercase tracking-[0.12em] text-[#707d91]">
                 Operational Margin
               </div>
             </div>
@@ -210,7 +210,7 @@ export const TopPanel: React.FC<Props> = ({ state, maxTurns, showDescription = t
 
             {/* Status readout - larger, dominant */}
             <div className="flex items-center justify-between">
-              <span className="text-[9px] uppercase tracking-[0.1em] text-[#4a5565]">
+              <span className="text-[9px] uppercase tracking-[0.1em] text-[#64748b]">
                 Status:
               </span>
               <span className={`text-lg font-bold tracking-wide ${marginColor}`}>

@@ -39,12 +39,12 @@ export const CrisisModal: React.FC<Props> = ({ crisis, onResolve }) => {
         </div>
 
         {/* Description */}
-        <div className="text-[11px] text-[#8b95a5] bg-[#0a0c10] border border-[#1a1f28] p-3 mb-4 leading-relaxed">
+        <div className="text-[11px] text-[#94a3b8] bg-[#0a0c10] border border-[#1a1f28] p-3 mb-4 leading-relaxed">
           {crisis.description}
         </div>
 
         {/* Options */}
-        <div className="text-[9px] uppercase tracking-[0.12em] text-[#4a5565] mb-2">Select Response</div>
+        <div className="text-[9px] uppercase tracking-[0.12em] text-[#64748b] mb-2">Select Response</div>
         <div className="space-y-1.5">
           {crisis.options.map((opt) => (
             <button

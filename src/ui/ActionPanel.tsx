@@ -57,7 +57,7 @@ export const ActionPanel: React.FC<Props> = ({ state, onSelect, disabled }) => {
           <div key={cat} className="min-w-0">
             <div className="flex items-center gap-2 mb-1.5">
               <span className="text-sm">{catSymbol}</span>
-              <span className="text-[9px] uppercase tracking-[0.1em] text-[#4a5565] font-semibold">
+              <span className="text-[9px] uppercase tracking-[0.1em] text-[#64748b] font-semibold">
                 {cat}
               </span>
             </div>
@@ -94,7 +94,7 @@ export const ActionPanel: React.FC<Props> = ({ state, onSelect, disabled }) => {
                     <div className="font-medium text-sm leading-tight text-[#c8cdd5] pr-16">
                       {a.name.replace("[Your Name]", state.founderName)}
                     </div>
-                    <div className="text-[10px] text-[#4a5565] leading-tight mt-0.5">
+                    <div className="text-[10px] text-[#64748b] leading-tight mt-0.5">
                       {a.description}
                     </div>
                     {/* Filing annotation */}

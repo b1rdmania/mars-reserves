@@ -32,21 +32,21 @@ export const EndOfRunCard: React.FC<Props> = ({ state, onRestart, onBackToHome, 
 
           {/* SECTION 1: THE VERDICT */}
           <div className="py-6">
-            <div className="text-[10px] uppercase tracking-[0.15em] text-[#4a5565] mb-4">Mission Complete</div>
+            <div className="text-[10px] uppercase tracking-[0.15em] text-[#64748b] mb-4">Mission Complete</div>
             <h2 className="text-xl font-semibold tracking-wide uppercase mb-2 text-[#c8cdd5]">
               {ending.headline}
             </h2>
-            <p className="text-[11px] text-[#5a6475] mb-6">{ending.subline}</p>
+            <p className="text-[11px] text-[#707d91] mb-6">{ending.subline}</p>
 
             {/* The verdict narrative */}
-            <p className="text-[11px] text-[#8b95a5] leading-relaxed px-4">
+            <p className="text-[11px] text-[#94a3b8] leading-relaxed px-4">
               "{ending.narrative}"
             </p>
           </div>
 
           {/* SECTION 2: THE RECORD */}
           <div className="border-t border-b border-[#1a1f28] py-3 mb-6">
-            <div className="text-[9px] uppercase tracking-[0.12em] text-[#4a5565] mb-1">Final Legacy</div>
+            <div className="text-[9px] uppercase tracking-[0.12em] text-[#64748b] mb-1">Final Legacy</div>
             <div className="text-lg font-semibold text-[#16a34a] font-mono">{formatScore(finalScore)}</div>
           </div>
 
@@ -62,7 +62,7 @@ export const EndOfRunCard: React.FC<Props> = ({ state, onRestart, onBackToHome, 
           {/* SECTION 4: TRY AGAIN */}
           <button
             onClick={onRestart}
-            className="mt-6 text-[10px] text-[#4a5565] hover:text-[#5a6475] font-bold uppercase tracking-[0.2em] transition-colors"
+            className="mt-6 text-[10px] text-[#64748b] hover:text-[#707d91] font-bold uppercase tracking-[0.2em] transition-colors"
           >
             [ REPLAY INITIAL_MISSION ]
           </button>

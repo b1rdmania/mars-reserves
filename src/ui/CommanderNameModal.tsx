@@ -80,20 +80,20 @@ export const CommanderNameModal: React.FC<Props> = ({ open, onClose }) => {
             <div className="modal-content max-w-sm w-full">
                 {/* Header */}
                 <div className="text-center mb-5">
-                    <div className="text-[10px] uppercase tracking-[0.15em] text-[#4a5565] mb-2">
+                    <div className="text-[10px] uppercase tracking-[0.15em] text-[#64748b] mb-2">
                         New Commander
                     </div>
                     <h2 className="text-base font-semibold uppercase tracking-wide text-[#c8cdd5]">
                         Choose Your Call Sign
                     </h2>
-                    <p className="text-[10px] text-[#5a6475] mt-1">
+                    <p className="text-[10px] text-[#707d91] mt-1">
                         This is how you'll be remembered in the Archive.
                     </p>
                 </div>
 
                 {/* Commander ID Preview */}
                 <div className="bg-[#0a0c10] border border-[#1a1f28] p-3 mb-4 text-center">
-                    <div className="text-[8px] uppercase tracking-[0.1em] text-[#4a5565] mb-1">
+                    <div className="text-[8px] uppercase tracking-[0.1em] text-[#64748b] mb-1">
                         Commander ID
                     </div>
                     <div className="text-sm font-mono text-[#0891b2]">
@@ -104,7 +104,7 @@ export const CommanderNameModal: React.FC<Props> = ({ open, onClose }) => {
                 {/* Name Input */}
                 <div className="mb-4">
                     <label className="block">
-                        <span className="text-[9px] uppercase tracking-[0.12em] text-[#4a5565]">
+                        <span className="text-[9px] uppercase tracking-[0.12em] text-[#64748b]">
                             Call Sign
                         </span>
                         <input
@@ -119,7 +119,7 @@ export const CommanderNameModal: React.FC<Props> = ({ open, onClose }) => {
                     </label>
                     <button
                         onClick={handleRegenerate}
-                        className="mt-2 text-[9px] text-[#4a5565] hover:text-[#0891b2] uppercase tracking-wide"
+                        className="mt-2 text-[9px] text-[#64748b] hover:text-[#0891b2] uppercase tracking-wide"
                     >
                         ↻ Regenerate
                     </button>
@@ -134,13 +134,13 @@ export const CommanderNameModal: React.FC<Props> = ({ open, onClose }) => {
 
                 {/* Preview */}
                 <div className="bg-[#0a0c10] border border-[#1a1f28] p-3 mb-4 text-center">
-                    <div className="text-[8px] uppercase tracking-[0.1em] text-[#4a5565] mb-1">
+                    <div className="text-[8px] uppercase tracking-[0.1em] text-[#64748b] mb-1">
                         Archive Preview
                     </div>
                     <div className="text-sm font-semibold text-[#c8cdd5] uppercase">
                         CMDR. {name.toUpperCase() || '—'}
                     </div>
-                    <div className="text-[9px] text-[#5a6475] font-mono mt-0.5">
+                    <div className="text-[9px] text-[#707d91] font-mono mt-0.5">
                         {commanderId}
                     </div>
                 </div>

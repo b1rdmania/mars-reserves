@@ -292,22 +292,22 @@ const App: React.FC = () => {
           {/* Header */}
           <div>
             <h1 className="text-lg font-semibold uppercase tracking-wide">Mars Extraction</h1>
-            <p className="text-[11px] text-[#5a6475] mt-1">A public mission. A private legacy.</p>
+            <p className="text-[11px] text-[#707d91] mt-1">A public mission. A private legacy.</p>
           </div>
 
           {/* System Status Lines */}
           <div className="border border-[#1a1f28] bg-[#0a0c10] p-3 space-y-1.5">
             <div className="flex items-center justify-between">
-              <span className="text-[9px] uppercase tracking-[0.1em] text-[#4a5565]">Status</span>
+              <span className="text-[9px] uppercase tracking-[0.1em] text-[#64748b]">Status</span>
               <span className="text-[10px] text-[#d97706] font-medium uppercase tracking-wide">Awaiting Command</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-[9px] uppercase tracking-[0.1em] text-[#4a5565]">Earth Link</span>
+              <span className="text-[9px] uppercase tracking-[0.1em] text-[#64748b]">Earth Link</span>
               <span className="text-[10px] text-[#16a34a] font-medium uppercase tracking-wide">Active</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-[9px] uppercase tracking-[0.1em] text-[#4a5565]">Mission Duration</span>
-              <span className="text-[10px] text-[#8b95a5] font-mono">{maxTurnsDisplay} Cycles</span>
+              <span className="text-[9px] uppercase tracking-[0.1em] text-[#64748b]">Mission Duration</span>
+              <span className="text-[10px] text-[#94a3b8] font-mono">{maxTurnsDisplay} Cycles</span>
             </div>
           </div>
 
@@ -324,7 +324,7 @@ const App: React.FC = () => {
             </button>
             <button
               onClick={() => setShowGlobalArchive(true)}
-              className="w-full py-2.5 px-4 bg-[#0d0f13] hover:bg-[#12151c] text-[#4a5565] hover:text-[#0891b2] font-medium border border-[#1a1f28] text-[9px] uppercase tracking-[0.2em] transition-all"
+              className="w-full py-2.5 px-4 bg-[#0d0f13] hover:bg-[#12151c] text-[#64748b] hover:text-[#0891b2] font-medium border border-[#1a1f28] text-[9px] uppercase tracking-[0.2em] transition-all"
             >
               [ OPEN GLOBAL ARCHIVE ]
             </button>
@@ -351,7 +351,7 @@ const App: React.FC = () => {
               >
                 {authenticated ? 'CONTINUE AS COMMANDER' : 'SIGN IN WITH PRIVY'}
               </button>
-              <div className="mt-2 flex items-center justify-center gap-3 text-[9px] text-[#4a5565] uppercase tracking-wider font-medium">
+              <div className="mt-2 flex items-center justify-center gap-3 text-[9px] text-[#64748b] uppercase tracking-wider font-medium">
                 <span>• Secure Privy Login</span>
                 <span>• Persistent Career</span>
               </div>
@@ -359,7 +359,7 @@ const App: React.FC = () => {
           </div>
 
           {/* Warning Footer */}
-          <div className="text-[9px] text-[#4a5565] text-center uppercase tracking-wide flex items-center justify-center gap-1.5">
+          <div className="text-[9px] text-[#64748b] text-center uppercase tracking-wide flex items-center justify-center gap-1.5">
             <span className="text-[#d97706]">⚠</span>
             <span>All actions recorded on Movement</span>
           </div>
