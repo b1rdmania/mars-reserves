@@ -350,7 +350,7 @@ const App: React.FC = () => {
                   disabled={!ready}
                   className="w-full py-3 px-4 bg-[#0d0f13] hover:bg-[#12151c] text-[#c8cdd5] font-bold uppercase tracking-[0.2em] text-xs border border-[#1a1f28] disabled:opacity-50 transition-colors"
                 >
-                  {authenticated ? 'CONTINUE AS COMMANDER' : 'SIGN IN WITH PRIVY'}
+                  {authenticated ? 'CONTINUE AS COMMANDER' : 'PRIVY SIGN IN'}
                 </button>
                 <div className="mt-2 flex items-center justify-center gap-3 text-[9px] text-[#64748b] uppercase tracking-wider font-medium">
                   <span>• Secure Privy Login</span>

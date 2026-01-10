@@ -182,7 +182,7 @@ export const RecordMissionModal: React.FC<RecordMissionModalProps> = ({
                     /* Connect State */
                     <div className="space-y-3">
                         <p className="text-[10px] text-[#707d91] text-center">
-                            Sign in to file your mission report and record it permanently.
+                            Privy sign in required to file your mission report and record it permanently.
                         </p>
                         <button
                             onClick={handleConnect}

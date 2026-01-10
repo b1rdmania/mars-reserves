@@ -81,9 +81,6 @@ export const ActionPanel: React.FC<Props> = ({ state, onSelect, disabled }) => {
                     <div className="font-medium text-sm leading-tight text-[#c8cdd5] pr-16">
                       {a.name.replace("[Your Name]", state.founderName)}
                     </div>
-                    <div className="text-[10px] text-[#64748b] leading-tight mt-0.5">
-                      {a.description}
-                    </div>
                   </button>
                 );
               })}
