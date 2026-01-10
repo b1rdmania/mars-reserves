@@ -24,6 +24,7 @@ import { CommanderNameModal } from "./ui/CommanderNameModal";
 import { useGameSession } from "./hooks/useGameSession";
 import { useMusic } from "./hooks/useMusic";
 import { Footer } from "./ui/Footer";
+import { GlobalLeaderboard } from "./ui/GlobalLeaderboard";
 
 const App: React.FC = () => {
   const [seed, setSeed] = useState(() => Math.floor(Math.random() * 1e9));
@@ -39,6 +40,7 @@ const App: React.FC = () => {
   const [turnModalOpen, setTurnModalOpen] = useState(false);
   const [showHowToPlay, setShowHowToPlay] = useState(false);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
+  const [showGlobalArchive, setShowGlobalArchive] = useState(false);
   const [showSplash, setShowSplash] = useState(true);
   const [showCommanderNameModal, setShowCommanderNameModal] = useState(false);
   const [turnModalData, setTurnModalData] = useState<{
@@ -307,13 +309,21 @@ const App: React.FC = () => {
           {/* Colony Archive */}
           <ArchivePanel />
 
-          {/* Briefing Button */}
-          <button
-            onClick={() => setShowHowToPlay(true)}
-            className="w-full py-2 px-4 bg-emerald-500/5 hover:bg-emerald-500/10 text-emerald-500/70 hover:text-emerald-500 font-medium border border-emerald-500/20 hover:border-emerald-500/40 text-xs transition-colors"
-          >
-            ? How To Play?
-          </button>
+          {/* Navigation & Info */}
+          <div className="space-y-2 mb-4">
+            <button
+              onClick={() => setShowHowToPlay(true)}
+              className="w-full py-2 px-4 bg-emerald-500/5 hover:bg-emerald-500/10 text-emerald-500/70 hover:text-emerald-500 font-medium border border-emerald-500/20 hover:border-emerald-500/40 text-xs transition-colors"
+            >
+              ? How To Play?
+            </button>
+            <button
+              onClick={() => setShowGlobalArchive(true)}
+              className="w-full py-1.5 px-4 bg-[#0d0f13] hover:bg-[#12151c] text-[#4a5565] hover:text-[#0891b2] font-medium border border-[#1a1f28] text-[9px] uppercase tracking-[0.2em] transition-all"
+            >
+              [ Open Global Archive ]
+            </button>
+          </div>
 
           {/* Dual CTA: Guest vs Sign In */}
           <div className="space-y-3">
@@ -365,6 +375,11 @@ const App: React.FC = () => {
         <Footer />
       </div>
     );
+  }
+
+  // Global Archive View
+  if (showGlobalArchive) {
+    return <GlobalLeaderboard onBack={() => setShowGlobalArchive(false)} />;
   }
 
   // Main game
