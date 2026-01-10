@@ -287,95 +287,91 @@ const App: React.FC = () => {
   // Config screen
   if (!started) {
     return (
-      <div className="min-h-screen min-h-[100dvh] flex items-center justify-center p-4">
-        <div className="max-w-md w-full terminal-frame space-y-4">
-          {/* Header */}
-          <div>
-            <h1 className="text-lg font-semibold uppercase tracking-wide">Mars Extraction</h1>
-            <p className="text-[11px] text-[#707d91] mt-1">A public mission. A private legacy.</p>
-          </div>
-
-          {/* System Status Lines */}
-          <div className="border border-[#1a1f28] bg-[#0a0c10] p-3 space-y-1.5">
-            <div className="flex items-center justify-between">
-              <span className="text-[9px] uppercase tracking-[0.1em] text-[#64748b]">Status</span>
-              <span className="text-[10px] text-[#d97706] font-medium uppercase tracking-wide">Awaiting Command</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-[9px] uppercase tracking-[0.1em] text-[#64748b]">Earth Link</span>
-              <span className="text-[10px] text-[#16a34a] font-medium uppercase tracking-wide">Active</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-[9px] uppercase tracking-[0.1em] text-[#64748b]">Mission Duration</span>
-              <span className="text-[10px] text-[#94a3b8] font-mono">{maxTurnsDisplay} Cycles</span>
-            </div>
-          </div>
-
-          {/* Colony Archive */}
-          <ArchivePanel />
-
-          {/* Navigation & Info */}
-          <div className="space-y-3 mb-6">
-            <button
-              onClick={() => setShowHowToPlay(true)}
-              className="w-full py-2.5 px-4 bg-emerald-500/5 hover:bg-emerald-500/10 text-emerald-500/70 hover:text-emerald-500 font-bold border border-emerald-500/20 hover:border-emerald-500/40 text-[9px] uppercase tracking-[0.2em] transition-colors"
-            >
-              ? HOW TO PLAY ?
-            </button>
-            <button
-              onClick={() => setShowGlobalArchive(true)}
-              className="w-full py-2.5 px-4 bg-[#0d0f13] hover:bg-[#12151c] text-[#64748b] hover:text-[#0891b2] font-medium border border-[#1a1f28] text-[9px] uppercase tracking-[0.2em] transition-all"
-            >
-              [ OPEN GLOBAL ARCHIVE ]
-            </button>
-          </div>
-
-          {/* Dual CTA: Guest vs Sign In */}
-          <div className="space-y-3">
-            {/* Play as Guest - Primary */}
-            <div className="border border-[#1a1f28] bg-[#0a0c10] p-3">
-              <button
-                onClick={handleStart}
-                className="w-full py-3 px-4 bg-[#0891b2] hover:bg-[#0e7490] text-white font-bold uppercase tracking-[0.2em] text-xs transition-colors"
-              >
-                PLAY AS GUEST
-              </button>
+      <div className="min-h-screen min-h-[100dvh] flex flex-col">
+        <div className="flex-1 flex items-center justify-center p-4">
+          <div className="max-w-md w-full terminal-frame space-y-4">
+            {/* Header */}
+            <div>
+              <h1 className="text-lg font-semibold uppercase tracking-wide">Mars Extraction</h1>
+              <p className="text-[11px] text-[#707d91] mt-1">A public mission. A private legacy.</p>
             </div>
 
-            {/* Sign In with Privy - Secondary */}
-            <div className="border border-[#1a1f28] bg-[#0a0c10] p-3">
-              <button
-                onClick={handleSignInAndStart}
-                disabled={!ready}
-                className="w-full py-3 px-4 bg-[#0d0f13] hover:bg-[#12151c] text-[#c8cdd5] font-bold uppercase tracking-[0.2em] text-xs border border-[#1a1f28] disabled:opacity-50 transition-colors"
-              >
-                {authenticated ? 'CONTINUE AS COMMANDER' : 'SIGN IN WITH PRIVY'}
-              </button>
-              <div className="mt-2 flex items-center justify-center gap-3 text-[9px] text-[#64748b] uppercase tracking-wider font-medium">
-                <span>• Secure Privy Login</span>
-                <span>• Persistent Career</span>
+            {/* System Status Lines */}
+            <div className="border border-[#1a1f28] bg-[#0a0c10] p-3 space-y-1.5">
+              <div className="flex items-center justify-between">
+                <span className="text-[9px] uppercase tracking-[0.1em] text-[#64748b]">Status</span>
+                <span className="text-[10px] text-[#d97706] font-medium uppercase tracking-wide">Awaiting Command</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-[9px] uppercase tracking-[0.1em] text-[#64748b]">Earth Link</span>
+                <span className="text-[10px] text-[#16a34a] font-medium uppercase tracking-wide">Active</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-[9px] uppercase tracking-[0.1em] text-[#64748b]">Mission Duration</span>
+                <span className="text-[10px] text-[#94a3b8] font-mono">{maxTurnsDisplay} Cycles</span>
               </div>
             </div>
-          </div>
 
-          {/* Warning Footer */}
-          <div className="text-[9px] text-[#64748b] text-center uppercase tracking-wide flex items-center justify-center gap-1.5">
-            <span className="text-[#d97706]">⚠</span>
-            <span>All actions recorded on Movement</span>
-          </div>
+            {/* Colony Archive */}
+            <ArchivePanel />
 
-          <HowToPlayModal open={showHowToPlay} onClose={() => setShowHowToPlay(false)} />
-          <LeaderboardModal open={showLeaderboard} onClose={() => setShowLeaderboard(false)} />
-          <CommanderNameModal
-            open={showCommanderNameModal}
-            onClose={() => {
-              setShowCommanderNameModal(false);
-              // Start game after setting commander name
-              if (profile?.commander_name) {
-                handleStart();
-              }
-            }}
-          />
+            {/* Navigation & Info */}
+            <div className="space-y-3 mb-6">
+              <button
+                onClick={() => setShowHowToPlay(true)}
+                className="w-full py-2.5 px-4 bg-emerald-500/5 hover:bg-emerald-500/10 text-emerald-500/70 hover:text-emerald-500 font-bold border border-emerald-500/20 hover:border-emerald-500/40 text-[9px] uppercase tracking-[0.2em] transition-colors"
+              >
+                ? HOW TO PLAY ?
+              </button>
+              <button
+                onClick={() => setShowGlobalArchive(true)}
+                className="w-full py-2.5 px-4 bg-[#0d0f13] hover:bg-[#12151c] text-[#64748b] hover:text-[#0891b2] font-medium border border-[#1a1f28] text-[9px] uppercase tracking-[0.2em] transition-all"
+              >
+                [ OPEN GLOBAL ARCHIVE ]
+              </button>
+            </div>
+
+            {/* Dual CTA: Guest vs Sign In */}
+            <div className="space-y-3">
+              {/* Play as Guest - Primary */}
+              <div className="border border-[#1a1f28] bg-[#0a0c10] p-3">
+                <button
+                  onClick={handleStart}
+                  className="w-full py-3 px-4 bg-[#0891b2] hover:bg-[#0e7490] text-white font-bold uppercase tracking-[0.2em] text-xs transition-colors"
+                >
+                  PLAY AS GUEST
+                </button>
+              </div>
+
+              {/* Sign In with Privy - Secondary */}
+              <div className="border border-[#1a1f28] bg-[#0a0c10] p-3">
+                <button
+                  onClick={handleSignInAndStart}
+                  disabled={!ready}
+                  className="w-full py-3 px-4 bg-[#0d0f13] hover:bg-[#12151c] text-[#c8cdd5] font-bold uppercase tracking-[0.2em] text-xs border border-[#1a1f28] disabled:opacity-50 transition-colors"
+                >
+                  {authenticated ? 'CONTINUE AS COMMANDER' : 'SIGN IN WITH PRIVY'}
+                </button>
+                <div className="mt-2 flex items-center justify-center gap-3 text-[9px] text-[#64748b] uppercase tracking-wider font-medium">
+                  <span>• Secure Privy Login</span>
+                  <span>• Persistent Career</span>
+                </div>
+              </div>
+            </div>
+
+            <HowToPlayModal open={showHowToPlay} onClose={() => setShowHowToPlay(false)} />
+            <LeaderboardModal open={showLeaderboard} onClose={() => setShowLeaderboard(false)} />
+            <CommanderNameModal
+              open={showCommanderNameModal}
+              onClose={() => {
+                setShowCommanderNameModal(false);
+                // Start game after setting commander name
+                if (profile?.commander_name) {
+                  handleStart();
+                }
+              }}
+            />
+          </div>
         </div>
         <Footer />
       </div>
