@@ -27,9 +27,12 @@
 - **Mobile Responsive:** Optimized for both desktop command centers and mobile field reports.
 
 ### 6. Branding & UX Polish
-- **Movement Logo**: Integrated the Movement brand identity into the landing sequence for ecosystem alignment.
-- **Privy Branding**: Placed "Powered by Privy" badges in high-visibility areas (Guest Banner, Footer) and integrated a subtle Privy symbol in the commander UI to reinforce the security of the auth layer.
-- **Visual Feedback**: Added pulsing animations and transition states for brand elements to ensure a premium feel.
+- **Movement Logo**: Relocated the Movement brand identity to a refined "Recorded on [Logo]" lockup in the splash footer, mirroring the Privy attribution for a sleek, unified ecosystem look.
+- **Privy Branding**: Placed "Powered by Privy" badges in high-visibility areas and integrated the Privy symbol into the Commander UI.
+- **UX Reordering**: Dynamically reordered the game HUD to place the **Event Log above Action Buttons**, ensuring players receive immediate feedback on their tactical decisions.
+- **Fast-Replay Flow**: Optimized the navigation to skip the splash screen when title-clicking or returning "Home," allowing for seamless, rapid replay sessions.
+- **"How To Play?"**: Renamed and elevated the briefing section for improved player onboarding.
+- **Creator Attribution**: Added "created with [wario.style](https://wario.style)" beneath the music controls.
 
 Status: [READY FOR SUBMISSION]
 
