@@ -66,18 +66,6 @@ export const ActionPanel: React.FC<Props> = ({ state, onSelect, disabled }) => {
                 const categoryKey = CATEGORY_TO_KEY[a.category];
                 const classification = CLASSIFICATIONS[categoryKey] || "LOGGED";
 
-                // Temptation sub-lines for Ambition actions (subtle moral pressure)
-                const temptationLines = [
-                  "No one will question this.",
-                  "Oversight won't notice yet.",
-                  "This can be justified later.",
-                  "Standard procedure, really.",
-                  "It's for the mission.",
-                ];
-                const temptation = cat === "Ambition"
-                  ? temptationLines[a.name.length % temptationLines.length]
-                  : null;
-
                 return (
                   <button
                     key={a.id}
@@ -96,11 +84,6 @@ export const ActionPanel: React.FC<Props> = ({ state, onSelect, disabled }) => {
                     <div className="text-[10px] text-[#64748b] leading-tight mt-0.5">
                       {a.description}
                     </div>
-                    {temptation && (
-                      <div className="text-[9px] text-[#d97706]/50 mt-0.5 italic">
-                        {temptation}
-                      </div>
-                    )}
                   </button>
                 );
               })}
