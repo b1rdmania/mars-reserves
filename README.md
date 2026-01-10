@@ -27,6 +27,8 @@ Mars Extraction leverages the speed and security of the **Movement Network (Bard
 - **Delayed Consequences**: A hidden state engine tracks **Oversight Scrutiny**, **Crew Unrest**, and **Institutional Memory**. Your shortcuts in Cycle 2 will haunt you in Cycle 9.
 - **Procedural Verdicts**: 5 distinct ending archetypes based on your command style—from *The Vizier* to *The Martyr*.
 
+[**→ Launch Mission**](https://marsreserves.xyz)
+
 ---
 
 ## 🛠️ Technical Stack
@@ -41,33 +43,10 @@ Mars Extraction leverages the speed and security of the **Movement Network (Bard
 
 ---
 
-## 🚀 Development
-
-### Prerequisites
-- Node.js 18+
-- [Movement CLI](https://docs.movementnetwork.xyz/)
-
-### Quick Start
-1. **Clone and Install**:
-   ```bash
-   git clone https://github.com/b1rdmania/mars-reserves
-   npm install
-   ```
-2. **Environment**:
-   ```bash
-   cp .env.example .env
-   # Populate with your Privy and Supabase keys
-   ```
-3. **Run**:
-   ```bash
-   npm run dev
-   ```
-
----
-
 ## 📜 On-Chain Contract
 
-The `mission_index` contract on Movement Bardock provides a verifiable registry for all colony missions:
+The `mission_index` contract on Movement Bardock provides a verifiable registry for all missions launched from [**marsreserves.xyz**](https://marsreserves.xyz):
+
 
 ```move
 public entry fun record_mission(
@@ -84,5 +63,6 @@ public entry fun record_mission(
 ## 🏆 Movement Hackathon 2026 Submission
 
 Built by **[b1rdmania](https://x.com/b1rdmania)**.
+Live at: [**marsreserves.xyz**](https://marsreserves.xyz)
 
 *A game about big mistakes in a small colony.*
