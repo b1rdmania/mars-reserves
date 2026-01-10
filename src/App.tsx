@@ -265,7 +265,7 @@ const App: React.FC = () => {
     playSound("click");
     stopMusic();
     setState(null);
-    setShowSplash(true);
+    setShowSplash(false);
   };
 
   // Splash screen
