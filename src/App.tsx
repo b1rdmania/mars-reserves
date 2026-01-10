@@ -306,6 +306,14 @@ const App: React.FC = () => {
           {/* Colony Archive */}
           <ArchivePanel />
 
+          {/* Briefing Button */}
+          <button
+            onClick={() => setShowHowToPlay(true)}
+            className="w-full py-2 px-4 bg-[#0a0c10] hover:bg-[#12151c] text-[#5a6475] font-medium border border-[#1a1f28] text-xs"
+          >
+            ? How To Play?
+          </button>
+
           {/* Dual CTA: Guest vs Sign In */}
           <div className="space-y-3">
             {/* Play as Guest - Primary */}
@@ -337,14 +345,6 @@ const App: React.FC = () => {
               </div>
             </div>
           </div>
-
-          {/* Briefing Button */}
-          <button
-            onClick={() => setShowHowToPlay(true)}
-            className="w-full py-2 px-4 bg-[#0a0c10] hover:bg-[#12151c] text-[#5a6475] font-medium border border-[#1a1f28] text-xs"
-          >
-            ? Briefing
-          </button>
 
           {/* Warning Footer */}
           <div className="text-[9px] text-[#4a5565] text-center uppercase tracking-wide flex items-center justify-center gap-1.5">
