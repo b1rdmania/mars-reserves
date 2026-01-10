@@ -2,7 +2,7 @@ import React from "react";
 import type { GameState } from "../engine/state";
 import { ACTIONS, getVisibleActions } from "../engine/actions";
 import type { ActionCategory, ActionId } from "../engine/actions";
-import { SYMBOLS, ACTION_SYMBOLS, FILING_CATEGORIES, CLASSIFICATIONS } from "./symbols";
+import { SYMBOLS, ACTION_SYMBOLS, CLASSIFICATIONS } from "./symbols";
 
 interface Props {
   state: GameState;
@@ -65,7 +65,6 @@ export const ActionPanel: React.FC<Props> = ({ state, onSelect, disabled }) => {
               {list.map((a) => {
                 const categoryKey = CATEGORY_TO_KEY[a.category];
                 const classification = CLASSIFICATIONS[categoryKey] || "LOGGED";
-                const filing = FILING_CATEGORIES[categoryKey] || "GENERAL";
 
                 // Temptation sub-lines for Ambition actions (subtle moral pressure)
                 const temptationLines = [
@@ -96,10 +95,6 @@ export const ActionPanel: React.FC<Props> = ({ state, onSelect, disabled }) => {
                     </div>
                     <div className="text-[10px] text-[#64748b] leading-tight mt-0.5">
                       {a.description}
-                    </div>
-                    {/* Filing annotation */}
-                    <div className="text-[8px] text-[#3a4555] mt-1 uppercase tracking-wide">
-                      Filed under: {filing}
                     </div>
                     {temptation && (
                       <div className="text-[9px] text-[#d97706]/50 mt-0.5 italic">
