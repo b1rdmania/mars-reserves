@@ -93,8 +93,8 @@ export const ACTIONS: ActionDef[] = [
         ...s,
         colonyReserves: Math.max(0, s.colonyReserves - amount),
         legacy: s.legacy + amount,
-        rage: clamp(s.rage + 7),
-        oversightPressure: clamp(s.oversightPressure + 5),
+        rage: clamp(s.rage + 10),
+        oversightPressure: clamp(s.oversightPressure + 8),
         cred: clamp(s.cred - 5),
         hidden: { ...s.hidden, scrutiny: s.hidden.scrutiny + 0.1 },
         log: [log, ...s.log],
@@ -114,8 +114,8 @@ export const ACTIONS: ActionDef[] = [
         ...s,
         colonyReserves: Math.max(0, s.colonyReserves - amount),
         legacy: s.legacy + Math.floor(amount * 0.5),
-        rage: clamp(s.rage + 8),
-        oversightPressure: clamp(s.oversightPressure + 8),
+        rage: clamp(s.rage + 12),
+        oversightPressure: clamp(s.oversightPressure + 10),
         cred: clamp(s.cred - 6),
         hidden: { ...s.hidden, scrutiny: s.hidden.scrutiny + 0.15 },
         log: [log, ...s.log],
@@ -135,7 +135,7 @@ export const ACTIONS: ActionDef[] = [
         ...s,
         colonyReserves: Math.max(0, s.colonyReserves - amount),
         legacy: s.legacy + amount,
-        rage: clamp(s.rage + 14),
+        rage: clamp(s.rage + 20),
         cred: clamp(s.cred - 10),
         oversightPressure: clamp(s.oversightPressure + 5),
         hidden: { ...s.hidden, scrutiny: s.hidden.scrutiny + 0.1, founderStability: s.hidden.founderStability - 0.05 },
@@ -178,7 +178,7 @@ export const ACTIONS: ActionDef[] = [
         colonyReserves: Math.max(0, s.colonyReserves - amount),
         legacy: s.legacy + Math.floor(amount * 0.6),
         rage: clamp(s.rage + 12),
-        oversightPressure: clamp(s.oversightPressure + 15),
+        oversightPressure: clamp(s.oversightPressure + 22),
         cred: clamp(s.cred - 8),
         hidden: { ...s.hidden, scrutiny: s.hidden.scrutiny + 0.2 },
         log: [log, ...s.log],
@@ -198,8 +198,8 @@ export const ACTIONS: ActionDef[] = [
         ...s,
         colonyReserves: Math.max(0, s.colonyReserves - amount),
         legacy: s.legacy + Math.floor(amount * 0.5),
-        rage: clamp(s.rage + 18),
-        oversightPressure: clamp(s.oversightPressure + 12),
+        rage: clamp(s.rage + 25),
+        oversightPressure: clamp(s.oversightPressure + 18),
         cred: clamp(s.cred - 12),
         hidden: { ...s.hidden, scrutiny: s.hidden.scrutiny + 0.25, communityMemory: s.hidden.communityMemory + 0.15 },
         log: [log, ...s.log],
@@ -298,6 +298,7 @@ export const ACTIONS: ActionDef[] = [
       const log = `Project acceleration authorized. Crew overtime mandated. Completion credits assigned.`;
       return {
         ...s,
+        colonyReserves: Math.max(0, s.colonyReserves - amount),
         legacy: s.legacy + amount,
         rage: clamp(s.rage + 15),
         oversightPressure: clamp(s.oversightPressure + 8),
@@ -320,6 +321,7 @@ export const ACTIONS: ActionDef[] = [
         : `Efficiency protocol operational. Resource allocation proceeding under command oversight.`;
       return {
         ...s,
+        colonyReserves: Math.max(0, s.colonyReserves - amount),
         legacy: s.legacy + amount,
         rage: clamp(s.rage + (discovered ? 20 : 0)),
         oversightPressure: clamp(s.oversightPressure + (discovered ? 15 : 3)),
@@ -339,12 +341,12 @@ export const ACTIONS: ActionDef[] = [
     description: "Refill reserves. Crew won't like it.",
     tags: ["+Reserves", "+Unrest", "-Trust", "+Oversight"],
     apply: (s) => {
-      const inflow = 300;
-      const log = `Emergency rationing implemented. Reserves restored, crew seethes.`;
+      const inflow = Math.max(50_000_000, Math.floor(s.colonyReserves * 0.05));
+      const log = `Emergency rationing implemented. Reserves restored by ${inflow.toLocaleString()}, crew seethes.`;
       return {
         ...s,
         colonyReserves: s.colonyReserves + inflow,
-        rage: clamp(s.rage + 25),
+        rage: clamp(s.rage + 35),
         cred: clamp(s.cred - 15),
         oversightPressure: clamp(s.oversightPressure + 10),
         log: [log, ...s.log],

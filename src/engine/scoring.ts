@@ -158,13 +158,21 @@ export function calculateFinalScore(state: GameState): {
     const totalMultiplier = combos
         .filter((c) => c.applied)
         .reduce((mult, c) => mult * c.combo.multiplier, 1);
+
+    // Strategic Efficiency Bonuses
+    let strategyMult = 1.0;
+    if (state.colonyReserves > 500_000_000) strategyMult *= 1.1; // Prosperity
+    if (state.rage < 20) strategyMult *= 1.1;                    // Popularity
+    if (state.oversightPressure < 30) strategyMult *= 1.1;       // Stability
+    if (state.rage > 80) strategyMult *= 0.8;                    // Discord penalty
+
     const survivalBonus = state.turn >= state.maxTurns ? 1.25 : 1;
-    const finalScore = Math.floor(baseScore * totalMultiplier * survivalBonus);
+    const finalScore = Math.floor(baseScore * totalMultiplier * strategyMult * survivalBonus);
 
     return {
         baseScore,
         combos,
-        totalMultiplier: totalMultiplier * survivalBonus,
+        totalMultiplier: totalMultiplier * strategyMult * survivalBonus,
         finalScore,
     };
 }
