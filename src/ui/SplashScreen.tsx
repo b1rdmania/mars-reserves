@@ -10,15 +10,19 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onStart }) => {
 
     // Start music on first interaction (anywhere on splash)
     const handleFirstInteraction = useCallback(() => {
+        console.log('[SplashScreen] First interaction - musicStarted:', musicStarted, 'isPlaying:', isMarsAmbientPlaying());
         if (!musicStarted && !isMarsAmbientPlaying()) {
+            console.log('[SplashScreen] Initializing audio and starting Mars ambient');
             initAudio();
             startMarsAmbient();
             setMusicStarted(true);
+            console.log('[SplashScreen] Music should now be playing');
         }
     }, [musicStarted]);
 
     // Handle START click - stop music and proceed
     const handleStart = useCallback(() => {
+        console.log('[SplashScreen] Stopping Mars ambient music');
         stopMarsAmbient();
         onStart();
     }, [onStart]);
