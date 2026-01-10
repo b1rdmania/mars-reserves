@@ -77,5 +77,5 @@ struct RunRecorded {
 ### Environment
 
 - **Network**: Movement Bardock (Devnet)
-- **RPC**: https://aptos.devnet.imola.movementlabs.xyz/v1
+- **RPC**: https://testnet.movementnetwork.xyz/v1
 - **Explorer**: https://explorer.movementnetwork.xyz

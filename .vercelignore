@@ -1,0 +1,11 @@
+.bin
+.movement
+.git
+contracts/**/build
+*.zip
+*.tar.gz
+aptos
+aptos 2
+node_modules
+dist
+logs

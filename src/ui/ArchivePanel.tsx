@@ -101,16 +101,6 @@ export const ArchivePanel: React.FC = () => {
         );
     }
 
-    // Filter to only show on-chain recorded missions
-    const onChainRecords = data.recent.filter(e => e.on_chain_tx);
-
-    // Find notable record (highest score among on-chain)
-    const notableRecord = onChainRecords.length > 0
-        ? onChainRecords.reduce((best, entry) => entry.score > best.score ? entry : best, onChainRecords[0])
-        : null;
-
-    // Other records (excluding notable)
-    const otherRecords = onChainRecords.filter(e => e.id !== notableRecord?.id).slice(0, 4);
 
     return (
         <div className="border border-[#1a1f28] bg-[#0d0f13] overflow-hidden">
@@ -122,7 +112,7 @@ export const ArchivePanel: React.FC = () => {
                 <div className="flex items-center gap-2">
                     <span className="font-medium text-[#8b95a5] text-xs uppercase tracking-[0.1em]">Mission Registry</span>
                     <span className="text-[9px] text-[#4a5565]">
-                        {onChainRecords.length} verified
+                        {data.recent.filter(e => e.on_chain_tx).length} verified
                     </span>
                 </div>
                 <span className={`text-[#4a5565] text-[10px] ${expanded ? 'rotate-180' : ''}`}>
@@ -133,47 +123,24 @@ export const ArchivePanel: React.FC = () => {
             {/* Expandable Content */}
             {expanded && (
                 <div className="px-3 pb-3 pt-1 border-t border-[#1a1f28]">
-                    {/* Notable Record */}
-                    {notableRecord && (
-                        <div className="bg-[#0a0c10] border-l-2 border-l-[#16a34a] px-3 py-2 mb-2">
-                            <div className="text-[8px] uppercase tracking-[0.12em] text-[#4a5565] mb-1">Top Record</div>
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <div className="text-xs text-[#c8cdd5]">
-                                        {notableRecord.commander_name || 'Unknown Commander'}
-                                    </div>
-                                    <div className="text-[9px] text-[#5a6475]">
-                                        {ENDING_NAMES[notableRecord.ending_id] || 'Mission Complete'}
-                                    </div>
-                                </div>
-                                <div className="text-right">
-                                    <div className="text-xs text-[#8b95a5] font-mono">
-                                        {formatScore(notableRecord.score)}
-                                    </div>
-                                    <a
-                                        href={`https://explorer.movementnetwork.xyz/txn/${notableRecord.on_chain_tx}?network=bardock+testnet`}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-[8px] text-[#0891b2] hover:text-[#06b6d4] uppercase tracking-wide"
-                                    >
-                                        Verify ↗
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Other Records */}
-                    {otherRecords.length > 0 && (
-                        <div className="space-y-1">
-                            {otherRecords.map((entry) => (
+                    {/* Mission entries */}
+                    {data.recent.length > 0 ? (
+                        <div className="space-y-1 mt-2">
+                            {data.recent.map((entry) => (
                                 <div
                                     key={entry.id}
-                                    className="flex items-center justify-between px-2 py-1.5 border border-[#1a1f28]"
+                                    className={`flex items-center justify-between px-2 py-1.5 border ${entry.on_chain_tx ? 'border-[#1a1f28] bg-[#0a0c10]' : 'border-[#1a1f28]/50 opacity-80'}`}
                                 >
                                     <div className="flex-1 min-w-0">
-                                        <div className="text-[11px] text-[#8b95a5] truncate">
-                                            {entry.commander_name || 'Unknown'}
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-[11px] text-[#8b95a5] truncate">
+                                                {entry.commander_name || 'Unknown'}
+                                            </span>
+                                            {entry.on_chain_tx ? (
+                                                <span className="text-[7px] bg-[#16a34a]/20 text-[#16a34a] px-1 rounded-sm border border-[#16a34a]/30 uppercase font-bold">Verified</span>
+                                            ) : (
+                                                <span className="text-[7px] bg-[#4a5565]/20 text-[#4a5565] px-1 rounded-sm border border-[#4a5565]/30 uppercase font-bold">Saved</span>
+                                            )}
                                         </div>
                                         <div className="text-[9px] text-[#4a5565]">
                                             {ENDING_NAMES[entry.ending_id] || 'Complete'} · {formatTimeAgo(entry.created_at)}
@@ -183,23 +150,23 @@ export const ArchivePanel: React.FC = () => {
                                         <div className="text-[11px] font-mono text-[#5a6475]">
                                             {formatScore(entry.score)}
                                         </div>
-                                        <a
-                                            href={`https://explorer.movementnetwork.xyz/txn/${entry.on_chain_tx}?network=bardock+testnet`}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="text-[8px] text-[#0891b2]"
-                                        >
-                                            ↗
-                                        </a>
+                                        {entry.on_chain_tx && (
+                                            <a
+                                                href={`https://explorer.movementnetwork.xyz/txn/${entry.on_chain_tx}?network=bardock+testnet`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="text-[8px] text-[#0891b2] hover:text-[#06b6d4]"
+                                            >
+                                                PROOF ↗
+                                            </a>
+                                        )}
                                     </div>
                                 </div>
                             ))}
                         </div>
-                    )}
-
-                    {onChainRecords.length === 0 && (
+                    ) : (
                         <div className="text-center py-3 text-[#4a5565] text-[10px]">
-                            No verified missions in registry.
+                            No missions in registry.
                         </div>
                     )}
                 </div>

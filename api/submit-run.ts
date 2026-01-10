@@ -1,5 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { createHash } from 'crypto';
+import { recordMissionOnChain } from './shinami-client.js';
 
 /**
  * Minimal deterministic replay engine for verification
@@ -269,6 +270,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return res.status(405).json({ error: 'Method not allowed' });
     }
 
+    console.log('[SubmitRun] Incoming request body:', JSON.stringify(req.body));
+    console.log('[SubmitRun] Env Diagnostics:', {
+        HAS_SUPABASE_URL: !!process.env.SUPABASE_URL,
+        HAS_SUPABASE_KEY: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
+        HAS_SHINAMI_KEY: !!process.env.SHINAMI_API_KEY,
+        ENABLE_ONCHAIN_RAW: process.env.ENABLE_ONCHAIN,
+        MISSION_INDEX_RAW: process.env.MISSION_INDEX_ADDRESS,
+    });
+
     const body = req.body as SubmitRunRequest;
 
     // Validate required fields
@@ -470,15 +480,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         }
 
         // On-chain submission via Shinami Gas Station
-        // Sanitize address env vars at startup to prevent whitespace issues
-        const onChainEnabled = (process.env.ENABLE_ONCHAIN ?? '').trim() === 'true';
-        const missionIndexAddress = (process.env.MISSION_INDEX_ADDRESS ?? '').trim();
-        const shinamiApiKey = (process.env.SHINAMI_API_KEY ?? '').trim();
+        // Sanitize address env vars at startup to prevent whitespace/quotes issues
+        const sanitizeEnv = (val: string | undefined) => (val ?? '').trim().replace(/^["'](.+)["']$/, '$1');
+
+        const onChainEnabled = sanitizeEnv(process.env.ENABLE_ONCHAIN) === 'true';
+        const missionIndexAddress = sanitizeEnv(process.env.MISSION_INDEX_ADDRESS);
+        const shinamiApiKey = sanitizeEnv(process.env.SHINAMI_API_KEY);
 
         // Validate address format if on-chain is enabled
         if (onChainEnabled && missionIndexAddress) {
             if (!/^0x[0-9a-fA-F]{64}$/.test(missionIndexAddress)) {
-                console.error(`Invalid MISSION_INDEX_ADDRESS format: ${JSON.stringify(process.env.MISSION_INDEX_ADDRESS)}`);
+                console.error(`Invalid MISSION_INDEX_ADDRESS format: ${JSON.stringify(missionIndexAddress)}`);
             }
         }
 
@@ -487,13 +499,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         let explorerUrl: string | null = null;
         let onChainError: string | null = null;
 
-        console.log('[OnChain] Config:', { onChainEnabled, hasMissionIndex: !!missionIndexAddress, hasShinami: !!shinamiApiKey });
+        const rawEnable = process.env.ENABLE_ONCHAIN;
+        console.log('[OnChain] Raw Config:', {
+            ENABLE_ONCHAIN: rawEnable,
+            sanitizedEnable: onChainEnabled,
+            hasAddress: !!missionIndexAddress,
+            hasShinami: !!shinamiApiKey
+        });
 
         if (onChainEnabled && missionIndexAddress && shinamiApiKey) {
             console.log('[OnChain] Attempting on-chain recording...');
             try {
-                // Use the Shinami SDK for proper transaction sponsorship
-                const { recordMissionOnChain } = await import('./shinami-client.js');
+                // Static import used at top level for compatibility
 
                 const result = await recordMissionOnChain(
                     {
@@ -501,6 +518,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                         runHash,
                         score: finalScore,
                         endingId: verifiedEndingId,
+                        seed: body.seed,
                         missionIndexAddress,
                     },
                     shinamiApiKey,
@@ -537,26 +555,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                     console.error('Shinami sponsorship failed:', result.error);
                 }
 
-            } catch (err) {
-                console.error('On-chain submission blocked (likely testnet downtime/incompatibility):', err);
 
-                // FALLBACK SIMULATION FOR HACKATHON DEMO
-                // Since testnet deployment is blocked by tooling version mismatch,
-                // we simulate the success flow for the video.
-                console.log('[OnChain] Enabling demo simulation mode');
-                txHash = '0x' + createHash('sha256').update(runHash + Date.now().toString()).digest('hex');
-                onChainStatus = 'submitted';
-                explorerUrl = `https://explorer.movementnetwork.xyz/txn/${txHash}?network=bardock+testnet`;
-                onChainError = 'Simulated (Network Tooling Mismatch)';
+            } catch (err) {
+                onChainStatus = 'error';
+                onChainError = err instanceof Error ? err.message : String(err);
+                console.error('On-chain submission error:', err);
             }
         } else if (onChainEnabled) {
             console.warn('On-chain enabled but missing config:', { missionIndexAddress: !!missionIndexAddress, shinamiApiKey: !!shinamiApiKey });
-
-            // Sim fallback for config gaps too
-            console.log('[OnChain] Enabling demo simulation mode (missing config)');
-            txHash = '0x' + createHash('sha256').update(runHash + Date.now().toString()).digest('hex');
-            onChainStatus = 'submitted';
-            explorerUrl = `https://explorer.movementnetwork.xyz/txn/${txHash}?network=bardock+testnet`;
         }
 
         // Always return stable response structure
@@ -579,6 +585,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                 txHash,
                 explorerUrl,
                 error: onChainError,
+                debug: {
+                    rawEnable: process.env.ENABLE_ONCHAIN,
+                    hasAddress: !!missionIndexAddress,
+                    hasShinami: !!shinamiApiKey
+                }
             },
             ...(supabaseError && { supabaseError }),
         });

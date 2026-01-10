@@ -78,6 +78,12 @@ export const RecordMissionModal: React.FC<RecordMissionModalProps> = ({
             const result = await response.json();
             console.log('[RecordMission] API Response:', result);
             setTxHash(result.onChain?.txHash || null);
+
+            // If on-chain failed but run was saved, show the specific on-chain error
+            if (!result.onChain?.txHash && result.onChain?.error) {
+                setError(result.onChain.error);
+            }
+
             setSubmitted(true);
             // Refresh profile to update career stats
             await refreshProfile();
@@ -137,7 +143,7 @@ export const RecordMissionModal: React.FC<RecordMissionModalProps> = ({
                                 Your mission has been verified and saved.
                             </p>
                         </div>
-                        {txHash && (
+                        {txHash ? (
                             <a
                                 href={`https://explorer.movementnetwork.xyz/txn/${txHash}?network=bardock+testnet`}
                                 target="_blank"
@@ -146,7 +152,16 @@ export const RecordMissionModal: React.FC<RecordMissionModalProps> = ({
                             >
                                 View on Blockchain →
                             </a>
-                        )}
+                        ) : error ? (
+                            <div className="border border-[#ea580c] bg-[#ea580c]/5 p-3 text-center">
+                                <div className="text-[#ea580c] font-medium text-[10px] uppercase tracking-wide">
+                                    Archive Proof Bypassed
+                                </div>
+                                <p className="text-[9px] text-[#5a6475] mt-1">
+                                    Reason: {error}
+                                </p>
+                            </div>
+                        ) : null}
                         {onBackToHome ? (
                             <button
                                 onClick={onBackToHome}

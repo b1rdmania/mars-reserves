@@ -13,7 +13,7 @@ import {
     Ed25519Account,
 } from '@aptos-labs/ts-sdk';
 
-// Movement testnet configuration (from Shinami example)
+// Movement testnet configuration (verified working)
 const MOVEMENT_TESTNET_CONFIG = {
     fullnodeUrl: 'https://testnet.movementnetwork.xyz/v1',
     faucetUrl: 'https://faucet.testnet.movementnetwork.xyz/',
@@ -24,6 +24,7 @@ interface RecordMissionParams {
     runHash: string;
     score: number;
     endingId: string;
+    seed: number;
     missionIndexAddress: string;
 }
 
@@ -100,20 +101,31 @@ export async function recordMissionOnChain(
         console.log('[Shinami] Arg lengths - runHash:', runHashBytes.length, 'endingId:', endingIdBytes.length);
 
         const transaction = await aptos.transaction.build.simple({
-            sender: senderAddress,  // Pass as string, not object
+            sender: senderAddress,
             withFeePayer: true,
             data: {
-                function: `${cleanMissionIndexAddress}::mission_index::record_mission`,
+                function: `${cleanMissionIndexAddress}::mission_index::record_run`,
                 typeArguments: [],
                 functionArguments: [
-                    runHashBytes,           // Uint8Array for vector<u8>
-                    BigInt(params.score),   // BigInt for u64
-                    endingIdBytes,          // Uint8Array for vector<u8>
+                    BigInt(params.score),   // score: u64
+                    endingIdBytes,          // ending_id: vector<u8>
+                    runHashBytes,           // run_hash: vector<u8>
+                    BigInt(params.seed),    // seed: u64
+                    cleanMissionIndexAddress // index_address: address
                 ],
             },
         });
 
-        console.log('[Shinami] Transaction built, requesting sponsorship...');
+        console.log('[Shinami] Transaction built. Payload preview:', {
+            sender: transaction.rawTransaction.sender.toString(),
+            sequence_number: transaction.rawTransaction.sequence_number.toString(),
+            max_gas_amount: transaction.rawTransaction.max_gas_amount.toString(),
+            gas_unit_price: transaction.rawTransaction.gas_unit_price.toString(),
+            expiration_timestamp_secs: transaction.rawTransaction.expiration_timestamp_secs.toString(),
+            chain_id: (transaction.rawTransaction.chain_id as any).value || (transaction.rawTransaction.chain_id as any).id || 'unknown',
+        });
+
+        console.log('[Shinami] Requesting sponsorship from Shinami...');
 
         // Get sponsorship from Shinami
         const feePayerAuth = await gasClient.sponsorTransaction(transaction);
@@ -141,12 +153,18 @@ export async function recordMissionOnChain(
         return {
             success: executedTx.success,
             txHash: pendingTx.hash,
-            explorerUrl: `https://explorer.movementnetwork.xyz/txn/${pendingTx.hash}?network=bardock+testnet`,
+            explorerUrl: `https://explorer.movementnetwork.xyz/txn/${pendingTx.hash}?network=testnet`,
         };
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         const errorStack = error instanceof Error ? error.stack : '';
         console.error('Shinami sponsored transaction error:', errorMessage);
+        // Log the full error object if possible
+        try {
+            console.error('Full Error Object:', JSON.stringify(error, Object.getOwnPropertyNames(error), 2));
+        } catch (e) {
+            console.error('Could not stringify error');
+        }
         console.error('Stack:', errorStack);
         return {
             success: false,

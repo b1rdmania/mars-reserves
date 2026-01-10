@@ -64,7 +64,6 @@ module mission_index::mission_index {
     }
 
     /// View function to get total missions recorded
-    #[view]
     public fun get_total_missions(): u64 acquires MissionRegistry {
         borrow_global<MissionRegistry>(@mission_index).total_missions
     }

@@ -42,6 +42,11 @@ Thumbs.db
 movement
 .movement/config.yaml
 
+# Local Binaries and Archives
+.bin/
+*.zip
+*.tar.gz
+
 # Contract build artifacts
 contracts/mission_index/build
 contracts/**/build
