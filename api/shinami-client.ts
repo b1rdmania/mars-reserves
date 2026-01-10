@@ -86,7 +86,7 @@ export async function recordMissionOnChain(
             missionIndexLen: cleanMissionIndexAddress.length,
             senderAddress,
             senderLen: senderAddress.length,
-            fn: `${cleanMissionIndexAddress}::mission_index::record_run`,
+            fn: `${cleanMissionIndexAddress}::mission_index::record_mission`,
         });
 
         // Validate address format (should be 0x + 64 hex chars = 66 total)
@@ -104,7 +104,7 @@ export async function recordMissionOnChain(
             sender: senderAddress,
             withFeePayer: true,
             data: {
-                function: `${cleanMissionIndexAddress}::mission_index::record_run`,
+                function: `${cleanMissionIndexAddress}::mission_index::record_mission`,
                 typeArguments: [],
                 functionArguments: [
                     runHashBytes,           // run_hash: vector<u8>

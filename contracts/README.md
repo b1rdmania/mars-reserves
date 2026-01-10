@@ -43,14 +43,12 @@ A simple on-chain registry for verified game runs on Movement Bardock testnet.
 // Initialize (admin only, once)
 public entry fun initialize(admin: &signer)
 
-// Record a verified run
-public entry fun record_run(
-    player: &signer,
+// Record a verified mission
+public entry fun record_mission(
+    commander: &signer,
+    run_hash: vector<u8>,
     score: u64,
     ending_id: vector<u8>,
-    run_hash: vector<u8>,
-    seed: u64,
-    index_address: address,
 )
 
 // View current state
