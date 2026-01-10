@@ -104,14 +104,12 @@ export async function recordMissionOnChain(
             sender: senderAddress,
             withFeePayer: true,
             data: {
-                function: `${cleanMissionIndexAddress}::mission_index::record_run`,
+                function: `${cleanMissionIndexAddress}::mission_index::record_mission`,
                 typeArguments: [],
                 functionArguments: [
+                    runHashBytes,           // run_hash: vector<u8>
                     BigInt(params.score),   // score: u64
                     endingIdBytes,          // ending_id: vector<u8>
-                    runHashBytes,           // run_hash: vector<u8>
-                    BigInt(params.seed),    // seed: u64
-                    cleanMissionIndexAddress // index_address: address
                 ],
             },
         });
