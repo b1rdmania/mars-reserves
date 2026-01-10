@@ -1,56 +1,73 @@
 # Mars Extraction
 
-> A public mission. A private legacy.
+**A public mission. A private legacy.**
 
-**Mars Extraction** is a Web 2.5 strategy game built on Movement blockchain. Every decision you make — every compromise, every shortcut — is recorded permanently on-chain. Your choices don't just affect your score. They become data that shapes how the game evolves.
+**Mars Extraction** is a Web 2.5 survival strategy game built for the [Movement Network](https://movementnetwork.xyz/). Set in the first permanent human colony on Mars, players act as the Colony Commander, balancing the utilitarian needs of survival against the seductive pull of personal ambition.
 
-## 🎮 Play Now
+Every run is a historical record. Every decision is permanent.
 
-**[marsreserves.xyz](https://marsreserves.xyz)**
-
----
-
-## ⛓️ Why Movement?
-
-Most blockchain games are either Unity ports with a wallet bolted on, or they're slow and clunky with endless transaction approvals.
-
-Mars Extraction is different:
-
-- **Fully abstracted**: Privy handles auth, Shinami sponsors gas — players never see a wallet prompt
-- **On-chain decisions**: Every completed run is recorded to Movement with a verifiable hash
-- **Speed matters**: Movement's performance makes real-time recording viable
-- **Data with purpose**: On-chain decision data will shape future game mechanics
-
-**Your choices become permanent. The archive is alive.**
+[**→ Play the Live Demo**](https://marsreserves.xyz)
 
 ---
 
-## 🌌 The Game
+## ⛓️ Built on Movement
 
-You are the commander of Olympus Base. Guide the colony through 10 cycles while balancing survival against your own ambitions.
+Mars Extraction leverages the speed and security of the **Movement Network (Bardock Testnet)** to create a "verdict machine" where blockchain is the immutable archive.
 
-- **One resource, infinite pressure**: Colony Stockpile represents everything — energy, oxygen, materials
-- **Legacy is seductive**: Extract resources for personal glory, but the crew is watching
-- **Delayed consequences**: Bad decisions don't hurt immediately... until they do
-- **30 unique endings**: From legendary triumph to catastrophic failure
-
----
-
-## 🏗️ Built With
-
-| Layer | Technology |
-|-------|------------|
-| **Frontend** | React + Vite + TypeScript |
-| **Auth** | Privy (wallet login, embedded wallets) |
-| **Backend** | Supabase (profiles, runs, leaderboards) |
-| **Blockchain** | Movement Network (Bardock Testnet) |
-| **Gas Sponsorship** | Shinami Gas Station |
+- **Fully Abstracted Web3**: Powered by **Privy**, players experience the benefits of true ownership and verifiable history without the friction of manual wallet management or gas fees.
+- **Sponsored On-Chain Events**: Using **Shinami Gas Station**, every completed mission is recorded on-chain with zero cost to the player.
+- **Move Smart Contracts**: A custom Move contract on Movement Bardock maintains a tamper-proof Mission Registry, storing run hashes and legacy scores.
 
 ---
 
-## 📜 On-Chain Recording
+## 🎮 The Experience
 
-The `mission_index` Move contract records verified game runs:
+- **Deterministic Strategy**: Navigate a 10-cycle mission where 49 unique actions create a branching path of survival and institutional power.
+- **Moral Tension**: Balance **Colony Stockpile** (oxygen, energy, water) against **Legacy Capital** (personal fame and historical credit).
+- **Delayed Consequences**: A hidden state engine tracks **Oversight Scrutiny**, **Crew Unrest**, and **Institutional Memory**. Your shortcuts in Cycle 2 will haunt you in Cycle 9.
+- **Procedural Verdicts**: 5 distinct ending archetypes based on your command style—from *The Vizier* to *The Martyr*.
+
+---
+
+## 🛠️ Technical Stack
+
+- **Frontend**: React + Vite + TypeScript
+- **Styling**: Vanilla CSS with a bespoke "Glass-Terminal" aesthetic
+- **Auth**: Privy (Embedded Wallets + Social Login)
+- **Engine**: Custom TypeScript state machine (Mulberry32 RNG)
+- **Database**: Supabase (Persistent career profiles & global archive)
+- **Blockchain**: Movement Network (Move Language)
+- **Infrastructure**: Shinami (Sui/Aptos Gas Station)
+
+---
+
+## 🚀 Development
+
+### Prerequisites
+- Node.js 18+
+- [Movement CLI](https://docs.movementnetwork.xyz/)
+
+### Quick Start
+1. **Clone and Install**:
+   ```bash
+   git clone https://github.com/b1rdmania/mars-reserves
+   npm install
+   ```
+2. **Environment**:
+   ```bash
+   cp .env.example .env
+   # Populate with your Privy and Supabase keys
+   ```
+3. **Run**:
+   ```bash
+   npm run dev
+   ```
+
+---
+
+## 📜 On-Chain Contract
+
+The `mission_index` contract on Movement Bardock provides a verifiable registry for all colony missions:
 
 ```move
 public entry fun record_mission(
@@ -60,38 +77,12 @@ public entry fun record_mission(
 )
 ```
 
-Each run is verified server-side before recording. All transactions are sponsored — **players never pay gas**.
+**Contract Address:** `0xb35e9866a6c83bb290245cfbb48ef85a32e3b84447150138b37a7f11b9c473cf`
 
 ---
 
-## 🚀 Quick Start
+## 🏆 Movement Hackathon 2026 Submission
 
-```bash
-npm install
-cp .env.example .env
-npm run dev
-```
-
-## 📋 Environment Variables
-
-| Variable | Description |
-|----------|-------------|
-| `VITE_PRIVY_APP_ID` | Privy application ID |
-| `VITE_SUPABASE_URL` | Supabase project URL |
-| `VITE_SUPABASE_ANON_KEY` | Supabase anon key |
-| `SUPABASE_SERVICE_ROLE_KEY` | Supabase service key |
-| `SHINAMI_API_KEY` | Shinami Gas Station key |
-| `MISSION_INDEX_ADDRESS` | Deployed contract address |
-
----
-
-## 🏆 Movement Hackathon 2026
-
-Built for the Movement Network Hackathon. Categories:
-- **Best Gaming App on Movement**
-- **Best App Using Privy Wallets**
-- **The People's Choice**
-
----
+Built by **[b1rdmania](https://x.com/b1rdmania)**.
 
 *A game about big mistakes in a small colony.*
