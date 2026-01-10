@@ -41,7 +41,8 @@ We dedicated significant effort to the **Movement x Shinami** integration. Here 
 
 1. **Bardock Migration:** Migrated all RPC and Faucet infrastructure to support the new Bardock Testnet reset.
 2. **Contract-Backend Sync:** 
-   - Corrected function entry-point from `record_mission` to `record_run`.
+   - Synchronized function entry-point to `record_mission` after on-chain verification.
+   - Initialized `MissionRegistry` using Movement CLI to enable persistent events.
    - Re-aligned argument serialization to match the Move fixed-size bytes and u64 order.
 3. **DNS Fix (Bardock to Testnet):** Resolved the `ENOTFOUND` error by migrating from the unstable `bardock` subdomain to the primary `testnet.movementnetwork.xyz` endpoint.
 4. **Live Diagnostics:** Added a real-time "Proof Bypass" detector in the UI that surfaces specific blockchain sponsorship errors to the user.
